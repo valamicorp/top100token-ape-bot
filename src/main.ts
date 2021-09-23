@@ -1,8 +1,5 @@
-import Web3 from "web3";
-import { approveInfinity, ethereumChains } from "./contants";
+import { ethereumChains } from "./contants";
 import { ApeEngine } from "./engine/apeEngine";
-import { TradeEngine } from "./engine/tradeEngine";
-import { storageConfig, StorageService, TransactionsDB } from "./util/storage";
 import * as path from "path";
 import { app, BrowserWindow, ipcMain } from "electron";
 import { AddressFromPrivatekey, getEthBalance } from "./blockchain/walletHandler";
