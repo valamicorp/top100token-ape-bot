@@ -1,0 +1,148 @@
+
+<!doctype html>
+<html lang="en" class="h-100">
+  <head>
+    <meta charset="utf-8">
+
+    <title>Top100Token APE Bot</title>
+
+
+<link href="./css/bootstrap.min.css" rel="stylesheet" >
+<script type="text/javascript" src="./js/bootstrap.min.js"></script>
+
+<meta name="theme-color" content="#7952b3">
+
+<script type="text/javascript" src="./renderer.js"></script>
+   
+  </head>
+  <body class="d-flex h-100 text-center text-white bg-dark">
+    
+<div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+  <header style="margin-bottom: 4rem;">
+    <div>
+      <h3 class="float-md-start mb-0">Top100Token APE Bot</h3>
+      <div class="float-md-end mb-0">
+
+        <button id='settingsButton' type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Settings</button>
+
+      </div>
+    </div>
+  </header>
+
+  <h1 id="currentProfit" style="margin-bottom: 4rem;" class="display-3">0.00%</h1>
+
+  <main class="px-3">
+    <p class="lead">Use it for your own responsibility and profit!</p>
+
+    <div class="container">
+      <div class="row">
+
+        <div class="col">
+          <div class="mb-3">
+            <label for="apeAddress" class="form-label">APE ADDRESS</label>
+            <input  class="form-control" id="apeAddress">
+          </div>
+          <button id='startButton' class="btn btn-success">Start</button>
+          <button id='pauseButton' disabled  class="btn btn-warning">Pause</button>
+          <button id='stopButton' disabled class="btn btn-danger">Stop</button>
+          <button id='panicSell' disabled class="btn btn-dark">🐥 PanicSell 🧻</button>
+      
+        </div>
+
+      </div>
+    </div>
+
+    <div style="margin-top: 3rem;" class="container">
+      <div class="row">
+        <div class="col">
+          <p>Chain: <span id='chainName'></span></p>
+          <p>Wallet Address: <span id='walletAddress'></span></p>
+          <p>Wallet balance: <span id='walletBalance'></span></p>
+
+          <div>
+            <span id='traderStatus'></span>
+          </div>
+          <div>
+            <span id='traderStatus2'></span>
+          </div>
+
+
+
+        </div>
+  
+      </div>
+    </div>
+  
+
+  </main>
+
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog ">
+      <div class="modal-content">
+        <div class="modal-header text-dark">
+          <h5 class="modal-title" id="exampleModalLabel">Settings - AutoSave: On</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-dark">
+          <div class="mb-3">
+            <label for="setting1" class="form-label">PrivateKey</label>
+            <input type="password" class="form-control" id="setting1">
+          </div>
+          <div class="mb-3">
+            <label for="setting2" class="form-label">Chain/Swap</label>
+            <select  id="setting2" class="form-select" aria-label="Default select example">
+              <option selected value="binance">PancakeSwap / Binance Chain</option>
+              <option  value="dth">devethswap / dTH</option>
+              <option value="ethereum">UniSwapV2 / ETH</option>
+              <option value="polygon">QuickSwap / Poly</option>
+              <option value="cth">CheapSwap / cTH</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="setting3" class="form-label">APE Amount (in BNB/ETH/...)</label>
+            <input type="number" value="0.1" step="0.0001" class="form-control" id="setting3">
+          </div>
+          <div class="mb-3">
+            <label for="setting4" class="form-label">Auto sell when profit %</label>
+            <select  id="setting4" class="form-select" aria-label="Default select example">
+              <option value="10">10%</option>
+              <option value="20">20%</option>
+              <option value="20">30%</option>
+              <option value="40">40%</option>
+              <option selected value="50">50%</option>
+              <option value="60">60%</option>
+              <option value="100">100%</option>
+              <option value="150">150%</option>
+              <option value="200">200%</option>
+              <option value="1000">1000% B!G D*CK</option>
+            </select>
+          </div>
+          <hr>
+          <p>! Advanced settings, do not change unless you are pro !</p>
+          <div class="mb-3">
+            <label for="setting5" class="form-label">Custom Gas Price (in GWEI)</label>
+            <input  type="number" placeholder="default" class="form-control" id="setting5">
+          </div>
+          <div class="mb-3">
+            <label for="setting6" class="form-label">Custom Gas Limit</label>
+            <input  type="number" placeholder="default" class="form-control" id="setting6">
+          </div>
+        </div>
+        <div class="modal-footer text-dark">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="mt-auto text-white-50">
+  
+  </footer>
+</div>
+
+
+    
+  </body>
+
+
+</html>

@@ -1,0 +1,39 @@
+{
+  "name": "top100token-defi-trader-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./build/main.js",
+  "dependencies": {
+    "bignumber.js": "^9.0.1",
+    "electron-store": "^8.0.1",
+    "erc-20-abi": "^1.0.0",
+    "knex": "^0.95.11",
+    "sqlite3": "^5.0.2",
+    "tslib": "^2.3.1",
+    "web3": "^1.5.2"
+  },
+  "devDependencies": {
+    "electron": "^14.0.1",
+    "@types/sqlite3": "^3.1.7",
+    "electron-builder": "^22.11.7"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "lint": "eslint -c .eslintrc --ext .ts ./src",
+    "start": "npm run build && electron ./build/main.js",
+    "postinstall": "install-app-deps",
+    "compile": "npm run build && electron-builder build --win"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "build": {
+    "asar": false,
+    "files": [
+      "build/**/*",
+      "package.json",
+      "assets/**/*"
+    ]
+  }
+}
