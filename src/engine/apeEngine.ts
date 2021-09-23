@@ -47,41 +47,39 @@ export class ApeEngine {
 
   public minProfit: number;
 
-  private lastState = '';
-  public state = 'Wait for buy!';
+  private lastState = "";
+  public state = "Wait for buy!";
 
   public isApproved = false;
 
   public paused = false;
 
-  public swapValue = '0';
+  public swapValue = "0";
 
-  public currProfit = '0.00%';
+  public currProfit = "0.00%";
 
   constructor(
     address: string,
     privateKey: string,
-    maxPositionCoin = '0.1',
-    minProfitPct = '50'
+    maxPositionCoin = "0.1",
+    minProfitPct = "50"
   ) {
     this.WalletAddress = address;
     this.WalletPrivateKey = privateKey;
 
-    this.maxPositionCoin =  Web3.utils.toWei(maxPositionCoin, "ether");
+    this.maxPositionCoin = Web3.utils.toWei(maxPositionCoin, "ether");
 
     this.minProfit = Number(minProfitPct) / 100;
 
-    console.log('Min profit :',this.minProfit);
+    console.log("Min profit :", this.minProfit);
 
     this.updateInterval = setInterval(async () => {
-
-      if(this.state !== this.lastState){
+      if (this.state !== this.lastState) {
         console.log(this.state);
         this.lastState = this.state;
       }
-     
 
-      if(this.paused){
+      if (this.paused) {
         return;
       }
 
@@ -106,29 +104,26 @@ export class ApeEngine {
             break;
         }
       }
-
     }, 100);
   }
 
-  public PauseApe(){
+  public PauseApe() {
     this.paused = !this.paused;
   }
 
-  public StopApe(){
+  public StopApe() {
     this.paused = true;
     clearInterval(this.updateInterval);
   }
 
-  public PanicSell(){
+  public PanicSell() {
     this.minProfit = -0.99;
   }
 
-
-
   async AddNewApe(chain: string, address: string) {
     if (!this.Balances.find((e) => e.chain === chain)) {
-        this.Balances.push({ chain, ethBalance: "0" });
-      }
+      this.Balances.push({ chain, ethBalance: "0" });
+    }
 
     await this.HandleApeTradeEvent(chain, address);
   }
@@ -156,50 +151,54 @@ export class ApeEngine {
   }
 
   async HandleApeExitCheck(chain: string, address: string) {
-    const chainData = ethereumChains.find((e) => e.id === chain);
-    const balance = this.Balances.find((e) => e.chain === chain);
+    try {
+      const chainData = ethereumChains.find((e) => e.id === chain);
+      const balance = this.Balances.find((e) => e.chain === chain);
 
-    if (chainData && balance) {
+      if (chainData && balance) {
+        const tokenBalance = await balanceOfErc20(
+          chainData.rcpAddress,
+          address,
+          this.WalletAddress
+        );
 
-      const tokenBalance = await balanceOfErc20(
-        chainData.rcpAddress,
-        address,
-        this.WalletAddress
-      );
-
-      const swapValue = await getApeSwapValue(
-        chainData.rcpAddress,
-        chainData.router,
-        chainData.wCoin,
-        address,
-        tokenBalance
-      );
+        const swapValue = await getApeSwapValue(
+          chainData.rcpAddress,
+          chainData.router,
+          chainData.wCoin,
+          address,
+          tokenBalance
+        );
 
         this.swapValue = swapValue;
 
-        const kindofProfit = new BigNumber(swapValue).dividedBy(new BigNumber((this.maxPositionCoin))).multipliedBy(100).toNumber();
+        const kindofProfit = new BigNumber(swapValue)
+          .dividedBy(new BigNumber(this.maxPositionCoin))
+          .multipliedBy(100)
+          .toNumber();
 
-        this.currProfit = `${Number((Math.round(kindofProfit * 100) / 100) - 100).toFixed(2).toString()}%`;
+        this.currProfit = `${Number(Math.round(kindofProfit * 100) / 100 - 100)
+          .toFixed(2)
+          .toString()}%`;
 
+        if (
+          new BigNumber(swapValue).isGreaterThan(
+            new BigNumber(this.maxPositionCoin).multipliedBy(1 + this.minProfit)
+          )
+        ) {
+          await this.HandleApeSell(chain, address, tokenBalance);
 
-      if (
-        new BigNumber(swapValue).isGreaterThan(
-        new BigNumber(this.maxPositionCoin).multipliedBy(1 + this.minProfit)
-        )
-      ) {
-
-    
-       await this.HandleApeSell(chain, address,tokenBalance);
-
-       return;
+          return;
+        }
       }
+    } catch (error) {
+    } finally {
+      this.Events.push({
+        type: "apeExitCheck",
+        chain,
+        address,
+      });
     }
-
-    this.Events.push({
-      type: "apeExitCheck",
-      chain,
-      address,
-    });
   }
 
   UpdateBalance(chain: string, address: string) {
@@ -235,7 +234,7 @@ export class ApeEngine {
     address: string
   ): Promise<any> {
     try {
-      this.state = 'APE BUY STARTED!';
+      this.state = "APE BUY STARTED!";
 
       const chainData = ethereumChains.find((e) => e.id === chain);
 
@@ -265,8 +264,7 @@ export class ApeEngine {
         );
 
         if (receipt) {
- 
-          this.state = 'APE BUY SUCCESS!';
+          this.state = "APE BUY SUCCESS!";
 
           this.Events.push({
             type: "apeBuySuccess",
@@ -292,7 +290,7 @@ export class ApeEngine {
     } catch (error) {
       console.log(error);
 
-      this.state = 'APE BUY ERROR, RETRY!';
+      this.state = "APE BUY ERROR, RETRY!";
 
       this.Events.push({
         type: "apeBuyFail",
@@ -307,7 +305,7 @@ export class ApeEngine {
     try {
       const chainData = ethereumChains.find((e) => e.id === chain);
 
-      this.state = 'APE APPROVE STARTED!';
+      this.state = "APE APPROVE STARTED!";
 
       if (chainData) {
         const dataAprove = ApproveErc20(
@@ -330,8 +328,8 @@ export class ApeEngine {
         );
 
         if (receiptApprove) {
-            this.state = 'APE APPROVE FINISHED!';
-            this.isApproved = true;
+          this.state = "APE APPROVE FINISHED!";
+          this.isApproved = true;
         } else {
           throw new Error("Transaction failed!");
         }
@@ -339,7 +337,7 @@ export class ApeEngine {
     } catch (error) {
       console.log(error);
 
-      this.state = 'APE APPROVE FAILED RETRY!';
+      this.state = "APE APPROVE FAILED RETRY!";
 
       this.Events.push({
         type: "apeApprove",
@@ -350,46 +348,52 @@ export class ApeEngine {
     }
   }
 
-  private async HandleApeSell(chain: string, address: string, tokenBalance: string): Promise<any> {
+  private async HandleApeSell(
+    chain: string,
+    address: string,
+    tokenBalance: string
+  ): Promise<any> {
     try {
-
-       if(!this.isApproved){
+      if (!this.isApproved) {
         this.Events.push({
           type: "apeExitCheck",
           chain,
           address,
         });
-         return;
-       }
+        return;
+      }
 
       const chainData = ethereumChains.find((e) => e.id === chain);
 
-      this.state = 'APE SELL STARTED!';
+      this.state = "APE SELL STARTED!";
 
       if (chainData) {
-   
-        const  data = swapExactTokensForETH(
-            chainData.router,
-            chainData.wCoin,
-            address,
-            this.WalletAddress,
-            tokenBalance
-          );
+        const data = swapExactTokensForETH(
+          chainData.router,
+          chainData.wCoin,
+          address,
+          this.WalletAddress,
+          tokenBalance
+        );
 
-        const  singed = await createSignedTx(
-            chainData.rcpAddress,
-            this.WalletPrivateKey,
-            data,
-            {
-              from: this.WalletAddress,
-              to: chainData.router,
-            }
-          );
+        const singed = await createSignedTx(
+          chainData.rcpAddress,
+          this.WalletPrivateKey,
+          data,
+          {
+            from: this.WalletAddress,
+            to: chainData.router,
+          }
+        );
 
-          const receipt = await sendSignedTx(chainData.rcpAddress,this.WalletPrivateKey,singed); 
+        const receipt = await sendSignedTx(
+          chainData.rcpAddress,
+          this.WalletPrivateKey,
+          singed
+        );
 
         if (receipt) {
-            this.state = 'APE SELL FINISHED!';
+          this.state = "APE SELL FINISHED!";
         } else {
           throw new Error("Transaction failed!");
         }
@@ -397,7 +401,7 @@ export class ApeEngine {
     } catch (error) {
       console.log(error);
 
-      this.state = 'APE SELL FAILED, RETRY!';
+      this.state = "APE SELL FAILED, RETRY!";
 
       this.Events.push({
         type: "apeExitCheck",
