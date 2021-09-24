@@ -7,6 +7,7 @@
     "bignumber.js": "^9.0.1",
     "electron-store": "^8.0.1",
     "erc-20-abi": "^1.0.0",
+    "eventemitter3": "^4.0.7",
     "knex": "^0.95.11",
     "sqlite3": "^5.0.2",
     "ts-jest": "^27.0.5",

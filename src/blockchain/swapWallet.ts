@@ -38,8 +38,11 @@ export class SwapWallet {
       const provider = new Web3.providers.HttpProvider(this.chainData.rcpAddress);
       this.web3 = new Web3(provider);
       this.walletAddress = AddressFromPrivatekey(this.walletPrivateKey);
-      this.gasPrice = gasPrice ?? chainData.defaultGas;
-      this.gasLimit = gasLimit ?? '1600000';
+      this.gasPrice = (gasPrice && !new BigNumber(gasPrice).isNaN()) ? new BigNumber(gasPrice).toString() : chainData.defaultGas;
+      this.gasLimit = (gasLimit && !new BigNumber(gasLimit).isNaN()) ? new BigNumber(gasLimit).toString() : '1600000';
+
+      console.log("Price, limit",this.gasPrice,this.gasLimit);
+ 
 
       if(!gasPrice){
         this.GetGasPrice();

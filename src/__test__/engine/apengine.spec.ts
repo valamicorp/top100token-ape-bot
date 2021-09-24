@@ -54,7 +54,7 @@ describe('APE Trade Engine', () => {
   });
 
   it('should create a TradeEngine', async () => {
-    const engine = new ApeEngine(CHAIN_ID, 'privateKey', '0.1', '50',100, mockWallet);
+    const engine = new ApeEngine(CHAIN_ID, 'privateKey', '0.1', '50', undefined, undefined, 100, mockWallet);
 
     engine.StopApe();
 
@@ -62,7 +62,7 @@ describe('APE Trade Engine', () => {
   });
 
   it('should be Paused', async () => {
-    const engine = new ApeEngine(CHAIN_ID, 'privateKey', '0.1', '50',100, mockWallet);
+    const engine = new ApeEngine(CHAIN_ID, 'privateKey', '0.1', '50', undefined, undefined, 100, mockWallet);
 
     engine.PauseApe();
     expect(engine.paused).toBe(true);
@@ -72,7 +72,7 @@ describe('APE Trade Engine', () => {
   });
 
   it('should be AddNewApe buy', async () => {
-    const engine = new ApeEngine(CHAIN_ID, 'privateKey', '0.1', '50',100, mockWallet);
+    const engine = new ApeEngine(CHAIN_ID, 'privateKey', '0.1', '50', undefined, undefined, 100, mockWallet);
 
     engine.AddNewApe(APE_ADDRESS);
 
@@ -93,7 +93,7 @@ describe('APE Trade Engine', () => {
   });
 
   it('should be AddNewApe sell', async () => {
-    const engine = new ApeEngine(CHAIN_ID, 'privateKey', '0.1', '50',100, mockWallet);
+    const engine = new ApeEngine(CHAIN_ID, 'privateKey', '0.1', '50', undefined, undefined, 100, mockWallet);
 
     engine.AddNewApe(APE_ADDRESS);
 
@@ -116,6 +116,4 @@ describe('APE Trade Engine', () => {
 
     engine.StopApe();
   });
-
-
 });

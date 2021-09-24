@@ -7,7 +7,9 @@ import { ApeContract, Balance, EngineEvent } from '../types';
 
 import { SwapWallet } from '../blockchain/swapWallet';
 
-export class ApeEngine {
+import {EventEmitter} from 'eventemitter3';
+
+export class ApeEngine extends EventEmitter {
   private updateInterval: NodeJS.Timeout;
 
   private swapWallet: SwapWallet;
@@ -38,11 +40,14 @@ export class ApeEngine {
     privateKey: string,
     maxPositionCoin = '0.1',
     minProfitPct = '50',
+    gasprice?: string,
+    gasLimit?: string,
     updateTimeout = 300,
     injectWallet?: SwapWallet,
    
   ) {
-    this.swapWallet = injectWallet || new SwapWallet(chainId, privateKey);
+    super();
+    this.swapWallet = injectWallet || new SwapWallet(chainId, privateKey,gasprice,gasLimit);
 
     this.Balance = {
       chain: this.swapWallet.chainData.id,
