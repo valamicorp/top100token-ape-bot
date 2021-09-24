@@ -25,6 +25,7 @@ export class ApeEngine {
   public state = 'Wait for buy!';
 
   public isApproved = false;
+  public isSelling = false;
 
   public paused = false;
 
@@ -134,14 +135,20 @@ export class ApeEngine {
         .multipliedBy(100)
         .toNumber();
 
-      this.currProfit = `${Number(Math.round(kindofProfit * 100) / 100 - 100)
-        .toFixed(2)
-        .toString()}%`;
+      if(Number(this.swapValue)!== 0){
+        this.currProfit = `${Number(Math.round(kindofProfit * 100) / 100 - 100)
+          .toFixed(2)
+          .toString()}%`;
+      }
+
 
       if (
         new BigNumber(swapValue).isGreaterThan(new BigNumber(this.maxPositionCoin).multipliedBy(1 + this.minProfit))
       ) {
-        await this.HandleApeSell(address, tokenBalance);
+        if(!this.isSelling){
+          await this.HandleApeSell(address, tokenBalance);
+        }
+        
 
         return;
       }

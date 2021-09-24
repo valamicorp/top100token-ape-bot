@@ -89,6 +89,11 @@ export class SwapWallet {
     const token = new this.web3.eth.Contract(uniSwap2ABI as any, this.chainData.router);
 
     try {
+
+      if(Number(numToken) === 0){
+        return '0';
+      }
+
       const exchangeRate = await token.methods.getAmountsOut(numToken, [tokenAddress, this.chainData.wCoin]).call();
 
       return exchangeRate[1];
