@@ -96,7 +96,7 @@ export const ethereumChains = [
     factory: "0x8F8c3A7ccD2980b9A7b5cfadc5d1Cf638dc1427A",
     rcpAddress: "https://rpc-mainnet.maticvigil.com/",
     wCoin: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-    testContract: '0xa8fcee762642f156b5d757b6fabc36e06b6d4a1a',
+    testContract: '0xccae06ec0787c07d7df5a60856c73a113fc7cf9a',
     contractExplorer: (address: string) => `https://polygonscan.com/token/${address}`,
     chartLink:  (address: string) => `https://info.idamurni.de/#/token/${address}`,
     swapLink:  (address: string) => `https://exchange.idamurni.de/#/swap?outputCurrency=${address}`
