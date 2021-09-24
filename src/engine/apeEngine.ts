@@ -1,48 +1,26 @@
 import BigNumber from "bignumber.js";
 import Web3 from "web3";
 
-import { approveInfinity, ethereumChains } from "../contants";
-import {
-  ApproveErc20,
-  balanceOfErc20,
-  getERC20Data,
-} from "../blockchain/erc20";
-import { Iftt } from "../trading-ai/machine-learning";
+import { approveInfinity } from "../contants";
+
 import {
   ApeContract,
   Balance,
   EngineEvent,
-  TokenContract,
-  TokenContractOptions,
-  TradeEvent,
-  Transaction,
 } from "../types";
-import { getUniFactory } from "../blockchain/uniFactory";
-import {
-  getApeSwapValue,
-  getUniSwapData,
-  swapExactETHForTokens,
-  swapExactTokensForETH,
-} from "../blockchain/uniSwap";
-import {
-  createSignedTx,
-  getEthBalance,
-  sendSignedTx,
-} from "../blockchain/walletHandler";
-import { StorageService, TransactionsDB } from "../util/storage";
-import { calculatePosition } from "../trading-ai/positionHandler";
+
+import { SwapWallet } from "../blockchain/swapWallet";
 
 export class ApeEngine {
   private updateInterval: NodeJS.Timeout;
 
-  private WalletAddress: string;
-  private WalletPrivateKey: string;
+  private swapWallet: SwapWallet;
 
-  private Balances: Balance[] = [];
+  private Balance: Balance;
 
   private Events: EngineEvent[] = [];
 
-  private Contracts: ApeContract[] = [];
+  private Contract?: ApeContract;
   private maxPositionCoin: string;
 
   public minProfit: number;
@@ -59,13 +37,17 @@ export class ApeEngine {
   public currProfit = "0.00%";
 
   constructor(
-    address: string,
+    chainId: string,
     privateKey: string,
     maxPositionCoin = "0.1",
     minProfitPct = "50"
   ) {
-    this.WalletAddress = address;
-    this.WalletPrivateKey = privateKey;
+    this.swapWallet = new SwapWallet(chainId, privateKey);
+
+    this.Balance = {
+      chain: this.swapWallet.chainData.id,
+      ethBalance: '0'
+    }
 
     this.maxPositionCoin = Web3.utils.toWei(maxPositionCoin, "ether");
 
@@ -88,19 +70,19 @@ export class ApeEngine {
       if (e) {
         switch (e.type) {
           case "walletCheck":
-            this.CheckWallet(e.chain);
+            this.CheckWallet();
             break;
           case "apeBuyFail":
-            this.HandleApeTradeEvent(e.chain, e.address);
+            this.HandleApeTradeEvent(e.address);
             break;
           case "apeBuySuccess":
-            this.HandleApeSuccess(e.chain, e.address);
+            this.HandleApeSuccess(e.address);
             break;
           case "apeApprove":
-            this.HandleApeApprove(e.chain, e.address);
+            this.HandleApeApprove(e.address);
             break;
           case "apeExitCheck":
-            this.HandleApeExitCheck(e.chain, e.address);
+            this.HandleApeExitCheck(e.address);
             break;
         }
       }
@@ -120,55 +102,34 @@ export class ApeEngine {
     this.minProfit = -0.99;
   }
 
-  async AddNewApe(chain: string, address: string) {
-    if (!this.Balances.find((e) => e.chain === chain)) {
-      this.Balances.push({ chain, ethBalance: "0" });
-    }
+  async AddNewApe(address: string) {
 
-    await this.HandleApeTradeEvent(chain, address);
+    await this.HandleApeTradeEvent(address);
   }
 
-  async HandleApeSuccess(chain: string, address: string) {
-    const chainData = ethereumChains.find((e) => e.id === chain);
+  async HandleApeSuccess(address: string) {
 
-    if (!this.Balances.find((e) => e.chain === chain)) {
-      this.Balances.push({ chain, ethBalance: "0" });
-    }
+    this.CheckWallet();
 
-    this.CheckWallet(chain);
 
-    if (chainData) {
-      const basicData = await getERC20Data(chainData.rcpAddress, address);
+      const basicData =  await this.swapWallet.GetERC20Data(address); 
 
       const contractData = {
-        chain,
         address,
         ...basicData,
       };
 
-      this.Contracts.push(contractData);
-    }
+      this.Contract = contractData;
+    
   }
 
-  async HandleApeExitCheck(chain: string, address: string) {
+  async HandleApeExitCheck(address: string) {
     try {
-      const chainData = ethereumChains.find((e) => e.id === chain);
-      const balance = this.Balances.find((e) => e.chain === chain);
 
-      if (chainData && balance) {
-        const tokenBalance = await balanceOfErc20(
-          chainData.rcpAddress,
-          address,
-          this.WalletAddress
-        );
 
-        const swapValue = await getApeSwapValue(
-          chainData.rcpAddress,
-          chainData.router,
-          chainData.wCoin,
-          address,
-          tokenBalance
-        );
+        const tokenBalance = await this.swapWallet.BalanceOfErc20(address);
+        const swapValue = await this.swapWallet.GetApeSwapValue(address, tokenBalance);
+
 
         this.swapValue = swapValue;
 
@@ -186,42 +147,33 @@ export class ApeEngine {
             new BigNumber(this.maxPositionCoin).multipliedBy(1 + this.minProfit)
           )
         ) {
-          await this.HandleApeSell(chain, address, tokenBalance);
+          await this.HandleApeSell(address, tokenBalance);
 
           return;
         }
-      }
+      
     } catch (error) {
     } finally {
       this.Events.push({
         type: "apeExitCheck",
-        chain,
         address,
       });
     }
   }
 
-  UpdateBalance(chain: string, address: string) {
-    this.Events.push({ type: "lpCheck", chain, address });
-    this.Events.push({ type: "balanceCheck", chain, address });
+  UpdateBalance(address: string) {
+    this.Events.push({ type: "lpCheck", address });
+    this.Events.push({ type: "balanceCheck",  address });
   }
 
-  private async CheckWallet(chain: string) {
+  private async CheckWallet() {
     try {
-      const chainData = ethereumChains.find((e) => e.id === chain);
 
-      if (chainData) {
-        const balanceEth = await getEthBalance(
-          chainData.rcpAddress,
-          this.WalletAddress
-        );
+        const balanceEth = await  this.swapWallet.GetEthBalance();
 
-        const userBalance = this.Balances.find((i) => i.chain === chain);
-
-        if (userBalance) {
-          userBalance.ethBalance = balanceEth;
-        }
-      }
+        this.Balance.ethBalance = balanceEth;
+        
+    
     } catch (error) {
       console.log(error);
 
@@ -230,63 +182,45 @@ export class ApeEngine {
   }
 
   private async HandleApeTradeEvent(
-    chain: string,
     address: string
   ): Promise<any> {
     try {
       this.state = "APE BUY STARTED!";
 
-      const chainData = ethereumChains.find((e) => e.id === chain);
 
-      if (chainData) {
-        const data = swapExactETHForTokens(
-          chainData.router,
-          chainData.wCoin,
-          address, // address
-          this.WalletAddress
-        );
 
-        const singed = await createSignedTx(
-          chainData.rcpAddress,
-          this.WalletPrivateKey,
-          data,
-          {
-            from: this.WalletAddress,
-            to: chainData.router,
-            value: this.maxPositionCoin,
-          }
-        );
 
-        const receipt = await sendSignedTx(
-          chainData.rcpAddress,
-          this.WalletPrivateKey,
-          singed
-        );
+        const data = await this.swapWallet.SwapExactETHForTokens(address);
+        
+
+        const singedTx =  await this.swapWallet.CreateSignedTx(data,  {
+          to: this.swapWallet.chainData.router,
+          value: this.maxPositionCoin,
+        });
+
+        const receipt = await this.swapWallet.SendSignedTx(singedTx);  
 
         if (receipt) {
           this.state = "APE BUY SUCCESS!";
 
           this.Events.push({
             type: "apeBuySuccess",
-            chain,
             address,
           });
 
           this.Events.push({
             type: "apeApprove",
-            chain,
             address,
           });
 
           this.Events.push({
             type: "apeExitCheck",
-            chain,
             address,
           });
         } else {
           throw new Error("Transaction failed!");
         }
-      }
+      
     } catch (error) {
       console.log(error);
 
@@ -294,46 +228,34 @@ export class ApeEngine {
 
       this.Events.push({
         type: "apeBuyFail",
-        chain,
         address,
       });
       return;
     }
   }
 
-  private async HandleApeApprove(chain: string, address: string): Promise<any> {
+  private async HandleApeApprove(address: string): Promise<any> {
     try {
-      const chainData = ethereumChains.find((e) => e.id === chain);
+    
 
       this.state = "APE APPROVE STARTED!";
 
-      if (chainData) {
-        const dataAprove = ApproveErc20(
-          address,
-          chainData.router,
-          approveInfinity
-        );
+      
+        const data =  await this.swapWallet.ApproveErc20(address, this.swapWallet.chainData.router, approveInfinity) 
 
-        const singedApprove = await createSignedTx(
-          chainData.rcpAddress,
-          this.WalletPrivateKey,
-          dataAprove,
-          { from: this.WalletAddress, to: address }
-        );
+        const singedTx =  await this.swapWallet.CreateSignedTx(data,  {
+          to: address,
+        });
 
-        const receiptApprove = await sendSignedTx(
-          chainData.rcpAddress,
-          this.WalletPrivateKey,
-          singedApprove
-        );
+        const receipt = await this.swapWallet.SendSignedTx(singedTx);  
 
-        if (receiptApprove) {
+        if (receipt) {
           this.state = "APE APPROVE FINISHED!";
           this.isApproved = true;
         } else {
           throw new Error("Transaction failed!");
         }
-      }
+      
     } catch (error) {
       console.log(error);
 
@@ -341,7 +263,6 @@ export class ApeEngine {
 
       this.Events.push({
         type: "apeApprove",
-        chain,
         address,
       });
       return;
@@ -349,55 +270,40 @@ export class ApeEngine {
   }
 
   private async HandleApeSell(
-    chain: string,
     address: string,
     tokenBalance: string
   ): Promise<any> {
     try {
+      
       if (!this.isApproved) {
         this.Events.push({
           type: "apeExitCheck",
-          chain,
           address,
         });
         return;
       }
 
-      const chainData = ethereumChains.find((e) => e.id === chain);
-
       this.state = "APE SELL STARTED!";
 
-      if (chainData) {
-        const data = swapExactTokensForETH(
-          chainData.router,
-          chainData.wCoin,
-          address,
-          this.WalletAddress,
-          tokenBalance
-        );
+ 
+        const data =  await this.swapWallet.SwapExactTokensForETH(address,tokenBalance);
 
-        const singed = await createSignedTx(
-          chainData.rcpAddress,
-          this.WalletPrivateKey,
+
+        const singedTx = await this.swapWallet.CreateSignedTx(
           data,
           {
-            from: this.WalletAddress,
-            to: chainData.router,
+            to: this.swapWallet.chainData.router,
           }
         );
 
-        const receipt = await sendSignedTx(
-          chainData.rcpAddress,
-          this.WalletPrivateKey,
-          singed
-        );
+        const receipt = await this.swapWallet.SendSignedTx(singedTx); 
 
         if (receipt) {
           this.state = "APE SELL FINISHED!";
         } else {
           throw new Error("Transaction failed!");
         }
-      }
+      
     } catch (error) {
       console.log(error);
 
@@ -405,7 +311,6 @@ export class ApeEngine {
 
       this.Events.push({
         type: "apeExitCheck",
-        chain,
         address,
       });
       return;

@@ -2,7 +2,7 @@ import Web3 from 'web3';
 
 const erc20abi = require('erc-20-abi');
 
-import { uniFactoryABI } from '../abi/uniswapFactory';
+import { uniFactoryABI } from '../../abi/uniswapFactory';
 
 
 export interface SwapLiquidityData {

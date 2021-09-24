@@ -2,7 +2,7 @@ import { ethereumChains } from "./contants";
 import { ApeEngine } from "./engine/apeEngine";
 import * as path from "path";
 import { app, BrowserWindow, ipcMain } from "electron";
-import { AddressFromPrivatekey, getEthBalance } from "./blockchain/walletHandler";
+import { AddressFromPrivatekey, getEthBalance } from "./blockchain/utilities/walletHandler";
 import BigNumber from "bignumber.js";
 import { AppState } from "./types";
 const Store = require("electron-store");

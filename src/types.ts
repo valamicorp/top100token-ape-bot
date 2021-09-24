@@ -57,7 +57,7 @@ export interface Balance {
   }
 
   export interface ApeContract {
-    chain: string;
+    chain?: string;
     address: string;
     name: string;
     totalSupply: string;
@@ -71,7 +71,7 @@ export interface Balance {
 
   export interface EngineEvent {
     type: 'lpCheck' | 'balanceCheck' | 'walletCheck' | 'apeBuyFail' | 'apeBuySuccess' | 'apeExitCheck' | 'apeApprove';
-    chain: string;
+    chain?: string;
     address: string;
   }
 
