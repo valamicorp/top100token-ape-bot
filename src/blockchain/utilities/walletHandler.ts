@@ -30,6 +30,17 @@ export const createWeb3Wallet = async (rcpAddress: string, entropy = randomEntro
    return result;
 };
 
+export const getEthBalance = async (rcpAddress: string, address: string): Promise<string>  =>{
+    const provider = new Web3.providers.HttpProvider(rcpAddress);
+    const web3 = new Web3(provider);
+
+    const balance = await web3.eth.getBalance(address);
+
+   // console.log('Wallet : ', address, 'balance: ', web3.utils.fromWei(balance));
+
+    return balance;
+}
+
 
 
 

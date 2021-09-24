@@ -87,6 +87,7 @@ ipcMain.on("setting:async", async (event, arg) => {
 
         if(chainData && arg.privateKey !== ''){
 
+
             const walletAddress = AddressFromPrivatekey(arg.privateKey);
            
             if(!walletAddress){
@@ -110,9 +111,9 @@ ipcMain.on("setting:async", async (event, arg) => {
             if(appState.buttonState === 'start'){
               if(arg.apeAddress && appState.apeLoaded === null){
 
-                const apeEngine = new ApeEngine(walletAddress,privateKey,arg.apeAmount,arg.minProfit);
+                const apeEngine = new ApeEngine(chainData.id,privateKey,arg.apeAmount,arg.minProfit);
 
-                apeEngine.AddNewApe(chainData.id,arg.apeAddress);
+                apeEngine.AddNewApe(arg.apeAddress);
 
                 appState.runningApes.push(apeEngine);
                 appState.apeLoaded = arg.apeAddress;

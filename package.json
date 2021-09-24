@@ -13,6 +13,7 @@
     "web3": "^1.5.2"
   },
   "devDependencies": {
+    "@types/babel__core": "^7.1.16",
     "@types/jest": "^27.0.2",
     "@types/sqlite3": "^3.1.7",
     "electron": "^14.0.1",
@@ -26,7 +27,7 @@
     "test": "jest",
     "start": "npm run build && electron ./build/main.js",
     "postinstall": "install-app-deps",
-    "compile": "npm run build && electron-builder build --win portable"
+    "compile": "npm run build && electron-builder build --win"
   },
   "keywords": [],
   "author": "",
