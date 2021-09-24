@@ -30,13 +30,13 @@
     "test": "jest",
     "start": "npm run build && electron ./build/main.js",
     "postinstall": "install-app-deps",
-    "compile": "npm run build && electron-builder build --win"
+    "compile": "npm run build && electron-builder build --win portable"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "build": {
-    "asar": false,
+    "asar": true,
     "files": [
       "build/**/*",
       "package.json",
