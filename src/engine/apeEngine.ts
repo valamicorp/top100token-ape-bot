@@ -1,15 +1,11 @@
-import BigNumber from "bignumber.js";
-import Web3 from "web3";
+import BigNumber from 'bignumber.js';
+import Web3 from 'web3';
 
-import { approveInfinity } from "../contants";
+import { approveInfinity } from '../contants';
 
-import {
-  ApeContract,
-  Balance,
-  EngineEvent,
-} from "../types";
+import { ApeContract, Balance, EngineEvent } from '../types';
 
-import { SwapWallet } from "../blockchain/swapWallet";
+import { SwapWallet } from '../blockchain/swapWallet';
 
 export class ApeEngine {
   private updateInterval: NodeJS.Timeout;
@@ -25,35 +21,36 @@ export class ApeEngine {
 
   public minProfit: number;
 
-  private lastState = "";
-  public state = "Wait for buy!";
+  private lastState = '';
+  public state = 'Wait for buy!';
 
   public isApproved = false;
 
   public paused = false;
 
-  public swapValue = "0";
+  public swapValue = '0';
 
-  public currProfit = "0.00%";
+  public currProfit = '0.00%';
 
   constructor(
     chainId: string,
     privateKey: string,
-    maxPositionCoin = "0.1",
-    minProfitPct = "50"
+    maxPositionCoin = '0.1',
+    minProfitPct = '50',
+    updateTimeout = 300,
+    injectWallet?: SwapWallet,
+   
   ) {
-    this.swapWallet = new SwapWallet(chainId, privateKey);
+    this.swapWallet = injectWallet || new SwapWallet(chainId, privateKey);
 
     this.Balance = {
       chain: this.swapWallet.chainData.id,
-      ethBalance: '0'
-    }
+      ethBalance: '0',
+    };
 
-    this.maxPositionCoin = Web3.utils.toWei(maxPositionCoin, "ether");
+    this.maxPositionCoin = Web3.utils.toWei(maxPositionCoin, 'ether');
 
     this.minProfit = Number(minProfitPct) / 100;
-
-    console.log("Min profit :", this.minProfit);
 
     this.updateInterval = setInterval(async () => {
       if (this.state !== this.lastState) {
@@ -65,28 +62,25 @@ export class ApeEngine {
         return;
       }
 
-      const e = this.Events.pop();
+      const e = this.Events.shift();
 
       if (e) {
         switch (e.type) {
-          case "walletCheck":
-            this.CheckWallet();
+          case 'apeBuyFail':
+            this.HandleApeBuyEvent(e.address);
             break;
-          case "apeBuyFail":
-            this.HandleApeTradeEvent(e.address);
-            break;
-          case "apeBuySuccess":
+          case 'apeBuySuccess':
             this.HandleApeSuccess(e.address);
             break;
-          case "apeApprove":
+          case 'apeApprove':
             this.HandleApeApprove(e.address);
             break;
-          case "apeExitCheck":
+          case 'apeExitCheck':
             this.HandleApeExitCheck(e.address);
             break;
         }
       }
-    }, 100);
+    }, updateTimeout);
   }
 
   public PauseApe() {
@@ -103,131 +97,105 @@ export class ApeEngine {
   }
 
   async AddNewApe(address: string) {
-
-    await this.HandleApeTradeEvent(address);
+    await this.HandleApeBuyEvent(address);
   }
 
   async HandleApeSuccess(address: string) {
+    try {
 
-    this.CheckWallet();
-
-
-      const basicData =  await this.swapWallet.GetERC20Data(address); 
-
+      const basicData = await this.swapWallet.GetERC20Data(address);
+  
       const contractData = {
         address,
         ...basicData,
       };
-
+  
       this.Contract = contractData;
-    
+    } catch (error) {
+      console.log(error);
+
+      this.Events.push({
+        type: 'apeBuySuccess',
+        address,
+      });
+    }
+
   }
 
   async HandleApeExitCheck(address: string) {
     try {
+      const tokenBalance = await this.swapWallet.BalanceOfErc20(address);
+      const swapValue = await this.swapWallet.GetApeSwapValue(address, tokenBalance);
 
+      this.swapValue = swapValue;
 
-        const tokenBalance = await this.swapWallet.BalanceOfErc20(address);
-        const swapValue = await this.swapWallet.GetApeSwapValue(address, tokenBalance);
+      const kindofProfit = new BigNumber(swapValue)
+        .dividedBy(new BigNumber(this.maxPositionCoin))
+        .multipliedBy(100)
+        .toNumber();
 
+      this.currProfit = `${Number(Math.round(kindofProfit * 100) / 100 - 100)
+        .toFixed(2)
+        .toString()}%`;
 
-        this.swapValue = swapValue;
+      if (
+        new BigNumber(swapValue).isGreaterThan(new BigNumber(this.maxPositionCoin).multipliedBy(1 + this.minProfit))
+      ) {
+        await this.HandleApeSell(address, tokenBalance);
 
-        const kindofProfit = new BigNumber(swapValue)
-          .dividedBy(new BigNumber(this.maxPositionCoin))
-          .multipliedBy(100)
-          .toNumber();
-
-        this.currProfit = `${Number(Math.round(kindofProfit * 100) / 100 - 100)
-          .toFixed(2)
-          .toString()}%`;
-
-        if (
-          new BigNumber(swapValue).isGreaterThan(
-            new BigNumber(this.maxPositionCoin).multipliedBy(1 + this.minProfit)
-          )
-        ) {
-          await this.HandleApeSell(address, tokenBalance);
-
-          return;
-        }
-      
+        return;
+      }
     } catch (error) {
+      console.log(error);
     } finally {
       this.Events.push({
-        type: "apeExitCheck",
+        type: 'apeExitCheck',
         address,
       });
     }
   }
 
-  UpdateBalance(address: string) {
-    this.Events.push({ type: "lpCheck", address });
-    this.Events.push({ type: "balanceCheck",  address });
-  }
 
-  private async CheckWallet() {
+  private async HandleApeBuyEvent(address: string): Promise<any> {
     try {
+      this.state = 'APE BUY STARTED!';
 
-        const balanceEth = await  this.swapWallet.GetEthBalance();
+      const data = await this.swapWallet.SwapExactETHForTokens(address);
 
-        this.Balance.ethBalance = balanceEth;
-        
-    
-    } catch (error) {
-      console.log(error);
+      const singedTx = await this.swapWallet.CreateSignedTx(data, {
+        to: this.swapWallet.chainData.router,
+        value: this.maxPositionCoin,
+      });
 
-      return false;
-    }
-  }
+      const receipt = await this.swapWallet.SendSignedTx(singedTx);
 
-  private async HandleApeTradeEvent(
-    address: string
-  ): Promise<any> {
-    try {
-      this.state = "APE BUY STARTED!";
+      if (receipt) {
+        this.state = 'APE BUY SUCCESS!';
 
-
-
-
-        const data = await this.swapWallet.SwapExactETHForTokens(address);
-        
-
-        const singedTx =  await this.swapWallet.CreateSignedTx(data,  {
-          to: this.swapWallet.chainData.router,
-          value: this.maxPositionCoin,
+        this.Events.push({
+          type: 'apeApprove',
+          address,
         });
 
-        const receipt = await this.swapWallet.SendSignedTx(singedTx);  
+        this.Events.push({
+          type: 'apeBuySuccess',
+          address,
+        });
 
-        if (receipt) {
-          this.state = "APE BUY SUCCESS!";
-
-          this.Events.push({
-            type: "apeBuySuccess",
-            address,
-          });
-
-          this.Events.push({
-            type: "apeApprove",
-            address,
-          });
-
-          this.Events.push({
-            type: "apeExitCheck",
-            address,
-          });
-        } else {
-          throw new Error("Transaction failed!");
-        }
-      
+        this.Events.push({
+          type: 'apeExitCheck',
+          address,
+        });
+      } else {
+        throw new Error('Transaction failed!');
+      }
     } catch (error) {
       console.log(error);
 
-      this.state = "APE BUY ERROR, RETRY!";
+      this.state = 'APE BUY ERROR, RETRY!';
 
       this.Events.push({
-        type: "apeBuyFail",
+        type: 'apeBuyFail',
         address,
       });
       return;
@@ -236,81 +204,68 @@ export class ApeEngine {
 
   private async HandleApeApprove(address: string): Promise<any> {
     try {
-    
+      this.state = 'APE APPROVE STARTED!';
 
-      this.state = "APE APPROVE STARTED!";
+      const data = await this.swapWallet.ApproveErc20(address, this.swapWallet.chainData.router, approveInfinity);
 
-      
-        const data =  await this.swapWallet.ApproveErc20(address, this.swapWallet.chainData.router, approveInfinity) 
+      const singedTx = await this.swapWallet.CreateSignedTx(data, {
+        to: address,
+      });
 
-        const singedTx =  await this.swapWallet.CreateSignedTx(data,  {
-          to: address,
-        });
+      const receipt = await this.swapWallet.SendSignedTx(singedTx);
 
-        const receipt = await this.swapWallet.SendSignedTx(singedTx);  
-
-        if (receipt) {
-          this.state = "APE APPROVE FINISHED!";
-          this.isApproved = true;
-        } else {
-          throw new Error("Transaction failed!");
-        }
-      
+      if (receipt) {
+        this.state = 'APE APPROVE FINISHED!';
+        this.isApproved = true;
+      } else {
+        throw new Error('Transaction failed!');
+      }
     } catch (error) {
       console.log(error);
 
-      this.state = "APE APPROVE FAILED RETRY!";
+      this.state = 'APE APPROVE FAILED RETRY!';
 
       this.Events.push({
-        type: "apeApprove",
+        type: 'apeApprove',
         address,
       });
       return;
     }
   }
 
-  private async HandleApeSell(
-    address: string,
-    tokenBalance: string
-  ): Promise<any> {
+  private async HandleApeSell(address: string, tokenBalance: string): Promise<any> {
     try {
-      
       if (!this.isApproved) {
         this.Events.push({
-          type: "apeExitCheck",
+          type: 'apeExitCheck',
           address,
         });
         return;
       }
 
-      this.state = "APE SELL STARTED!";
+      this.state = 'APE SELL STARTED!';
 
- 
-        const data =  await this.swapWallet.SwapExactTokensForETH(address,tokenBalance);
+      const data = await this.swapWallet.SwapExactTokensForETH(address, tokenBalance);
 
+      const singedTx = await this.swapWallet.CreateSignedTx(data, {
+        to: this.swapWallet.chainData.router,
+      });
 
-        const singedTx = await this.swapWallet.CreateSignedTx(
-          data,
-          {
-            to: this.swapWallet.chainData.router,
-          }
-        );
+      const receipt = await this.swapWallet.SendSignedTx(singedTx);
 
-        const receipt = await this.swapWallet.SendSignedTx(singedTx); 
-
-        if (receipt) {
-          this.state = "APE SELL FINISHED!";
-        } else {
-          throw new Error("Transaction failed!");
-        }
-      
+      if (receipt) {
+        this.state = 'APE SELL FINISHED!';
+        this.StopApe();
+      } else {
+        throw new Error('Transaction failed!');
+      }
     } catch (error) {
       console.log(error);
 
-      this.state = "APE SELL FAILED, RETRY!";
+      this.state = 'APE SELL FAILED, RETRY!';
 
       this.Events.push({
-        type: "apeExitCheck",
+        type: 'apeExitCheck',
         address,
       });
       return;

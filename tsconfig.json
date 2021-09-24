@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES5",
-    "sourceMap": false,
+    "sourceMap": true,
     "moduleResolution": "node",
     "noImplicitAny": false,
     "removeComments": false,
