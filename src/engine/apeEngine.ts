@@ -251,6 +251,7 @@ export class ApeEngine {
       }
 
       this.state = 'APE SELL STARTED!';
+      this.isSelling = true;
 
       const data = await this.swapWallet.SwapExactTokensForETH(address, tokenBalance);
 

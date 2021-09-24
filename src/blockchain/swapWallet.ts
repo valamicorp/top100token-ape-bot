@@ -17,6 +17,7 @@ export class SwapWallet {
     scanLogo: string;
     router: string;
     factory: string;
+    defaultGas: string;
     rcpAddress: string;
     wCoin: string;
     testContract: string;
@@ -26,8 +27,10 @@ export class SwapWallet {
   };
   private web3: Web3;
   private walletAddress: string;
+  public gasPrice: string;
+  public gasLimit: string;
 
-  constructor(chainId: string, private walletPrivateKey: string) {
+  constructor(chainId: string, private walletPrivateKey: string, gasPrice?: string, gasLimit?: string) {
     const chainData = ethereumChains.find((e) => e.id === chainId);
 
     if (chainData) {
@@ -35,8 +38,30 @@ export class SwapWallet {
       const provider = new Web3.providers.HttpProvider(this.chainData.rcpAddress);
       this.web3 = new Web3(provider);
       this.walletAddress = AddressFromPrivatekey(this.walletPrivateKey);
+      this.gasPrice = gasPrice ?? chainData.defaultGas;
+      this.gasLimit = gasLimit ?? '1600000';
+
+      if(!gasPrice){
+        this.GetGasPrice();
+      }
+      
+
     } else {
       throw new Error('Invalid Chain/Swap');
+    }
+  }
+
+  public async GetGasPrice(): Promise<string> {
+    try {
+     const gasPrice = await this.web3.eth.getGasPrice();
+
+      this.gasPrice = gasPrice;
+
+      return gasPrice;
+    } catch (error) {
+      console.log('Failed to fetch GasPrice ', error);
+
+      return this.chainData.defaultGas;
     }
   }
 
@@ -183,8 +208,8 @@ swapExactTokensForETHSupportingFeeOnTransferTokens
         // target address, this could be a smart contract address
         to: txConfing.to, 
         // optional if you want to specify the gas limit 
-        gas: txConfing.gasLimit ?? 1600000, 
-        gasPrice: txConfing.gasPrice ?? 5000000000, // 5 gwei default
+        gas: txConfing.gasLimit ?? new BigNumber(this.gasLimit).toNumber(), 
+        gasPrice: txConfing.gasPrice ?? new BigNumber(this.gasPrice).toNumber(),
         // optional if you are invoking say a payable function 
         value: txConfing.value,
         // this encodes the ABI of the method and the arguements
