@@ -1,5 +1,7 @@
 # top100token-ape-bot
-DeFi APE bot for PancakeSwap, UniSwapV2, CheapSwap,Quickswap and DevEthSwap more comming!
+[![DeepScan grade](https://deepscan.io/api/teams/15534/projects/18727/branches/465100/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=15534&pid=18727&bid=465100)
+
+DeFi APE bot for PancakeSwap, UniSwapV2, CheapSwap,Quickswap, SpookySwap, DevEthSwap.
 
 ## What is this?
 - The DeFi market is ruled by bots, and bots ruled by developers. Our goal is to provide a generic easy to use bot for everyone, without overpriced "PRO" version, mallware, tracking or GPU mining. 
