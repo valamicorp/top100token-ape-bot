@@ -85,6 +85,21 @@ export const ethereumChains = [
     contractExplorer: (address: string) => `https://explore.deveth.org/account/${address}`,
     chartLink:  (address: string) => `https://www.devethswap.de/#/swap?outputCurrency=${address}`,
     swapLink:  (address: string) => `https://www.devethswap.de/#/swap?outputCurrency=${address}`
+  },
+   {
+    id: 'polygon:ida',
+    name: 'IdaMurni-(IDA)',
+    slug: "IDA",
+    logo: 'https://raw.githubusercontent.com/IdaMurni/website/main/src/assets/img/ida_murni_master.png',
+    scanLogo: './assets/none.png',
+    router: "0x33AfA1A1a9343b2dfdf9B8a0615bEfC0A4584B14",
+    factory: "0x8F8c3A7ccD2980b9A7b5cfadc5d1Cf638dc1427A",
+    rcpAddress: "https://rpc-mainnet.maticvigil.com/",
+    wCoin: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+    testContract: '0xccae06ec0787c07d7df5a60856c73a113fc7cf9a',
+    contractExplorer: (address: string) => `https://polygonscan.com/token/${address}`,
+    chartLink:  (address: string) => `https://info.idamurni.de/#/token/${address}`,
+    swapLink:  (address: string) => `https://exchange.idamurni.de/#/swap?outputCurrency=${address}`
   }  
   
   ];
