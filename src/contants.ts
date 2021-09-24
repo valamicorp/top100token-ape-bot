@@ -59,6 +59,22 @@ export const ethereumChains = [
     swapLink:  (address: string) => `https://polygon.poocoin.app/tokens/${address}`
   },
   {
+    id: 'fantom',
+    name: 'Fantom',
+    slug: 'FTM',
+    logo: './assets/fantom.png',
+    scanLogo: './assets/none.png',
+    router: '0xf491e7b69e4244ad4002bc14e878a34207e38c29',
+    factory: '0x152ee697f2e276fa89e96742e9bb9ab1f2e61be3',
+    rcpAddress: 'https://rpc.ftm.tools',
+    defaultGas: "100000000000",
+    wCoin: '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83',
+    testContract: '0xbf1f3d7266a1080bf448e428daa37eec6b05a8ed',
+    contractExplorer: (address: string) => `https://ftmscan.com/address/${address}`,
+    chartLink: (address: string) => `https://spookyswap.finance/swap?outputCurrency=${address}`,
+    swapLink: (address: string) => `https://spookyswap.finance/swap?outputCurrency=${address}`,
+  },
+  {
     id: 'cth',
     name: 'cTH (cheapEthereum)',
     slug: "cTH",
