@@ -46,8 +46,10 @@ window.onload = (event) => {
     document.getElementById('setting6').value = store.get('gasLimit');
   }
 
-  ipcRenderer.send('start:sync');
-
+  if(store.has('privateKey')){
+    ipcRenderer.send('start:sync');
+  }
+  
   ipcRenderer.on('write:info', (event, payload) => {
     if (payload.status === 'success') {
       writeInfo({
