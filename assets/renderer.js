@@ -17,10 +17,14 @@ window.StateApeUI = {
 window.onload = (event) => {
 
   if (store.get("privateKey")) {
-    writeSetting(store.get("privateKey"));
+    document.getElementById("setting1").value = store.get("privateKey");
   }else{
     const setupModal = new SetupModal();
     setupModal.Open();
+  }
+
+  if(store.get("chainId")){
+    document.getElementById("setting2").value = store.get("chainId");
   }
 
   writeInfo({
@@ -107,21 +111,6 @@ window.onload = (event) => {
 };
 
 
-
-const unlockSettings = () => {
-  settingLocked = false;
-};
-
-const lockSettings = () => {
-  settingLocked = true;
-};
-
-const writeSetting = (newPrivateKey) => {
-  const privateKey = document.getElementById("setting1");
-
-  privateKey.value = newPrivateKey;
-};
-
 const writeInfo = ({ chainName, walletAddress, walletBalance, currentProfit }) => {
 
   if(chainName !==  window.StateApeUI.chainName){
@@ -157,6 +146,10 @@ const readSetting = () => {
 
   if (privateKey && typeof privateKey === "string" && privateKey.length >= 64) {
     store.set("privateKey", privateKey);
+  }
+
+  if (chain && typeof chain === "string" && chain.length > 0) {
+    store.set("chainId", chain);
   }
 
   return {
