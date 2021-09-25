@@ -12,7 +12,8 @@
 
 <meta name="theme-color" content="#7952b3">
 
-<script type="text/javascript" src="./renderer.js"></script>
+<script type="text/javascript" src="./renderer.js"></script> 
+<script type="text/javascript" src="./setup.js"></script>
    
   </head>
   <body class="d-flex h-100 text-center text-white bg-dark">
@@ -23,7 +24,7 @@
       <h3 class="float-md-start mb-0">Top100Token APE Bot</h3>
       <div class="float-md-end mb-0">
 
-        <button id='settingsButton' type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Settings</button>
+        <button id='settingsButton' type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#settingModal">Settings</button>
 
       </div>
     </div>
@@ -75,12 +76,12 @@
   
 
   </main>
-
-  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+ <!-- Settings modal -->
+  <div class="modal fade" id="settingModal" tabindex="-1" aria-labelledby="settingModalLabel" aria-hidden="true">
     <div class="modal-dialog ">
       <div class="modal-content">
         <div class="modal-header text-dark">
-          <h5 class="modal-title" id="exampleModalLabel">Settings - AutoSave: On</h5>
+          <h5 class="modal-title" id="settingModalLabel">Settings - AutoSave: On</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body text-dark">
@@ -136,6 +137,50 @@
       </div>
     </div>
   </div>
+<!-- Settings modal -->
+<!-- Initial Setup modal -->
+  <div class="modal fade" id="setupModal" tabindex="-1" aria-labelledby="setupModalLabel" aria-hidden="true">
+    <div class="modal-dialog ">
+      <div class="modal-content">
+        <div class="modal-header text-dark" >
+          <h5 class="modal-title" id="setupModalLabel">Setup</h5>
+        </div>
+
+        <div class="text-dark">
+          <br>
+          <h4>Welcome at Top100Token Ape bot!</h4>
+          <p>
+            <br>
+            
+            Before you start aping you need to setup your trading Wallet, for that we re recommend to create a new empty wallet.
+            <br>
+            <br>
+            Generate one or add your own!
+  
+          </p>
+
+        </div>
+
+        <div class="modal-body text-dark">
+          <div class="mb-5">
+            <label for="setupWalletPrivateKey" class="form-label">Enter PrivateKey</label>
+            <input type="text" class="form-control" id="setupWalletPrivateKey">
+            <button style="margin-top: 1rem;" id="generatePrivateKey" type="button" class="btn btn-success">Click here to Generate</button>
+          </div>
+         
+          <div>
+            <p>! Do not share your PrivateKey with anyone !</p>
+          </div>
+
+
+        </div>
+        <div class="modal-footer text-dark">
+          <button type="button" id='setupSaveAndClose' class="btn btn-secondary" data-bs-dismiss="modal">Save & Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- Initial Setup modal -->
 
   <footer class="mt-auto text-white-50">
   

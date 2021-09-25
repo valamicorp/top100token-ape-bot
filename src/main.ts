@@ -2,7 +2,7 @@ import { ethereumChains } from './contants';
 import { ApeEngine } from './engine/apeEngine';
 import * as path from 'path';
 import { app, BrowserWindow, ipcMain } from 'electron';
-import { AddressFromPrivatekey, getEthBalance } from './blockchain/utilities/walletHandler';
+import { AddressFromPrivatekey, createWeb3Wallet, getEthBalance } from './blockchain/utilities/walletHandler';
 import BigNumber from 'bignumber.js';
 import { AppState } from './types';
 const Store = require('electron-store');
@@ -123,11 +123,26 @@ ipcMain.on('setting:async', async (event, arg) => {
       return;
     }
 
-    throw new Error('No chain found!');
   } catch (error) {
     event.reply('asynchronous-reply', {
       status: 'error',
       statusdDetails: error,
     });
+  }
+});
+
+
+ipcMain.on('wallet:generate', async (event, arg) => {
+  try {
+    
+    const result = createWeb3Wallet();
+
+    event.reply('wallet:generate', {
+      address: result.address,
+      privateKey: result.privateKey,
+    });
+
+  } catch (error) {
+ 
   }
 });
