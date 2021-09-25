@@ -3,7 +3,9 @@ var settingLocked = false;
 const Store = require("electron-store");
 const { ipcRenderer } = require('electron')
 
-const store = new Store();
+const store = new Store({
+  encryptionKey: "The old apple revels in its authority"
+});
 
 
 window.StateApeUI = {

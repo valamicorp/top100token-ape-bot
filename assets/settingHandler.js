@@ -1,7 +1,7 @@
 
 
 
-const loadState = (privateKey: string) => {
+const loadState = (privateKey) => {
 
 
 
@@ -12,7 +12,7 @@ const loadState = (privateKey: string) => {
 }
 
 
-const saveState = () => {
+const saveState = (privateKey) => {
 
 
 
