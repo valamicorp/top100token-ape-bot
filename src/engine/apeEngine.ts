@@ -141,6 +141,8 @@ export class ApeEngine extends EventEmitter {
       const tokenBalance = await this.swapWallet.BalanceOfErc20(address);
       const swapValue = await this.swapWallet.GetApeSwapValue(address, tokenBalance);
 
+      this.Balance[address] = tokenBalance;
+
       this.swapValue = swapValue;
 
       const kindofProfit = new BigNumber(swapValue)
