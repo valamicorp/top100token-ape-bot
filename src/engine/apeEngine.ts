@@ -10,6 +10,14 @@ import { SwapWallet } from '../blockchain/swapWallet';
 import {EventEmitter} from 'eventemitter3';
 
 export class ApeEngine extends EventEmitter {
+  private maxBuyRetry = 5;
+  private maxApproveRerty = 5;
+  private maxSellRetry = 5;
+
+  private currBuyRetry = 0;
+  private currApproveRerty = 0;
+  private currSellRetry = 0;
+
   private updateInterval: NodeJS.Timeout;
 
   private swapWallet: SwapWallet;
@@ -76,7 +84,7 @@ export class ApeEngine extends EventEmitter {
             this.HandleApeBuyEvent(e.address);
             break;
           case 'apeBuySuccess':
-            this.HandleApeSuccess(e.address);
+            this.HandleApeBuySuccess(e.address);
             break;
           case 'apeApprove':
             this.HandleApeApprove(e.address);
@@ -106,7 +114,7 @@ export class ApeEngine extends EventEmitter {
     await this.HandleApeBuyEvent(address);
   }
 
-  async HandleApeSuccess(address: string) {
+  async HandleApeBuySuccess(address: string) {
     try {
 
       const basicData = await this.swapWallet.GetERC20Data(address);
@@ -172,6 +180,12 @@ export class ApeEngine extends EventEmitter {
     try {
       this.state = 'APE BUY STARTED!';
 
+      if(this.currBuyRetry >= this.maxBuyRetry){
+        this.state = 'APE BUY RETRY LIMIT REACHED, APE STOPPED!';
+        this.StopApe();
+        return;
+      }
+
       const data = await this.swapWallet.SwapExactETHForTokens(address);
 
       const singedTx = await this.swapWallet.CreateSignedTx(data, {
@@ -206,6 +220,8 @@ export class ApeEngine extends EventEmitter {
 
       this.state = 'APE BUY ERROR, RETRY!';
 
+      this.currBuyRetry += 1;
+
       this.Events.push({
         type: 'apeBuyFail',
         address,
@@ -217,6 +233,12 @@ export class ApeEngine extends EventEmitter {
   private async HandleApeApprove(address: string): Promise<any> {
     try {
       this.state = 'APE APPROVE STARTED!';
+
+      if(this.currApproveRerty >= this.maxApproveRerty){
+        this.state = 'APE APPROVE, RETRY LIMIT REACHED, APE STOPPED!';
+        this.StopApe();
+        return;
+      }
 
       const data = await this.swapWallet.ApproveErc20(address, this.swapWallet.chainData.router, approveInfinity);
 
@@ -237,6 +259,8 @@ export class ApeEngine extends EventEmitter {
 
       this.state = 'APE APPROVE FAILED RETRY!';
 
+      this.currApproveRerty +=1;
+
       this.Events.push({
         type: 'apeApprove',
         address,
@@ -254,6 +278,13 @@ export class ApeEngine extends EventEmitter {
         });
         return;
       }
+
+      if(this.currSellRetry >= this.maxSellRetry){
+        this.state = 'APE SELL, RETRY LIMIT REACHED, APE STOPPED!';
+        this.StopApe();
+        return;
+      }
+
 
       this.state = 'APE SELL STARTED!';
       this.isSelling = true;
@@ -276,6 +307,8 @@ export class ApeEngine extends EventEmitter {
       console.log(error);
 
       this.state = 'APE SELL FAILED, RETRY!';
+
+      this.currSellRetry +=1;
 
       this.Events.push({
         type: 'apeExitCheck',
