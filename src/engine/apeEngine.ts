@@ -10,7 +10,7 @@ import { SwapWallet } from '../blockchain/swapWallet';
 import {EventEmitter} from 'eventemitter3';
 
 export class ApeEngine extends EventEmitter {
-  private orderStatus = ApeOrderStatus.created;
+  protected orderStatus = ApeOrderStatus.created;
 
   private maxBuyRetry = 5;
   private maxApproveRerty = 5;
@@ -74,7 +74,6 @@ export class ApeEngine extends EventEmitter {
 
     this.updateInterval = setInterval(async () => {
       if (this.state !== this.lastState) {
-        console.log(this.state);
         this.lastState = this.state;
       }
 
@@ -131,9 +130,34 @@ export class ApeEngine extends EventEmitter {
     this.minProfit = -0.99;
   }
 
+  public SetMinProfit(minProfit: number) {
+    this.minProfit = minProfit;
+  }
+
   async AddNewApe(address: string) {
     this.contractAddress = address;
     await this.HandleApeBuyEvent(address);
+  }
+
+  public async LoadSnapshotApe(apeOrder: ApeOrder) {
+    this.contractAddress = apeOrder.address;
+    this.Balance[apeOrder.address] = apeOrder.tokenBalance;
+    this.minProfit = apeOrder.minProfit;
+    this.isApproved = apeOrder.isApproved;
+    this.orderStatus = apeOrder.status;
+    this.createdAt = apeOrder.createdAt;
+
+    if(!this.isApproved){
+      this.Events.push({
+        type: 'apeApprove',
+        address: apeOrder.address,
+      });
+    }
+
+    this.Events.push({
+      type: 'apeExitCheck',
+      address: apeOrder.address,
+    });
   }
 
   async HandleApeBuySuccess(address: string) {

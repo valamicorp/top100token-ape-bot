@@ -13,9 +13,6 @@ export class ElectronStore {
     this.uniqueField = uniqueField ?? '';
   }
 
-  public async Purge(){
-    await store.delete(this.key);
-  }
 
   public async Write<T>(data: T | T[]) {
     let arrayData: T[] = [];
@@ -46,24 +43,6 @@ export class ElectronStore {
     }
   }
 
-  public async Insert<T>(data: T) {
-    try {
-      const values = await this.Load<T>();
 
-      if (this.uniqueField) {
-        const find = values.find((e) => e[this.uniqueField] === data[this.uniqueField]);
-
-        if (find) {
-          return;
-        } else {
-          values.push(data);
-
-          await this.Write<T>(values);
-        }
-      }
-    } catch (error) {
-      console.log('Error while insert data into store!', error);
-    }
-  }
 
 }
