@@ -1,10 +1,12 @@
 import { BigNumber } from "bignumber.js";
+import { ERC20TokenData } from "./blockchain/utilities/erc20";
 import { ApeEngine } from "./engine/apeEngine";
 
 export interface AppState {
   buttonState: 'none' | 'start' | 'pause' | 'stop' | 'panicSell';
   apeLoaded: null | string;
   syncStared: boolean;
+  currentApe: ApeEngine | null;
   runningApes: ApeEngine[];
   settings: {
     privateKey: string;
@@ -106,15 +108,18 @@ export interface Balance {
     sellStart = 6,
     sellSuccess = 7,
     finished = 8,
+    stopped = 999,
   }
 
 
   export interface ApeOrder {
     chain: string;
     address: string;
+    erc20Data: ERC20TokenData | undefined;
     apeAmount: string;
     tokenBalance: string;
     minProfit: number;
+    currProfit: string;
     isApproved: boolean;
     stopped: boolean;
     error: string | undefined;

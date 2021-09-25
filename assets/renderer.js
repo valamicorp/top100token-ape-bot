@@ -49,6 +49,11 @@ window.onload = (event) => {
   if(store.has('privateKey')){
     ipcRenderer.send('start:sync');
   }
+
+
+  ipcRenderer.on('portfolio:sync', (event, payload) => {
+      renderPortfolio(payload);
+  });
   
   ipcRenderer.on('write:info', (event, payload) => {
     if (payload.status === 'success') {

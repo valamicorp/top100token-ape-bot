@@ -8,6 +8,7 @@ import { ApeContract, ApeOrder, ApeOrderStatus, Balance, EngineEvent } from '../
 import { SwapWallet } from '../blockchain/swapWallet';
 
 import {EventEmitter} from 'eventemitter3';
+import { ERC20TokenData } from '../blockchain/utilities/erc20';
 
 export class ApeEngine extends EventEmitter {
   protected orderStatus = ApeOrderStatus.created;
@@ -20,7 +21,7 @@ export class ApeEngine extends EventEmitter {
   private currApproveRerty = 0;
   private currSellRetry = 0;
 
-  private contractAddress = '';
+  public contractAddress = '';
 
   private updateInterval: NodeJS.Timeout;
 
@@ -46,6 +47,8 @@ export class ApeEngine extends EventEmitter {
   public swapValue = '0';
 
   public currProfit = '0.00%';
+
+  public erc20Data: ERC20TokenData | undefined;
 
   public createdAt = Date.now();
 
@@ -106,9 +109,11 @@ export class ApeEngine extends EventEmitter {
     return ({
       chain: this.swapWallet.chainData.id,
       address: this.contractAddress,
+      erc20Data: this.erc20Data,
       apeAmount: this.maxPositionCoin,
       tokenBalance: this.Balance[this.contractAddress],
       minProfit: this.minProfit,
+      currProfit: this.currProfit,
       isApproved: this.isApproved,
       stopped: false,
       error: undefined,
@@ -124,6 +129,10 @@ export class ApeEngine extends EventEmitter {
   public StopApe() {
     this.paused = true;
     clearInterval(this.updateInterval);
+    // Save forced stop status
+    if(this.orderStatus !== ApeOrderStatus.finished){
+      this.orderStatus = ApeOrderStatus.stopped;
+    }
   }
 
   public PanicSell() {
@@ -136,8 +145,11 @@ export class ApeEngine extends EventEmitter {
 
   async AddNewApe(address: string) {
     this.contractAddress = address;
+    this.UpdateERC20(address);
     await this.HandleApeBuyEvent(address);
   }
+
+
 
   public async LoadSnapshotApe(apeOrder: ApeOrder) {
     this.contractAddress = apeOrder.address;
@@ -146,6 +158,10 @@ export class ApeEngine extends EventEmitter {
     this.isApproved = apeOrder.isApproved;
     this.orderStatus = apeOrder.status;
     this.createdAt = apeOrder.createdAt;
+
+    this.erc20Data = apeOrder.erc20Data;
+
+    this.UpdateERC20(apeOrder.address);
 
     if(!this.isApproved){
       this.Events.push({
@@ -165,6 +181,8 @@ export class ApeEngine extends EventEmitter {
 
       const basicData = await this.swapWallet.GetERC20Data(address);
   
+      this.erc20Data = basicData;
+
       const contractData = {
         address,
         ...basicData,
@@ -203,7 +221,6 @@ export class ApeEngine extends EventEmitter {
           .toFixed(2)
           .toString()}%`;
       }
-
 
       if (
         new BigNumber(swapValue).isGreaterThan(new BigNumber(this.maxPositionCoin).multipliedBy(1 + this.minProfit))
@@ -372,6 +389,17 @@ export class ApeEngine extends EventEmitter {
         address,
       });
       return;
+    }
+  }
+
+
+  private async UpdateERC20 (address: string){
+    try {
+      const basicData = await this.swapWallet.GetERC20Data(address);
+  
+      this.erc20Data = basicData;
+    } catch (error) {
+      
     }
   }
 }

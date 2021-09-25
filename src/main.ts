@@ -7,6 +7,7 @@ import BigNumber from 'bignumber.js';
 import { ApeOrder, ApeOrderStatus, AppState } from './types';
 import { ElectronBroker } from './electronBroker';
 import { ElectronStore } from './util/electronStorage';
+import Web3 from 'web3';
 const Store = require('electron-store');
 
 let electronBroker: ElectronBroker;
@@ -70,6 +71,7 @@ var appState: AppState = {
   syncStared: false,
   buttonState: 'none',
   apeLoaded: null,
+  currentApe: null,
   runningApes: [],
   settings: {} as any
 };
@@ -77,6 +79,12 @@ var appState: AppState = {
 
 const startNewApe = () =>{
   if(appState.settings.apeAddress){
+
+    if(appState.runningApes.find(e => e.contractAddress === appState.settings.apeAddress)){
+      console.log('You cannot create new Ape order for the given address!');
+      return;
+    }
+
     const apeEngine = new ApeEngine(
       appState.settings.chain,
       appState.settings.privateKey,
@@ -88,12 +96,10 @@ const startNewApe = () =>{
   
     apeEngine.AddNewApe(appState.settings.apeAddress);
   
-    appState.runningApes.push(apeEngine);
+    appState.currentApe = apeEngine;
     appState.apeLoaded = appState.settings.apeAddress;
   
-    const apeStore = new ElectronStore(`${appState.settings.privateKey}:apeOrders`, 'address');
-  
-    apeStore.Insert<ApeOrder>(apeEngine.SnapshotApe());
+
   }
 }
 
@@ -110,9 +116,25 @@ const start = async (broker: ElectronBroker) => {
 
     const allApes = await apeStore.Load<ApeOrder>();
 
-    
-    // TODO Load old APES
-    // console.log("Load old apes: ", allApes);
+    // Load Portfolio Apes
+    allApes.forEach(apeOrder => {
+      // Only load orders which has still something to do
+      if(apeOrder.status >= 2 && apeOrder.status <= 6){
+
+        const apeEngine = new ApeEngine(
+          apeOrder.chain,
+          appState.settings.privateKey,
+          Web3.utils.fromWei(apeOrder.apeAmount, 'ether'),
+          apeOrder.minProfit.toString()
+        );
+  
+        apeEngine.LoadSnapshotApe(apeOrder);
+  
+        appState.runningApes.push(apeEngine);
+
+      }
+    });
+
   }
 
   if(store.get("chainId")){
@@ -127,19 +149,19 @@ const start = async (broker: ElectronBroker) => {
         startNewApe();
       }
   
-      if (arg === 'pause' && appState.runningApes[0]) {
-        appState.runningApes[0].PauseApe();
+      if (arg === 'pause' && appState.currentApe) {
+        appState.currentApe?.PauseApe();
       }
   
-      if (arg === 'stop' && appState.runningApes[0]) {
-        appState.runningApes[0].StopApe();
-        appState.runningApes.pop();
+      if (arg === 'stop' && appState.currentApe) {
+        appState.currentApe?.StopApe();
+        appState.currentApe = null;
         appState.apeLoaded = null;
         appState.buttonState = 'none';
       }
   
-      if (arg === 'panicSell' && appState.runningApes[0]) {
-        appState.runningApes[0].PanicSell();
+      if (arg === 'panicSell' && appState.currentApe) {
+        appState.currentApe?.PanicSell();
         appState.buttonState = 'panicSell';
       }
     } catch (error) {
@@ -171,6 +193,8 @@ const start = async (broker: ElectronBroker) => {
 
   broker.msg.on('start:sync', ()=> {
 
+    const apeStore = new ElectronStore(`${appState.settings.privateKey}:apeOrders`, 'address');
+
     if(!appState.syncStared){
 
       appState.syncStared = true;
@@ -190,17 +214,53 @@ const start = async (broker: ElectronBroker) => {
             chainName: `${chainData.name}`,
             walletAddress: `${walletAddress}`,
             walletBalance: `${new BigNumber(ethBalance).dividedBy(10 ** 18).toString()}`,
-            currentProfit: appState?.runningApes[0]?.currProfit ?? '0.00%',
-            traderStatus: appState?.runningApes[0]?.state ?? undefined,
-          })
+            currentProfit: appState?.currentApe?.currProfit ?? '0.00%',
+            traderStatus: appState?.currentApe?.state ?? undefined,
+          });
+
+          const allApes = appState.runningApes.map(e => e.SnapshotApe());
+
+          broker.emit('portfolio:sync', allApes);
+
       
         }
+
+        const runningApes: ApeOrder[] = appState.runningApes.map(e => e.SnapshotApe());
+
+        if(appState.currentApe){
+          runningApes.push(appState.currentApe.SnapshotApe());
+        }
+
+        if(runningApes.length > 0){
+          apeStore.Write<ApeOrder>(runningApes); 
+        }
+
         
       }, 1000);
 
     }
   });
 
+
+  broker.msg.on('portfolio:stop', async (event, address) => {
+    try {
+      
+      console.log('portfolio:stop',address);
+  
+    } catch (error) {
+   
+    }
+  });
+
+  broker.msg.on('portfolio:sell', async (event, address) => {
+    try {
+      
+      console.log('portfolio:sell',address);
+  
+    } catch (error) {
+   
+    }
+  });
   
   broker.msg.on('wallet:generate', async (event, arg) => {
     try {

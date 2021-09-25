@@ -10,8 +10,14 @@ export class ElectronBroker {
     constructor(window: Electron.BrowserWindow){
 
         this.msg = ipcMain;
-        this.emit = (event: string, payload: Object) => window.webContents.send(event, payload);
-    }
+        this.emit = async (event: string, payload: Object) => {
+                try {
+                  await window.webContents.send(event, payload) 
+                } catch (error) {
+                    console.log('ElectronBroker emit error: ', error);
+                }
+        };
 
 
+}
 }
