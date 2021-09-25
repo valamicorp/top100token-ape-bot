@@ -16,6 +16,9 @@ class SetupModal {
       ipcRenderer.send('wallet:save', this.privateKeyField.value);
 
       document.getElementById('setting1').value = this.privateKeyField.value;
+
+      ipcRenderer.send('start:sync');
+      syncSetting();
     });
 
     document.getElementById('generatePrivateKey').addEventListener('click', () => {

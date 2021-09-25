@@ -4,7 +4,17 @@ import { ApeEngine } from "./engine/apeEngine";
 export interface AppState {
   buttonState: 'none' | 'start' | 'pause' | 'stop' | 'panicSell';
   apeLoaded: null | string;
+  syncStared: boolean;
   runningApes: ApeEngine[];
+  settings: {
+    privateKey: string;
+    chain: string;
+    apeAmount: string;
+    minProfit: string;
+    gasPrice: string;
+    gasLimit: string;
+    apeAddress: string;
+  }
 }
 
 
@@ -84,4 +94,30 @@ export interface Balance {
     minToken?: string;
     amountToken?: string;
     minCoint?: string;
+  }
+
+  export enum ApeOrderStatus {
+    created = 0,
+    buyStart = 1,
+    buySuccess = 2,
+    approvedStart = 3,
+    approvedSuccess = 4,
+    waitForExit = 5,
+    sellStart = 6,
+    sellSuccess = 7,
+    finished = 8,
+  }
+
+
+  export interface ApeOrder {
+    chain: string;
+    address: string;
+    apeAmount: string;
+    tokenBalance: string;
+    minProfit: number;
+    isApproved: boolean;
+    stopped: boolean;
+    error: string | undefined;
+    status: ApeOrderStatus;
+    createdAt: number;
   }
