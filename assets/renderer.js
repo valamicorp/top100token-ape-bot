@@ -5,11 +5,22 @@ const { ipcRenderer } = require('electron')
 
 const store = new Store();
 
+
+window.StateApeUI = {
+  chainName: '',
+  walletAddress: '',
+  walletBalance: '',
+  currentProfit: ''
+}
+
+
 window.onload = (event) => {
-  console.log(store.get("unicorn"));
 
   if (store.get("privateKey")) {
     writeSetting(store.get("privateKey"));
+  }else{
+    const setupModal = new SetupModal();
+    setupModal.Open();
   }
 
   writeInfo({
@@ -89,20 +100,7 @@ window.onload = (event) => {
 
 };
 
-//store.set('unicorn', 'fsdfsdafasdfasdfasfasfsdfasdf');
 
-/*
-const { ipcRenderer } = require('electron')
-
-
-console.log(ipcRenderer.sendSync('synchronous-message', 'ping')) // prints "pong"
-
-ipcRenderer.on('asynchronous-reply', (event, arg) => {
-  console.log(arg) // prints "pong"
-})
-
-ipcRenderer.send('asynchronous-message', 'ping');
-*/
 
 const unlockSettings = () => {
   settingLocked = false;
@@ -119,10 +117,27 @@ const writeSetting = (newPrivateKey) => {
 };
 
 const writeInfo = ({ chainName, walletAddress, walletBalance, currentProfit }) => {
-  document.getElementById("chainName").innerHTML = chainName;
-  document.getElementById("walletAddress").innerHTML = walletAddress;
-  document.getElementById("walletBalance").innerHTML = walletBalance;
+
+  if(chainName !==  window.StateApeUI.chainName){
+    document.getElementById("chainName").innerHTML = chainName;
+  }
+  if(walletAddress !==  window.StateApeUI.walletAddress){
+    document.getElementById("walletAddress").innerHTML = walletAddress;
+  }
+  if(walletBalance !==  window.StateApeUI.walletBalance){
+    document.getElementById("walletBalance").innerHTML = walletBalance;
+  }
   document.getElementById("currentProfit").innerHTML = currentProfit;
+
+  window.StateApeUI ={
+    ...window.StateApeUI,
+    chainName, 
+    walletAddress, 
+    walletBalance, 
+    currentProfit
+  };
+
+
 };
 
 const readSetting = () => {

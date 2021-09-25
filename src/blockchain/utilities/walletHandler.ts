@@ -1,5 +1,13 @@
 import Web3 from "web3";
 
+export interface Account {
+    address: string;
+    privateKey: string;
+    signTransaction: any;
+    sign: any;
+    encrypt: any;
+}
+
 const crypto = require("crypto");
 export const randomEntropy = crypto.randomBytes(32).toString('hex');
 
@@ -19,13 +27,10 @@ export const AddressFromPrivatekey = (privateKey: string) => {
 } 
 
 
-export const createWeb3Wallet = async (rcpAddress: string, entropy = randomEntropy): Promise<any> => {
-    const provider = new Web3.providers.HttpProvider(rcpAddress);
-    const web3 = new Web3(provider);
+export const createWeb3Wallet = (entropy = randomEntropy): Account => {
+   const web3 = new Web3();
 
    const result = web3.eth.accounts.create(entropy);
-
-   console.log(result);
 
    return result;
 };
