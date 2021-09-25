@@ -36,6 +36,12 @@ window.onload = (event) => {
 
   }, 1000);
 
+
+  ipcRenderer.on('hello:world', function (evt, message) {
+    console.log(message); 
+  });
+
+
   ipcRenderer.on('asynchronous-reply', (event, payload) => {
 
     if(payload.status === 'success'){

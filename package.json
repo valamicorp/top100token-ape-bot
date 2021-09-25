@@ -5,6 +5,7 @@
   "main": "./build/main.js",
   "dependencies": {
     "bignumber.js": "^9.0.1",
+    "cross-env": "^7.0.3",
     "electron-store": "^8.0.1",
     "erc-20-abi": "^1.0.0",
     "eventemitter3": "^4.0.7",
@@ -29,7 +30,7 @@
     "watch": "tsc -w",
     "lint": "eslint -c .eslintrc --ext .ts ./src",
     "test": "jest",
-    "start": "npm run build && electron ./build/main.js",
+    "start": "npm run build && cross-env DEBUG=true electron ./build/main.js",
     "postinstall": "install-app-deps",
     "cleanup": "rimraf dist",
     "compile": "npm run cleanup && npm run build && electron-builder build --win portable"
