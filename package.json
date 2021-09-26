@@ -8,15 +8,16 @@
     "electron-store": "^8.0.1",
     "erc-20-abi": "^1.0.0",
     "eventemitter3": "^4.0.7",
+    "telegram": "^1.9.4",
     "ts-jest": "^27.0.5",
     "tslib": "^2.3.1",
     "web3": "^1.5.2"
   },
   "devDependencies": {
-    "cross-env": "^7.0.3",
     "@types/babel__core": "^7.1.16",
     "@types/jest": "^27.0.2",
     "@types/sqlite3": "^3.1.7",
+    "cross-env": "^7.0.3",
     "electron": "^14.0.1",
     "electron-builder": "^22.11.7",
     "jest": "^27.2.1",
@@ -29,6 +30,7 @@
     "lint": "eslint -c .eslintrc --ext .ts ./src",
     "test": "jest",
     "start": "npm run build && cross-env DEBUG=true electron ./build/main.js",
+    "start:node": "npm run build && node ./build/main.js",
     "postinstall": "install-app-deps",
     "cleanup": "rimraf dist",
     "compile": "npm run cleanup && npm run build && electron-builder build --win portable"
