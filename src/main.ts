@@ -80,7 +80,7 @@ var appState: AppState = {
 const startNewApe = () =>{
   if(appState.settings.apeAddress){
 
-    if(appState.runningApes.find(e => e.contractAddress === appState.settings.apeAddress)){
+    if(appState.runningApes.find(e => e.contractAddress === appState.settings.apeAddress && e.orderStatus <= 7)){
       console.log('You cannot create new Ape order for the given address!');
       return;
     }
@@ -99,7 +99,6 @@ const startNewApe = () =>{
     appState.currentApe = apeEngine;
     appState.apeLoaded = appState.settings.apeAddress;
   
-
   }
 }
 
@@ -129,6 +128,7 @@ const start = async (broker: ElectronBroker) => {
         );
   
         apeEngine.LoadSnapshotApe(apeOrder);
+        apeEngine.CreateEventQueue(3000); // Slow down update interval
   
         appState.runningApes.push(apeEngine);
 
@@ -159,6 +159,23 @@ const start = async (broker: ElectronBroker) => {
         appState.apeLoaded = null;
         appState.buttonState = 'none';
       }
+
+      if (arg === 'portfolio:move' && appState.currentApe) {
+        // Move APE
+        const ape = appState.currentApe;
+        ape.CreateEventQueue(3000); // Slow down update interval
+        appState.runningApes.push(ape);
+
+        appState.currentApe = null;
+        appState.apeLoaded = null;
+        appState.buttonState = 'none';
+
+        const allApes = appState.runningApes.map(e => e.SnapshotApe());
+
+        broker.emit('portfolio:sync', allApes.filter(e => e.status < 8));
+      }
+
+
   
       if (arg === 'panicSell' && appState.currentApe) {
         appState.currentApe?.PanicSell();
@@ -196,8 +213,10 @@ const start = async (broker: ElectronBroker) => {
     const apeStore = new ElectronStore(`${appState.settings.privateKey}:apeOrders`, 'address');
 
     if(!appState.syncStared){
-
       appState.syncStared = true;
+
+      const allApes = appState.runningApes.map(e => e.SnapshotApe());
+      broker.emit('portfolio:sync', allApes.filter(e => e.status < 8));
 
       setInterval(async ()=> {
 
@@ -218,12 +237,14 @@ const start = async (broker: ElectronBroker) => {
             traderStatus: appState?.currentApe?.state ?? undefined,
           });
 
-          const allApes = appState.runningApes.map(e => e.SnapshotApe());
-
-          broker.emit('portfolio:sync', allApes);
-
-      
         }
+      }, 1000);
+
+
+      setInterval(async ()=> {
+        const allApes = appState.runningApes.map(e => e.SnapshotApe());
+
+        broker.emit('portfolio:sync', allApes.filter(e => e.status < 8));
 
         const runningApes: ApeOrder[] = appState.runningApes.map(e => e.SnapshotApe());
 
@@ -232,11 +253,9 @@ const start = async (broker: ElectronBroker) => {
         }
 
         if(runningApes.length > 0){
-          apeStore.Write<ApeOrder>(runningApes); 
+         await apeStore.Write<ApeOrder>(runningApes); 
         }
-
-        
-      }, 1000);
+      }, 5000);
 
     }
   });
@@ -245,6 +264,12 @@ const start = async (broker: ElectronBroker) => {
   broker.msg.on('portfolio:stop', async (event, address) => {
     try {
       
+      const portfolioApe = appState.runningApes.find(e => e.contractAddress === address && e.orderStatus < 8);
+
+      if(portfolioApe){
+        portfolioApe.StopApe();
+      }
+
       console.log('portfolio:stop',address);
   
     } catch (error) {
@@ -255,6 +280,12 @@ const start = async (broker: ElectronBroker) => {
   broker.msg.on('portfolio:sell', async (event, address) => {
     try {
       
+      const portfolioApe = appState.runningApes.find(e => e.contractAddress === address && e.orderStatus < 8);
+
+      if(portfolioApe){
+        portfolioApe.PanicSell();
+      }
+
       console.log('portfolio:sell',address);
   
     } catch (error) {

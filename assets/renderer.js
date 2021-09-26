@@ -90,6 +90,7 @@ window.onload = (event) => {
     document.getElementById('startButton').disabled = true;
     document.getElementById('pauseButton').disabled = false;
     document.getElementById('stopButton').disabled = false;
+    document.getElementById('movePortfolio').disabled = false;
     document.getElementById('panicSell').disabled = false;
   });
 
@@ -108,14 +109,34 @@ window.onload = (event) => {
     document.getElementById('pauseButton').disabled = true;
     document.getElementById('stopButton').disabled = true;
     document.getElementById('panicSell').disabled = true;
+    document.getElementById('movePortfolio').disabled = true;
     document.getElementById('settingsButton').disabled = false;
+    clearTradeStatus();
   });
 
   document.getElementById('panicSell').addEventListener('click', function () {
     ipcRenderer.send('button:control', 'panicSell');
     settingLocked = true;
   });
+
+  document.getElementById('movePortfolio').addEventListener('click', function () {
+    ipcRenderer.send('button:control', 'portfolio:move');
+    settingLocked = false;
+    document.getElementById('pauseButton').innerHTML = 'Pause';
+    document.getElementById('startButton').disabled = false;
+    document.getElementById('pauseButton').disabled = true;
+    document.getElementById('stopButton').disabled = true;
+    document.getElementById('panicSell').disabled = true;
+    document.getElementById('settingsButton').disabled = false;
+    document.getElementById('apeAddress').value = '';
+    document.getElementById('movePortfolio').disabled = true;
+    clearTradeStatus();
+  });
+
 };
+
+
+
 
 const writeInfo = ({ chainName, walletAddress, walletBalance, currentProfit }) => {
   if (chainName !== window.StateApeUI.chainName) {
@@ -169,3 +190,10 @@ const readSetting = () => {
     gasLimit,
   };
 };
+
+
+
+const clearTradeStatus = () => {
+  document.getElementById('traderStatus2').innerHTML = '';
+  document.getElementById('traderStatus').innerHTML = '';
+}

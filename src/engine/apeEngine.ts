@@ -11,7 +11,9 @@ import {EventEmitter} from 'eventemitter3';
 import { ERC20TokenData } from '../blockchain/utilities/erc20';
 
 export class ApeEngine extends EventEmitter {
-  protected orderStatus = ApeOrderStatus.created;
+  public orderStatus = ApeOrderStatus.created;
+
+  private retryTimeout = 5000;
 
   private maxBuyRetry = 5;
   private maxApproveRerty = 5;
@@ -23,7 +25,7 @@ export class ApeEngine extends EventEmitter {
 
   public contractAddress = '';
 
-  private updateInterval: NodeJS.Timeout;
+  private updateInterval?: NodeJS.Timeout;
 
   private swapWallet: SwapWallet;
 
@@ -75,34 +77,7 @@ export class ApeEngine extends EventEmitter {
 
     this.minProfit = Number(minProfitPct) / 100;
 
-    this.updateInterval = setInterval(async () => {
-      if (this.state !== this.lastState) {
-        this.lastState = this.state;
-      }
-
-      if (this.paused) {
-        return;
-      }
-
-      const e = this.Events.shift();
-
-      if (e) {
-        switch (e.type) {
-          case 'apeBuyFail':
-            this.HandleApeBuyEvent(e.address);
-            break;
-          case 'apeBuySuccess':
-            this.HandleApeBuySuccess(e.address);
-            break;
-          case 'apeApprove':
-            this.HandleApeApprove(e.address);
-            break;
-          case 'apeExitCheck':
-            this.HandleApeExitCheck(e.address);
-            break;
-        }
-      }
-    }, updateTimeout);
+    this.CreateEventQueue(updateTimeout);
   }
 
   public SnapshotApe(): ApeOrder{
@@ -128,7 +103,9 @@ export class ApeEngine extends EventEmitter {
 
   public StopApe() {
     this.paused = true;
-    clearInterval(this.updateInterval);
+    if(this.updateInterval){
+      clearInterval(this.updateInterval);
+    }
     // Save forced stop status
     if(this.orderStatus !== ApeOrderStatus.finished){
       this.orderStatus = ApeOrderStatus.stopped;
@@ -174,6 +151,42 @@ export class ApeEngine extends EventEmitter {
       type: 'apeExitCheck',
       address: apeOrder.address,
     });
+  }
+
+  public CreateEventQueue (speed: number){
+
+    if(this.updateInterval){
+      clearInterval(this.updateInterval);
+    }
+
+    this.updateInterval = setInterval(async () => {
+      if (this.state !== this.lastState) {
+        this.lastState = this.state;
+      }
+
+      if (this.paused) {
+        return;
+      }
+
+      const e = this.Events.shift();
+
+      if (e) {
+        switch (e.type) {
+          case 'apeBuyFail':
+            this.HandleApeBuyEvent(e.address);
+            break;
+          case 'apeBuySuccess':
+            this.HandleApeBuySuccess(e.address);
+            break;
+          case 'apeApprove':
+            this.HandleApeApprove(e.address);
+            break;
+          case 'apeExitCheck':
+            this.HandleApeExitCheck(e.address);
+            break;
+        }
+      }
+    }, speed);
   }
 
   async HandleApeBuySuccess(address: string) {
@@ -332,6 +345,8 @@ export class ApeEngine extends EventEmitter {
 
       this.currApproveRerty +=1;
 
+      await new Promise((resolve) => setTimeout(resolve, this.retryTimeout));
+
       this.Events.push({
         type: 'apeApprove',
         address,
@@ -383,6 +398,8 @@ export class ApeEngine extends EventEmitter {
       this.state = 'APE SELL FAILED, RETRY!';
 
       this.currSellRetry +=1;
+
+      await new Promise((resolve) => setTimeout(resolve, this.retryTimeout));
 
       this.Events.push({
         type: 'apeExitCheck',

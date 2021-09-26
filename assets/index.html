@@ -48,11 +48,13 @@
               <label for="apeAddress" class="form-label">APE ADDRESS</label>
               <input class="form-control" id="apeAddress">
             </div>
-            <button id='startButton' class="btn btn-success">Start</button>
-            <button id='pauseButton' disabled class="btn btn-warning">Pause</button>
-            <button id='stopButton' disabled class="btn btn-danger">Stop</button>
-            <button id='panicSell' disabled class="btn btn-dark">🐥 PanicSell 🧻</button>
-
+          <div class="btn-group" role="group" aria-label="ape-options">
+            <button id='startButton' class="btn btn-success">🔥 Start</button>
+            <button id='pauseButton' disabled class="btn btn-warning">⏳ Pause</button>
+            <button id='stopButton' disabled class="btn btn-danger">✋ Stop</button>
+            <button id='panicSell' disabled class="btn btn-secondary">🧻 PanicSell</button>
+            <button id='movePortfolio' disabled class="btn btn-primary">🧾 Move to Portfolio</button>
+          </div>
           </div>
 
         </div>
@@ -194,7 +196,7 @@
     <section>
 
       <div class="container">
-        <h3 style="text-align: left;">Portfolio</h3>
+        <h3 style="text-align: left; margin-bottom: 1rem;">Your Portfolio</h3>
         <div id="portfolioCards" class="row">
 
 

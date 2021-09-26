@@ -1,26 +1,45 @@
-const { default: BigNumber } = require("bignumber.js")
+const { default: BigNumber } = require('bignumber.js');
 
+const statusToText = (status) => {
+  switch (status) {
+    case 0:
+      return `created`;
+    case 1:
+      return `buyTxStart`;
+    case 2:
+      return `buyTxSuccess`;
+    case 3:
+      return `approveTxStart`;
+    case 4:
+      return `approveTxSuccess`;
+    case 5:
+      return `listeningPriceChanges`;
+    case 6:
+      return `sellTxStart`;
+    case 7:
+      return `sellTxSuccess`;
+    case 8:
+      return `OrderFinished`;
+    case 999:
+      return `OrderStopped`;
+  }
+};
 
 const renderPortfolio = (apeOrders) => {
+  let content = '';
 
-    let content = '';
+  apeOrders.forEach((e) => {
+    content += renderPortfolioCard(e);
+  });
 
-    apeOrders.forEach(e => {
-
-        content += renderPortfolioCard(e);
-    });
-
-    document.getElementById('portfolioCards').innerHTML = content;
-
-}
-
+  document.getElementById('portfolioCards').innerHTML = content;
+};
 
 const renderPortfolioCard = (apeOrder) => {
-
-
-   return `<div class="card text-white bg-dark mb-3" style="width: 18rem;">
+  return `<div class="card text-white bg-dark mb-3" style="width: 18rem;">
    <div class="card-body">
      <h5 class="card-title">$${apeOrder.erc20Data.symbol} / ${apeOrder.erc20Data.name}</h5>
+     <p class="card-title" style="font-size: x-small;">${apeOrder.address}</p>
        <div style="margin-top: 1rem; margin-bottom: 1rem">
          <div class="logtailTitle">
            <span>BuyAmount</span>
@@ -31,32 +50,35 @@ const renderPortfolioCard = (apeOrder) => {
            <span>${new BigNumber(apeOrder.tokenBalance).dividedBy(10 ** apeOrder.erc20Data.decimals).toFixed(2)}</span>
          </div>
          <div class="logtailTitle">
-           <span>Profit</span>
+           <span>Target Profit</span>
+           <span>${(apeOrder.minProfit * 100).toFixed(2)}%</span>
+         </div>
+         <div class="logtailTitle">
+           <span>Current Profit</span>
            <span>${apeOrder.currProfit}</span>
          </div>
          <div class="logtailTitle">
            <span>Status</span>
-           <span>${apeOrder.status}</span>
+           <span>${statusToText(apeOrder.status)}</span>
          </div>
        </div>
      <div class="btn-group" role="group" aria-label="Basic example">
-       <button type="button" onclick="StopApePortfolio(this, '${apeOrder.address}')" class="btn btn-danger">Stop</button>
-       <button type="button" onclick="SellApePortfolio(this, '${apeOrder.address}')" class="btn btn-secondary">🐥 PanicSell 🧻</button>
+       <button type="button" onclick="StopApePortfolio(this, '${
+         apeOrder.address
+       }')" class="btn btn-danger">Stop</button>
+       <button type="button" onclick="SellApePortfolio(this, '${
+         apeOrder.address
+       }')" class="btn btn-secondary">🐥 PanicSell 🧻</button>
      </div>
 
    </div>
- </div>`
-
-
+ </div>`;
 };
 
 const StopApePortfolio = (elem, address) => {
-    ipcRenderer.send('portfolio:stop', address);
-}
+  ipcRenderer.send('portfolio:stop', address);
+};
 
 const SellApePortfolio = (elem, address) => {
-    ipcRenderer.send('portfolio:sell', address);
-}
-
-
-
+  ipcRenderer.send('portfolio:sell', address);
+};
