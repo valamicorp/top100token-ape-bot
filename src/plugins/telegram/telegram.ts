@@ -1,4 +1,4 @@
-import { EventEmitter } from 'eventemitter3';
+    import { EventEmitter } from 'eventemitter3';
 import { Api, TelegramClient } from 'telegram';
 import { StringSession } from 'telegram/sessions';
 
@@ -12,6 +12,7 @@ export class TelegramScrapper extends EventEmitter {
 
   private lastSignal = '';
   private listener: NodeJS.Timer;
+  private  client: TelegramClient;
 
   constructor(apiId: string, apiHash: string, session: string, channelName: string) {
     super();
@@ -19,6 +20,10 @@ export class TelegramScrapper extends EventEmitter {
     this.apiHash = apiHash;
     this.stringSession = new StringSession(session);
     this.channelName = channelName;
+
+    this.client = new TelegramClient(this.stringSession, this.apiId, this.apiHash, {
+        connectionRetries: 5,
+      });
 
     // Every 2 Minute check
     this.listener = setInterval(async () => {
@@ -31,14 +36,12 @@ export class TelegramScrapper extends EventEmitter {
   public async GetPoocoinSignal(): Promise<void> {
     this.ready = false;
 
-    const client = new TelegramClient(this.stringSession, this.apiId, this.apiHash, {
-      connectionRetries: 5,
-    });
-
     try {
-      await client.connect();
-
-      const channelResult = await client.invoke(
+      if(!this.client.connected){
+        await this.client.connect();
+      }
+      
+      const channelResult = await this.client.invoke(
         new Api.channels.GetFullChannel({
           channel: this.channelName,
         }),
@@ -47,7 +50,7 @@ export class TelegramScrapper extends EventEmitter {
       const lastMessage = (channelResult.fullChat as any).readInboxMaxId;
       const unreadCount = (channelResult.fullChat as any).unreadCount;
 
-      const getLastMessage = await client.invoke(
+      const getLastMessage = await this.client.invoke(
         new Api.channels.GetMessages({
           channel: this.channelName,
           id: [lastMessage + unreadCount] as any,
@@ -56,7 +59,7 @@ export class TelegramScrapper extends EventEmitter {
 
       const content = (getLastMessage as any)?.messages[0]?.message;
 
-
+      
 
       if (content && content.includes('poocoin.app')) {
         const almostAddres = content.split('poocoin.app/tokens/');
