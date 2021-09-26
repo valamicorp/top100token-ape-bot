@@ -147,11 +147,21 @@ const start = async (broker: ElectronBroker) => {
         const telegramSignaler = new TelegramScrapper(tgOption.api,tgOption.hash, tgOption.session, tgOption.channel);
         telegramSignaler.on('newSignal', async (address: string) => {
           try {
+
+            if(store.has('signalHistory')){
+              if(store.get('signalHistory') === address){
+                return;
+              }
+            }
+
+            store.set('signalHistory', address);
+            
+
             if(appState.runningApes.find(e => e.contractAddress === address && e.orderStatus <= 7)){
               console.log('You cannot create new Ape order for the given address!');
               return;
             }
-        
+
             const apeEngine = new ApeEngine(
               appState.settings.chain,
               appState.settings.privateKey,
@@ -179,6 +189,22 @@ const start = async (broker: ElectronBroker) => {
 
   if(store.get("chainId")){
     appState.settings.chain = store.get("chainId");
+  }
+
+  if(store.has("apeAmount")){
+    appState.settings.apeAmount = store.get("apeAmount");
+  }
+
+  if(store.has("minProfit")){
+    appState.settings.minProfit = store.get("minProfit");
+  }
+
+  if(store.has("gasPrice")){
+    appState.settings.gasPrice = store.get("gasPrice");
+  }
+
+  if(store.has("gasLimit")){
+    appState.settings.gasLimit = store.get("gasLimit");
   }
 
   broker.msg.on('button:control', async (event, arg) => {

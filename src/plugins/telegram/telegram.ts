@@ -30,7 +30,7 @@ export class TelegramScrapper extends EventEmitter {
       if (this.ready) {
         await this.GetPoocoinSignal();
       }
-    }, 60000);
+    }, 5000);
   }
 
   public async GetPoocoinSignal(): Promise<void> {
@@ -59,7 +59,7 @@ export class TelegramScrapper extends EventEmitter {
 
       const content = (getLastMessage as any)?.messages[0]?.message;
 
-      
+     
 
       if (content && content.includes('poocoin.app')) {
         const almostAddres = content.split('poocoin.app/tokens/');
