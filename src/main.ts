@@ -8,6 +8,7 @@ import { ApeOrder, ApeOrderStatus, AppState } from './types';
 import { ElectronBroker } from './electronBroker';
 import { ElectronStore } from './util/electronStorage';
 import Web3 from 'web3';
+import { TelegramScrapper } from './plugins/telegram/telegram';
 const Store = require('electron-store');
 
 let electronBroker: ElectronBroker;
@@ -134,8 +135,51 @@ const start = async (broker: ElectronBroker) => {
 
       }
     });
-
   }
+
+  // TELEGRAM PLUGIN
+  if(store.has("telegramAPI") && store.has("telegramAPIHASH")){
+    if(store.has("telegramSession") && store.has("telegramChannel")){
+
+        const tgOption ={
+          api: store.get("telegramAPI"),
+          hash: store.get("telegramAPIHASH"),
+          session: store.get("telegramSession"),
+          channel: store.get("telegramChannel")
+        }
+
+        const telegramSignaler = new TelegramScrapper(tgOption.api,tgOption.hash, tgOption.session, tgOption.channel);
+        telegramSignaler.on('newSignal', async (address: string) => {
+          try {
+            if(appState.runningApes.find(e => e.contractAddress === address && e.orderStatus <= 7)){
+              console.log('You cannot create new Ape order for the given address!');
+              return;
+            }
+        
+            const apeEngine = new ApeEngine(
+              appState.settings.chain,
+              appState.settings.privateKey,
+              appState.settings.apeAmount,
+              appState.settings.minProfit,
+              appState.settings.gasPrice,
+              appState.settings.gasLimit,
+            );
+          
+            apeEngine.AddNewApe(address);
+
+            appState.runningApes.push(apeEngine);
+          
+          } catch (error) {
+            console.log('Unable to start Telegram Signal APE');
+          }
+
+        })
+
+
+    }
+  }
+
+
 
   if(store.get("chainId")){
     appState.settings.chain = store.get("chainId");

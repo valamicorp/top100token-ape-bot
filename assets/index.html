@@ -16,7 +16,7 @@
   <script type="text/javascript" src="./renderer.js"></script>
   <script type="text/javascript" src="./setup.js"></script>
   <script type="text/javascript" src="./portfolio.js"></script>
- 
+
 
 </head>
 
@@ -48,13 +48,13 @@
               <label for="apeAddress" class="form-label">APE ADDRESS</label>
               <input class="form-control" id="apeAddress">
             </div>
-          <div class="btn-group" role="group" aria-label="ape-options">
-            <button id='startButton' class="btn btn-success">🔥 Start</button>
-            <button id='pauseButton' disabled class="btn btn-warning">⏳ Pause</button>
-            <button id='stopButton' disabled class="btn btn-danger">✋ Stop</button>
-            <button id='panicSell' disabled class="btn btn-secondary">🧻 PanicSell</button>
-            <button id='movePortfolio' disabled class="btn btn-primary">🧾 Move to Portfolio</button>
-          </div>
+            <div class="btn-group" role="group" aria-label="ape-options">
+              <button id='startButton' class="btn btn-success">🔥 Start</button>
+              <button id='pauseButton' disabled class="btn btn-warning">⏳ Pause</button>
+              <button id='stopButton' disabled class="btn btn-danger">✋ Stop</button>
+              <button id='panicSell' disabled class="btn btn-secondary">🧻 PanicSell</button>
+              <button id='movePortfolio' disabled class="btn btn-primary">🧾 Move to Portfolio</button>
+            </div>
           </div>
 
         </div>
@@ -136,6 +136,22 @@
             <div class="mb-3">
               <label for="setting6" class="form-label">Custom Gas Limit</label>
               <input type="number" min="100000" placeholder="default" class="form-control" id="setting6">
+            </div>
+            <div class="mb-3">
+              <label for="settingTelegramSession" class="form-label">TelegramSession</label>
+              <input type="password" class="form-control" id="settingTelegramSession">
+            </div>
+            <div class="mb-3">
+              <label for="settingTelegramChannel" class="form-label">TelegramChannelName</label>
+              <input type="text" class="form-control" id="settingTelegramChannel">
+            </div>
+            <div class="mb-3">
+              <label for="settingTelegramAPI" class="form-label">TelegramAPI ID</label>
+              <input type="text" class="form-control" id="settingTelegramAPI">
+            </div>
+            <div class="mb-3">
+              <label for="settingTelegramAPIHASH" class="form-label">TelegramAPI HASH</label>
+              <input type="text" class="form-control" id="settingTelegramAPIHASH">
             </div>
           </div>
           <div class="modal-footer text-dark">
