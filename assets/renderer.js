@@ -175,6 +175,22 @@ const readSetting = () => {
     store.set('privateKey', privateKey);
   }
 
+  const telegramSession = document.getElementById('settingTelegramSession').value;
+  const telegramChannel = document.getElementById('settingTelegramChannel').value;
+  const telegramAPI = document.getElementById('settingTelegramAPI').value;
+  const telegramAPIHASH = document.getElementById('settingTelegramAPIHASH').value;
+
+  // Setup Telegram Plugin
+  if(telegramSession.length > 2 && telegramChannel.length > 2){
+    store.set('telegramSession', telegramSession.trim());
+    store.set('telegramChannel', telegramChannel.trim());
+  }
+  if(telegramAPI.length > 2 && telegramAPIHASH.length > 2){
+    store.set('telegramAPI', telegramAPI.trim());
+    store.set('telegramAPIHASH', telegramAPIHASH.trim());
+  }
+
+
   store.set('chainId', chain);
   store.set('apeAmount', apeAmount);
   store.set('minProfit', minProfit);
