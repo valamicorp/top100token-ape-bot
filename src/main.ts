@@ -164,7 +164,7 @@ const start = async (broker: ElectronBroker) => {
         // Move APE
         const ape = appState.currentApe;
         ape.CreateEventQueue(3000); // Slow down update interval
-        appState.runningApes.push(ape);
+        appState.runningApes.unshift(ape);
 
         appState.currentApe = null;
         appState.apeLoaded = null;
