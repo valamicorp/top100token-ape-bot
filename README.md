@@ -26,6 +26,6 @@ To buy us a coffee ☕ => 0x0C52A285712B8A9Fb6b31B128C09aBd868c58987 (Accepted E
 
 ### Screenshot UI:
 
-![top100token bot UI 1](https://i.imgur.com/vtLAhwF.png)
+![top100token bot UI 1](https://i.imgur.com/nJUcnOb.png)
 ![top100token bot UI 2](https://i.imgur.com/1DJmIvJ.png)
 
