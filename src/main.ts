@@ -1,10 +1,10 @@
 import { ethereumChains } from './contants';
 import { ApeEngine } from './engine/apeEngine';
 import * as path from 'path';
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow } from 'electron';
 import { AddressFromPrivatekey, createWeb3Wallet, getEthBalance } from './blockchain/utilities/walletHandler';
 import BigNumber from 'bignumber.js';
-import { ApeOrder, ApeOrderStatus, AppState } from './types';
+import { ApeOrder,  AppState } from './types';
 import { ElectronBroker } from './electronBroker';
 import { ElectronStore } from './util/electronStorage';
 import Web3 from 'web3';
@@ -34,10 +34,6 @@ const createWindow = (): Electron.BrowserWindow => {
   if(process?.env?.DEBUG === 'true'){
     window.webContents.openDevTools();
   };
-
-  window.on('closed', () => {
-    (window as any) = null;
-  });
 
   return window;
 }
@@ -194,11 +190,11 @@ const start = async (broker: ElectronBroker) => {
       }
   
       if (arg === 'pause' && appState.currentApe) {
-        appState.currentApe?.PauseApe();
+        appState.currentApe.PauseApe();
       }
   
       if (arg === 'stop' && appState.currentApe) {
-        appState.currentApe?.StopApe();
+        appState.currentApe.StopApe();
         appState.currentApe = null;
         appState.apeLoaded = null;
         appState.buttonState = 'none';
@@ -222,7 +218,7 @@ const start = async (broker: ElectronBroker) => {
 
   
       if (arg === 'panicSell' && appState.currentApe) {
-        appState.currentApe?.PanicSell();
+        appState.currentApe.PanicSell();
         appState.buttonState = 'panicSell';
       }
     } catch (error) {
@@ -277,8 +273,8 @@ const start = async (broker: ElectronBroker) => {
             chainName: `${chainData.name}`,
             walletAddress: `${walletAddress}`,
             walletBalance: `${new BigNumber(ethBalance).dividedBy(10 ** 18).toString()}`,
-            currentProfit: appState?.currentApe?.currProfit ?? '0.00%',
-            traderStatus: appState?.currentApe?.state ?? undefined,
+            currentProfit: appState.currentApe?.currProfit ?? '0.00%',
+            traderStatus: appState.currentApe?.state ?? undefined,
           });
 
         }
