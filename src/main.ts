@@ -46,6 +46,8 @@ if (app) {
 
      electronBroker = new ElectronBroker(mainWindow);
 
+     Logger.setWindow(mainWindow);
+
      start(electronBroker).then();
 
   });
@@ -59,6 +61,8 @@ if (app) {
      const mainWindow = createWindow();
 
       electronBroker = new ElectronBroker(mainWindow);
+
+      Logger.setWindow(mainWindow);
 
       start(electronBroker).then();
     }

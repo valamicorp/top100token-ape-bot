@@ -50,6 +50,9 @@ window.onload = (event) => {
     ipcRenderer.send('start:sync');
   }
 
+  ipcRenderer.on('logger:log', (event, payload) => {
+    console.log("Node:", ...payload);
+ });
 
   ipcRenderer.on('portfolio:sync', (event, payload) => {
       renderPortfolio(payload);
@@ -181,13 +184,13 @@ const readSetting = () => {
   const telegramAPIHASH = document.getElementById('settingTelegramAPIHASH').value;
 
   // Setup Telegram Plugin
-  if(telegramSession.length > 2 && telegramChannel.length > 2){
-    store.set('telegramSession', telegramSession.trim());
+  if(telegramChannel.length > 2){
     store.set('telegramChannel', telegramChannel.trim());
   }
-  if(telegramAPI.length > 2 && telegramAPIHASH.length > 2){
+  if(telegramSession.length > 2 && telegramAPI.length > 2 && telegramAPIHASH.length > 2){
     store.set('telegramAPI', telegramAPI.trim());
     store.set('telegramAPIHASH', telegramAPIHASH.trim());
+    store.set('telegramSession', telegramSession.trim());
   }
 
 

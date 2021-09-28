@@ -3,6 +3,7 @@ import { ipcMain } from 'electron';
 class LoggerClass {
   instance: any = null;
   data: any = {}; // store data in here
+  private window?: Electron.BrowserWindow;
 
   constructor() {
     if (!this.instance) {
@@ -16,8 +17,17 @@ class LoggerClass {
     return this.instance;
   }
 
+  public setWindow (window: Electron.BrowserWindow){
+    this.window = window;
+  }
+
   public log(...args: any) {
     console.log(...args);
+
+    if(this.window?.webContents){
+      this.window.webContents.send('logger:log', [...args]);
+    }
+
   }
 }
 
