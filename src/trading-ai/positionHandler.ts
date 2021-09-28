@@ -1,5 +1,6 @@
 import { BigNumber } from "bignumber.js";
 import { Position, Transaction } from "../types";
+import Logger from "../util/logger";
 
 export const calculatePosition = (transactions: Transaction[], approveCb?: any): Position => {
 
@@ -36,7 +37,7 @@ export const calculatePosition = (transactions: Transaction[], approveCb?: any):
     });
 
 
-    console.log({
+    Logger.log({
         amountCoin: amountCoin.toString(),
         amountToken: amountToken.toString(),
     })

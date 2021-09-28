@@ -1,6 +1,7 @@
 
 
 import {  ipcMain } from 'electron';
+import Logger from './util/logger';
 
 export class ElectronBroker {
     public msg: Electron.IpcMain;
@@ -14,7 +15,7 @@ export class ElectronBroker {
                 try {
                   await window.webContents.send(event, payload) 
                 } catch (error) {
-                    console.log('ElectronBroker emit error: ', error);
+                    Logger.log('ElectronBroker emit error: ', error);
                 }
         };
 

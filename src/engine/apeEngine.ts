@@ -9,6 +9,7 @@ import { SwapWallet } from '../blockchain/swapWallet';
 
 import {EventEmitter} from 'eventemitter3';
 import { ERC20TokenData } from '../blockchain/utilities/erc20';
+import Logger from '../util/logger';
 
 export class ApeEngine extends EventEmitter {
   public orderStatus = ApeOrderStatus.created;
@@ -203,7 +204,7 @@ export class ApeEngine extends EventEmitter {
   
       this.Contract = contractData;
     } catch (error) {
-      console.log(error);
+      Logger.log(error);
 
       this.Events.push({
         type: 'apeBuySuccess',
@@ -246,7 +247,7 @@ export class ApeEngine extends EventEmitter {
         return;
       }
     } catch (error) {
-      console.log(error);
+      Logger.log(error);
     } finally {
       this.Events.push({
         type: 'apeExitCheck',
@@ -298,7 +299,7 @@ export class ApeEngine extends EventEmitter {
         throw new Error('Transaction failed!');
       }
     } catch (error) {
-      console.log(error);
+      Logger.log(error);
 
       this.state = 'APE BUY ERROR, RETRY!';
 
@@ -339,7 +340,7 @@ export class ApeEngine extends EventEmitter {
         throw new Error('Transaction failed!');
       }
     } catch (error) {
-      console.log(error);
+      Logger.log(error);
 
       this.state = 'APE APPROVE FAILED RETRY!';
 
@@ -393,7 +394,7 @@ export class ApeEngine extends EventEmitter {
         throw new Error('Transaction failed!');
       }
     } catch (error) {
-      console.log(error);
+      Logger.log(error);
 
       this.state = 'APE SELL FAILED, RETRY!';
 

@@ -9,6 +9,7 @@ import { ElectronBroker } from './electronBroker';
 import { ElectronStore } from './util/electronStorage';
 import Web3 from 'web3';
 import { TelegramScrapper } from './plugins/telegram/telegram';
+import Logger from './util/logger';
 const Store = require('electron-store');
 
 let electronBroker: ElectronBroker;
@@ -78,7 +79,7 @@ const startNewApe = () =>{
   if(appState.settings.apeAddress){
 
     if(appState.runningApes.find(e => e.contractAddress === appState.settings.apeAddress && e.orderStatus <= 7)){
-      console.log('You cannot create new Ape order for the given address!');
+      Logger.log('You cannot create new Ape order for the given address!');
       return;
     }
 
@@ -158,7 +159,7 @@ const start = async (broker: ElectronBroker) => {
             
 
             if(appState.runningApes.find(e => e.contractAddress === address && e.orderStatus <= 7)){
-              console.log('You cannot create new Ape order for the given address!');
+              Logger.log('You cannot create new Ape order for the given address!');
               return;
             }
 
@@ -176,7 +177,7 @@ const start = async (broker: ElectronBroker) => {
             appState.runningApes.push(apeEngine);
           
           } catch (error) {
-            console.log('Unable to start Telegram Signal APE');
+            Logger.log('Unable to start Telegram Signal APE');
           }
 
         })
@@ -336,7 +337,7 @@ const start = async (broker: ElectronBroker) => {
         portfolioApe.StopApe();
       }
 
-      console.log('portfolio:stop',address);
+      Logger.log('portfolio:stop',address);
   
     } catch (error) {
    
@@ -352,7 +353,7 @@ const start = async (broker: ElectronBroker) => {
         portfolioApe.PanicSell();
       }
 
-      console.log('portfolio:sell',address);
+      Logger.log('portfolio:sell',address);
   
     } catch (error) {
    

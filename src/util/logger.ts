@@ -1,27 +1,26 @@
-
+import { ipcMain } from 'electron';
 
 class LoggerClass {
+  instance: any = null;
+  data: any = {}; // store data in here
 
-    instance: any = null;
-    data: any = {} // store data in here
-  
-    constructor() {
-      if (!this.instance) {
-        this.instance = this;
-      }
-      return this.instance
+  constructor() {
+    if (!this.instance) {
+      this.instance = this;
+
+      ipcMain.on('logger', (event, payload) => {
+        this.log(payload);
+      });
     }
 
-
-    public log (msg: string) {
-
-
-
-    }
-
+    return this.instance;
   }
-  
-  const Logger: LoggerClass = new LoggerClass();
-  Object.freeze(Logger);
-  
-  export default Logger;
+
+  public log(...args: any) {
+    console.log(...args);
+  }
+}
+
+const Logger: LoggerClass = new LoggerClass();
+
+export default Logger;

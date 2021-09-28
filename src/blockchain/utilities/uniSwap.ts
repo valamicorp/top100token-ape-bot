@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js';
 import Web3 from 'web3';
 import { uniSwap2ABI } from '../../abi/uniSwap2';
+import Logger from '../../util/logger';
 
 
 export interface SwapTokenData {
@@ -36,7 +37,7 @@ export const getUniSwapData = async (rcpAddress: string, routerAddress: string, 
 
 
     } catch (error) {
-        console.log('Failed to fetch UniSwap Data: ',tokenAddress ," ", error);
+        Logger.log('Failed to fetch UniSwap Data: ',tokenAddress ," ", error);
     }
 
     throw new Error('Unable to find exchangeRate!');

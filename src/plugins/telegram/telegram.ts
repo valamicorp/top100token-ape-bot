@@ -1,6 +1,7 @@
     import { EventEmitter } from 'eventemitter3';
 import { Api, TelegramClient } from 'telegram';
 import { StringSession } from 'telegram/sessions';
+import Logger from '../../util/logger';
 
 export class TelegramScrapper extends EventEmitter {
   private ready = true;
@@ -73,7 +74,7 @@ export class TelegramScrapper extends EventEmitter {
         }
       }
     } catch (error) {
-      console.log('Telegram error, ', error);
+      Logger.log('Telegram error, ', error);
     } finally {
       this.ready = true;
     }

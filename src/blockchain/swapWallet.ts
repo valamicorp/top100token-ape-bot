@@ -7,6 +7,7 @@ import { ethereumChains } from '../contants';
 import { ERC20TokenData } from './utilities/erc20';
 import { AddressFromPrivatekey, TxConfing } from './utilities/walletHandler';
 import { uniSwap2ABI } from '../abi/uniSwap2';
+import Logger from '../util/logger';
 
 export class SwapWallet {
   public chainData: {
@@ -59,7 +60,7 @@ export class SwapWallet {
 
       return gasPrice;
     } catch (error) {
-      console.log('Failed to fetch GasPrice ', error);
+      Logger.log('Failed to fetch GasPrice ', error);
 
       return this.chainData.defaultGas;
     }
@@ -84,7 +85,7 @@ export class SwapWallet {
         decimals: Number(decimals),
       };
     } catch (error) {
-      console.log('Failed to fetch ERC 20: ', contractAddress, error);
+      Logger.log('Failed to fetch ERC 20: ', contractAddress, error);
     }
 
     throw new Error('Unable to find Contract!');
@@ -98,7 +99,7 @@ export class SwapWallet {
 
       return balance as string;
     } catch (error) {
-      console.log('Failed to connect ERC 20: ', contractAddress, ' ', error);
+      Logger.log('Failed to connect ERC 20: ', contractAddress, ' ', error);
     }
 
     throw new Error('Unable to fetch Balance');
@@ -123,7 +124,7 @@ export class SwapWallet {
 
       return exchangeRate[1];
     } catch (error) {
-      console.log('Failed to fetch UniSwap Data: ', tokenAddress, ' ', error);
+      Logger.log('Failed to fetch UniSwap Data: ', tokenAddress, ' ', error);
     }
 
     throw new Error('Unable to calculate value!');
@@ -160,7 +161,7 @@ swapExactETHForTokens
         .swapExactETHForTokensSupportingFeeOnTransferTokens(amountOutMin, path, from, deadline)
         .encodeABI();
     } catch (error) {
-      console.log('Failed create swapETHForExactTokens', tokenAddress, ' ', error);
+      Logger.log('Failed create swapETHForExactTokens', tokenAddress, ' ', error);
     }
   }
 
@@ -196,7 +197,7 @@ swapExactTokensForETHSupportingFeeOnTransferTokens
         .swapExactTokensForETHSupportingFeeOnTransferTokens(amountIn, amountOutMin, path, from, deadline)
         .encodeABI();
     } catch (error) {
-      console.log('Failed create swapETHForExactTokens', tokenAddress, ' ', error);
+      Logger.log('Failed create swapETHForExactTokens', tokenAddress, ' ', error);
     }
   }
 
@@ -238,7 +239,7 @@ swapExactTokensForETHSupportingFeeOnTransferTokens
 
       return receipt;
     }catch(e) {
-        console.log(e)
+        Logger.log(e)
     }
 
   }

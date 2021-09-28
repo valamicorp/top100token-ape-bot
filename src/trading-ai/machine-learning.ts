@@ -1,6 +1,7 @@
 import BigNumber from "bignumber.js";
 import { DustLimit } from "../contants";
 import { Balance,  TokenContract, TradeEvent} from "../types";
+import Logger from "../util/logger";
 
 export const Iftt = async (chain: string, contract: TokenContract, balance: Balance): Promise<TradeEvent | undefined> => {
         // TODO: Plugin support
@@ -23,7 +24,7 @@ export const Iftt = async (chain: string, contract: TokenContract, balance: Bala
                 const buyAmount = maxPositionCoin.minus(curPosition);
 
 
-                console.log('IFTT buy position check: ', curPosition.toString(), maxPositionCoin.toString());
+                Logger.log('IFTT buy position check: ', curPosition.toString(), maxPositionCoin.toString());
 
                 if(curPosition.isLessThan(maxPositionCoin) && balanceOfCoin.isGreaterThan(buyAmount.plus(DustLimit)))
                 {

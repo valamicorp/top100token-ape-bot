@@ -3,6 +3,7 @@ import Web3 from 'web3';
 const erc20abi = require('erc-20-abi');
 
 import { uniFactoryABI } from '../../abi/uniswapFactory';
+import Logger from '../../util/logger';
 
 
 export interface SwapLiquidityData {
@@ -31,7 +32,7 @@ export const getUniFactory = async (rcpAddress: string, factoryAddress: string, 
         };
 
     } catch (error) {
-        console.log('Failed to fetch UniSwap Data: ',tokenAddress ," ", error);
+        Logger.log('Failed to fetch UniSwap Data: ',tokenAddress ," ", error);
     }
   
     throw new Error('Unable to fetch UniFactory');
