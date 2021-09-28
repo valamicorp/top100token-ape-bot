@@ -9,9 +9,12 @@ class LoggerClass {
     if (!this.instance) {
       this.instance = this;
 
-      ipcMain.on('logger', (event, payload) => {
-        this.log(payload);
-      });
+      if(ipcMain){
+        ipcMain.on('logger', (event, payload) => {
+          this.log(payload);
+        });
+      }
+      
     }
 
     return this.instance;
