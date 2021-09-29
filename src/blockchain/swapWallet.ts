@@ -8,6 +8,7 @@ import { ERC20TokenData } from './utilities/erc20';
 import { AddressFromPrivatekey, TxConfing } from './utilities/walletHandler';
 import { uniSwap2ABI } from '../abi/uniSwap2';
 import Logger from '../util/logger';
+import SuperWallet from './superWallet';
 
 export class SwapWallet {
   public chainData: {
@@ -41,6 +42,8 @@ export class SwapWallet {
       this.walletAddress = AddressFromPrivatekey(this.walletPrivateKey);
       this.gasPrice = (gasPrice && !new BigNumber(gasPrice).isNaN()) ? Web3.utils.toWei(gasPrice, 'gwei') : chainData.defaultGas;
       this.gasLimit = (gasLimit && !new BigNumber(gasLimit).isNaN()) ? new BigNumber(gasLimit).toString() : '1600000';
+
+      SuperWallet.Add(this.chainData.id, this.walletAddress);
 
       if(!gasPrice){
         this.GetGasPrice();
@@ -203,6 +206,8 @@ swapExactTokensForETHSupportingFeeOnTransferTokens
 
   public async CreateSignedTx(data: string, txConfing: TxConfing) {
 
+     const nonce = SuperWallet.GetNonce(this.chainData.id, this.walletAddress);
+
     const tx = {
         // this could be provider.addresses[0] if it exists
         from: this.walletAddress, 
@@ -213,9 +218,20 @@ swapExactTokensForETHSupportingFeeOnTransferTokens
         gasPrice: txConfing.gasPrice ?? new BigNumber(this.gasPrice).toNumber(),
         // optional if you are invoking say a payable function 
         value: txConfing.value,
+        // nonce
+        nonce: nonce ?? undefined,
         // this encodes the ABI of the method and the arguements
         data: data
       };
+
+      Logger.log(`New TX created`, {
+        walletNonce: nonce,
+        txNonce: tx.nonce,
+        from: tx.from, 
+        gas: tx.gas,
+        gasPrice: tx.gasPrice,
+        value: tx.value
+      });
 
     const singed = await this.web3.eth.accounts.signTransaction(tx, this.walletPrivateKey); 
 
@@ -235,6 +251,7 @@ swapExactTokensForETHSupportingFeeOnTransferTokens
   public async SendSignedTx(singedTx: string) {
 
     try{
+      SuperWallet.IncNonce(this.chainData.id, this.walletAddress);
       const receipt = await this.web3.eth.sendSignedTransaction(singedTx);
 
       return receipt;

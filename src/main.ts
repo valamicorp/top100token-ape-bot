@@ -1,3 +1,7 @@
+// Load Before everything
+import Logger from './util/logger';
+import SuperWallet from './blockchain/superWallet';
+
 import { ethereumChains } from './contants';
 import { ApeEngine } from './engine/apeEngine';
 import * as path from 'path';
@@ -9,11 +13,11 @@ import { ElectronBroker } from './electronBroker';
 import { ElectronStore } from './util/electronStorage';
 import Web3 from 'web3';
 import { TelegramScrapper } from './plugins/telegram/telegram';
-import Logger from './util/logger';
 const Store = require('electron-store');
 
 let electronBroker: ElectronBroker;
 
+SuperWallet.init();
 
 const store = new Store({
   encryptionKey: 'The old apple revels in its authority',
