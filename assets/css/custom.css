@@ -5,3 +5,8 @@
     
     width: 100%;
   }
+
+
+.text-pull-left {
+  text-align: left;
+}

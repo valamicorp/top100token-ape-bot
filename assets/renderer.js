@@ -103,14 +103,14 @@ window.onload = (event) => {
   document.getElementById('pauseButton').addEventListener('click', function () {
     ipcRenderer.send('button:control', 'pause');
     document.getElementById('pauseButton').innerHTML =
-      document.getElementById('pauseButton').innerHTML === 'Pause' ? 'Continue' : 'Pause';
+      document.getElementById('pauseButton').innerHTML === '⏳ Pause' ? 'Continue' : '⏳ Pause';
     settingLocked = true;
   });
 
   document.getElementById('stopButton').addEventListener('click', function () {
     ipcRenderer.send('button:control', 'stop');
     settingLocked = false;
-    document.getElementById('pauseButton').innerHTML = 'Pause';
+    document.getElementById('pauseButton').innerHTML = '⏳ Pause';
     document.getElementById('startButton').disabled = false;
     document.getElementById('pauseButton').disabled = true;
     document.getElementById('stopButton').disabled = true;
@@ -128,7 +128,7 @@ window.onload = (event) => {
   document.getElementById('movePortfolio').addEventListener('click', function () {
     ipcRenderer.send('button:control', 'portfolio:move');
     settingLocked = false;
-    document.getElementById('pauseButton').innerHTML = 'Pause';
+    document.getElementById('pauseButton').innerHTML = '⏳ Pause';
     document.getElementById('startButton').disabled = false;
     document.getElementById('pauseButton').disabled = true;
     document.getElementById('stopButton').disabled = true;

@@ -35,18 +35,18 @@
       </div>
     </header>
 
-    <h1 id="currentProfit" style="margin-bottom: 4rem;" class="display-3">0.00%</h1>
 
-    <main class="px-3">
-      <p class="lead">Use it for your own responsibility and profit!</p>
+   
+
+    <section>
 
       <div class="container">
         <div class="row">
-
-          <div class="col">
-            <div class="mb-3">
+          <div style="margin-bottom: 2rem;" class="col">
+            <h4 id="currentProfit" style="margin-bottom: 2rem;" class="display-4">0.00%</h4>
+            <div class="text-pull-left mb-3">
               <label for="apeAddress" class="form-label">APE ADDRESS</label>
-              <input class="form-control" id="apeAddress">
+              <input placeholder="0x..." class="form-control" id="apeAddress">
             </div>
             <div class="btn-group" role="group" aria-label="ape-options">
               <button id='startButton' class="btn btn-success">🔥 Start</button>
@@ -56,16 +56,16 @@
               <button id='movePortfolio' disabled class="btn btn-primary">🧾 Move to Portfolio</button>
             </div>
           </div>
+          <div style="margin-bottom: 2rem;" class="col">
 
-        </div>
-      </div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item text-warning bg-dark text-pull-left">Chain:  <span class="text-light" id='chainName'></span></li>
+              <li class="list-group-item text-warning bg-dark text-pull-left">Wallet Address: <span class="text-light" id='walletAddress'></span></li>
+              <li class="list-group-item text-warning bg-dark text-pull-left">Wallet balance: <span class="text-light" id='walletBalance'></span></li>
+  
+            </ul>
 
-      <div style="margin-top: 3rem;" class="container">
-        <div class="row">
-          <div class="col">
-            <p>Chain: <span id='chainName'></span></p>
-            <p>Wallet Address: <span id='walletAddress'></span></p>
-            <p>Wallet balance: <span id='walletBalance'></span></p>
+
 
             <div>
               <span id='traderStatus'></span>
@@ -75,14 +75,33 @@
             </div>
 
 
-
           </div>
+        </div>
+      </div>
+
+
+    </section>
+
+    <section>
+
+      <div class="container">
+        <h3 style="text-align: left; margin-bottom: 1rem;">Your Portfolio</h3>
+        <div id="portfolioCards" class="row">
+
+
+
+
+
 
         </div>
       </div>
 
 
-    </main>
+
+
+    </section>
+
+
     <!-- Settings modal -->
     <div class="modal fade" id="settingModal" tabindex="-1" aria-labelledby="settingModalLabel" aria-hidden="true">
       <div class="modal-dialog ">
@@ -95,15 +114,18 @@
 
             <ul class="nav nav-tabs" id="settingTab" role="tablist">
               <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" type="button" role="tab" aria-controls="general" aria-selected="true">General</button>
+                <button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general"
+                  type="button" role="tab" aria-controls="general" aria-selected="true">General</button>
               </li>
               <li class="nav-item" role="presentation">
-                <button class="nav-link" id="telegram-tab" data-bs-toggle="tab" data-bs-target="#telegram" type="button" role="tab" aria-controls="telegram" aria-selected="false">Telegram</button>
+                <button class="nav-link" id="telegram-tab" data-bs-toggle="tab" data-bs-target="#telegram" type="button"
+                  role="tab" aria-controls="telegram" aria-selected="false">Telegram</button>
               </li>
             </ul>
 
             <div class="tab-content" id="settingTabContent">
-              <div style="padding-top: 2rem;" class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+              <div style="padding-top: 2rem;" class="tab-pane fade show active" id="general" role="tabpanel"
+                aria-labelledby="general-tab">
 
                 <div class="mb-3">
                   <label for="setting1" class="form-label">PrivateKey</label>
@@ -150,10 +172,11 @@
                   <label for="setting6" class="form-label">Custom Gas Limit</label>
                   <input type="number" min="100000" placeholder="default" class="form-control" id="setting6">
                 </div>
-  
+
 
               </div>
-              <div style="padding-top: 2rem;" class="tab-pane fade" id="telegram" role="tabpanel" aria-labelledby="telegram-tab">
+              <div style="padding-top: 2rem;" class="tab-pane fade" id="telegram" role="tabpanel"
+                aria-labelledby="telegram-tab">
 
                 <div class="mb-3">
                   <label for="settingTelegramSession" class="form-label">TelegramSession</label>
@@ -177,7 +200,7 @@
             </div>
 
 
-          
+
 
 
           </div>
@@ -236,35 +259,12 @@
     </div>
     <!-- Initial Setup modal -->
 
-    <section>
-
-      <div class="container">
-        <h3 style="text-align: left; margin-bottom: 1rem;">Your Portfolio</h3>
-        <div id="portfolioCards" class="row">
 
 
 
+    <footer class="mt-auto text-white-50">
 
-
-
-        </div>
-      </div>
-  </div>
-
-
-
-  </section>
-
-
-
-
-
-
-
-
-  <footer class="mt-auto text-white-50">
-
-  </footer>
+    </footer>
   </div>
 
 
