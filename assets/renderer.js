@@ -30,7 +30,7 @@ window.onload = (event) => {
     setupModal.Open();
   }
 
-  if (store.get('chainId')) {
+  if (store.has('chainId')) {
     document.getElementById('setting2').value = store.get('chainId');
   }
   if (store.has('apeAmount')) {
@@ -44,6 +44,9 @@ window.onload = (event) => {
   }
   if (store.has('gasLimit')) {
     document.getElementById('setting6').value = store.get('gasLimit');
+  }
+  if (store.has('telegramChannel')) {
+    document.getElementById('settingTelegramChannel').value = store.get('telegramChannel');
   }
 
   if(store.has('privateKey')){
@@ -184,9 +187,8 @@ const readSetting = () => {
   const telegramAPIHASH = document.getElementById('settingTelegramAPIHASH').value;
 
   // Setup Telegram Plugin
-  if(telegramChannel.length > 2){
-    store.set('telegramChannel', telegramChannel.trim());
-  }
+  store.set('telegramChannel', telegramChannel.trim());
+ 
   if(telegramSession.length > 2 && telegramAPI.length > 2 && telegramAPIHASH.length > 2){
     store.set('telegramAPI', telegramAPI.trim());
     store.set('telegramAPIHASH', telegramAPIHASH.trim());

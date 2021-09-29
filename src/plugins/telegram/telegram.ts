@@ -12,8 +12,8 @@ export class TelegramScrapper extends EventEmitter {
   private channelName: string;
 
   private lastSignal = '';
-  private listener: NodeJS.Timer;
-  private  client: TelegramClient;
+  private listener?: NodeJS.Timer;
+  private client?: TelegramClient;
 
   private lastProcessed = 0;
 
@@ -23,6 +23,11 @@ export class TelegramScrapper extends EventEmitter {
     this.apiHash = apiHash;
     this.stringSession = new StringSession(session);
     this.channelName = channelName;
+
+    if(this.channelName === ''){
+      Logger.log('No telegram channel set, telegram plugin disabled!');
+      return;
+    }
 
     this.client = new TelegramClient(this.stringSession, this.apiId, this.apiHash, {
         connectionRetries: 5,
@@ -40,6 +45,10 @@ export class TelegramScrapper extends EventEmitter {
     this.ready = false;
 
     try {
+      if(!this.client){
+        return;
+      }
+
       if(!this.client.connected){
         await this.client.connect();
       }

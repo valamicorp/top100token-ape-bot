@@ -92,67 +92,94 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body text-dark">
-            <div class="mb-3">
-              <label for="setting1" class="form-label">PrivateKey</label>
-              <input type="password" class="form-control" id="setting1">
+
+            <ul class="nav nav-tabs" id="settingTab" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" type="button" role="tab" aria-controls="general" aria-selected="true">General</button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="telegram-tab" data-bs-toggle="tab" data-bs-target="#telegram" type="button" role="tab" aria-controls="telegram" aria-selected="false">Telegram</button>
+              </li>
+            </ul>
+
+            <div class="tab-content" id="settingTabContent">
+              <div style="padding-top: 2rem;" class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+
+                <div class="mb-3">
+                  <label for="setting1" class="form-label">PrivateKey</label>
+                  <input type="password" class="form-control" id="setting1">
+                </div>
+                <div class="mb-3">
+                  <label for="setting2" class="form-label">Chain/Swap</label>
+                  <select id="setting2" class="form-select" aria-label="Default select example">
+                    <option selected value="binance">PancakeSwap / Binance Chain</option>
+                    <option value="dth">devethswap / dTH</option>
+                    <option value="ethereum">UniSwapV2 / ETH</option>
+                    <option value="polygon">QuickSwap / Poly</option>
+                    <option value="fantom">SpookySwap / Fantom</option>
+                    <option value="cth">CheapSwap / cTH</option>
+                    <option value="polygon:ida">IdamurniSwap / Poly</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="setting3" class="form-label">APE Amount (in BNB/ETH/...)</label>
+                  <input type="number" value="0.1" step="0.0001" class="form-control" id="setting3">
+                </div>
+                <div class="mb-3">
+                  <label for="setting4" class="form-label">Auto sell when profit %</label>
+                  <select id="setting4" class="form-select" aria-label="Default select example">
+                    <option value="10">10%</option>
+                    <option value="20">20%</option>
+                    <option value="20">30%</option>
+                    <option value="40">40%</option>
+                    <option selected value="50">50%</option>
+                    <option value="60">60%</option>
+                    <option value="100">100%</option>
+                    <option value="150">150%</option>
+                    <option value="200">200%</option>
+                    <option value="1000">1000% B!G D*CK</option>
+                  </select>
+                </div>
+                <hr>
+                <p>! Advanced settings, do not change unless you are pro !</p>
+                <div class="mb-3">
+                  <label for="setting5" class="form-label">Custom Gas Price (in GWEI)</label>
+                  <input type="number" min="1" max="10000" placeholder="default" class="form-control" id="setting5">
+                </div>
+                <div class="mb-3">
+                  <label for="setting6" class="form-label">Custom Gas Limit</label>
+                  <input type="number" min="100000" placeholder="default" class="form-control" id="setting6">
+                </div>
+  
+
+              </div>
+              <div style="padding-top: 2rem;" class="tab-pane fade" id="telegram" role="tabpanel" aria-labelledby="telegram-tab">
+
+                <div class="mb-3">
+                  <label for="settingTelegramSession" class="form-label">TelegramSession</label>
+                  <input type="password" class="form-control" id="settingTelegramSession">
+                </div>
+                <div class="mb-3">
+                  <label for="settingTelegramChannel" class="form-label">TelegramChannelName</label>
+                  <input type="text" class="form-control" id="settingTelegramChannel">
+                </div>
+                <div class="mb-3">
+                  <label for="settingTelegramAPI" class="form-label">TelegramAPI ID</label>
+                  <input type="text" class="form-control" id="settingTelegramAPI">
+                </div>
+                <div class="mb-3">
+                  <label for="settingTelegramAPIHASH" class="form-label">TelegramAPI HASH</label>
+                  <input type="text" class="form-control" id="settingTelegramAPIHASH">
+                </div>
+
+
+              </div>
             </div>
-            <div class="mb-3">
-              <label for="setting2" class="form-label">Chain/Swap</label>
-              <select id="setting2" class="form-select" aria-label="Default select example">
-                <option selected value="binance">PancakeSwap / Binance Chain</option>
-                <option value="dth">devethswap / dTH</option>
-                <option value="ethereum">UniSwapV2 / ETH</option>
-                <option value="polygon">QuickSwap / Poly</option>
-                <option value="fantom">SpookySwap / Fantom</option>
-                <option value="cth">CheapSwap / cTH</option>
-                <option value="polygon:ida">IdamurniSwap / Poly</option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <label for="setting3" class="form-label">APE Amount (in BNB/ETH/...)</label>
-              <input type="number" value="0.1" step="0.0001" class="form-control" id="setting3">
-            </div>
-            <div class="mb-3">
-              <label for="setting4" class="form-label">Auto sell when profit %</label>
-              <select id="setting4" class="form-select" aria-label="Default select example">
-                <option value="10">10%</option>
-                <option value="20">20%</option>
-                <option value="20">30%</option>
-                <option value="40">40%</option>
-                <option selected value="50">50%</option>
-                <option value="60">60%</option>
-                <option value="100">100%</option>
-                <option value="150">150%</option>
-                <option value="200">200%</option>
-                <option value="1000">1000% B!G D*CK</option>
-              </select>
-            </div>
-            <hr>
-            <p>! Advanced settings, do not change unless you are pro !</p>
-            <div class="mb-3">
-              <label for="setting5" class="form-label">Custom Gas Price (in GWEI)</label>
-              <input type="number" min="1" max="10000" placeholder="default" class="form-control" id="setting5">
-            </div>
-            <div class="mb-3">
-              <label for="setting6" class="form-label">Custom Gas Limit</label>
-              <input type="number" min="100000" placeholder="default" class="form-control" id="setting6">
-            </div>
-            <div class="mb-3">
-              <label for="settingTelegramSession" class="form-label">TelegramSession</label>
-              <input type="password" class="form-control" id="settingTelegramSession">
-            </div>
-            <div class="mb-3">
-              <label for="settingTelegramChannel" class="form-label">TelegramChannelName</label>
-              <input type="text" class="form-control" id="settingTelegramChannel">
-            </div>
-            <div class="mb-3">
-              <label for="settingTelegramAPI" class="form-label">TelegramAPI ID</label>
-              <input type="text" class="form-control" id="settingTelegramAPI">
-            </div>
-            <div class="mb-3">
-              <label for="settingTelegramAPIHASH" class="form-label">TelegramAPI HASH</label>
-              <input type="text" class="form-control" id="settingTelegramAPIHASH">
-            </div>
+
+
+          
+
+
           </div>
           <div class="modal-footer text-dark">
             <button type="button" id='settingSaveAndClose' class="btn btn-primary" data-bs-dismiss="modal">Save &
