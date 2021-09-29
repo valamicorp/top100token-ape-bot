@@ -1,4 +1,3 @@
-import { throwStatement } from '@babel/types';
 import Web3 from 'web3';
 import { ethereumChains } from '../contants';
 import  Logger  from '../util/logger';
