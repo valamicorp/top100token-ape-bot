@@ -13,6 +13,7 @@ import { ElectronBroker } from './electronBroker';
 import { ElectronStore } from './util/electronStorage';
 import Web3 from 'web3';
 import { TelegramScrapper } from './plugins/telegram/telegram';
+import SQL from './util/sqlStorage';
 const Store = require('electron-store');
 
 let electronBroker: ElectronBroker;
@@ -45,6 +46,7 @@ const createWindow = (): Electron.BrowserWindow => {
 
 if (app) {
   Store.initRenderer();
+  SQL.init();
   app.whenReady().then(()=> {
     const mainWindow = createWindow();
 
