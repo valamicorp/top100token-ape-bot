@@ -5,6 +5,8 @@
 
 DeFi APE bot for PancakeSwap, UniSwapV2, CheapSwap,Quickswap, SpookySwap, DevEthSwap.
 
+**This tool made for education purposes, use it for your own risk.**
+
 ## What is this?
 - The DeFi market is ruled by bots, and bots ruled by developers. Our goal is to provide a generic easy to use bot for everyone, without overpriced "PRO" version, mallware, tracking or GPU mining. 
 
