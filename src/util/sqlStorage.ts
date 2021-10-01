@@ -6,6 +6,7 @@ import { app } from 'electron';
 
 import * as path from 'path';
 import Logger from './logger';
+import { StorageTables } from '../types';
 
 let dbFileLocation = databaseName;
 
@@ -13,24 +14,13 @@ if (app) {
   dbFileLocation = path.join(app.getPath('userData'), databaseName);
 }
 
-export interface TransactionsDB {
-  chain: string;
-  address: string;
-  side: string;
-  time: number;
-  amountCoin: string;
-  amountToken: string;
-}
-
-export const storageConfig: Knex.Config = {
+const storageConfig: Knex.Config = {
   client: 'sqlite3',
   connection: {
     filename: `${dbFileLocation}`,
   },
   useNullAsDefault: true,
 };
-
-export type StorageTables = 'transactions' | 'none';
 
 export class SQLStorageService {
   knex!: Knex<any, unknown[]>;
@@ -82,6 +72,12 @@ export class SQLStorageService {
 
   private async CreateTables() {
     try {
+      await this.knex.schema.createTable('apeHistory', (table) => {
+        table.increments('id');
+        table.string('chain');
+        table.string('data');
+      });
+
       await this.knex.schema.createTable('transactions', (table) => {
         table.increments('id');
         table.string('chain');

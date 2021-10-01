@@ -3,13 +3,14 @@ import Web3 from 'web3';
 
 import { approveInfinity } from '../contants';
 
-import { ApeContract, ApeOrder, ApeOrderStatus, Balance, EngineEvent } from '../types';
+import { ApeContract, ApeOrder, ApeOrderStatus, Balance, EngineEvent, ApeHistoryDB } from '../types';
 
 import { SwapWallet } from '../blockchain/swapWallet';
 
 import {EventEmitter} from 'eventemitter3';
 import { ERC20TokenData } from '../blockchain/utilities/erc20';
 import Logger from '../util/logger';
+import SQL from '../util/sqlStorage';
 
 export class ApeEngine extends EventEmitter {
   public orderStatus = ApeOrderStatus.created;
@@ -390,6 +391,17 @@ export class ApeEngine extends EventEmitter {
         this.orderStatus = ApeOrderStatus.sellSuccess;
         this.StopApe();
         this.orderStatus = ApeOrderStatus.finished;
+
+        SQL.InsertData<ApeHistoryDB>({
+          chain: this.swapWallet.chainData.id,
+          data: JSON.stringify({
+            buyAmount: this.maxPositionCoin,
+            coinBalance: this.Balance[this.contractAddress],
+            expectedProfit: this.currProfit,
+            targetProfit: this.minProfit,
+            time: Date.now()
+          })
+        }, 'apeHistory')
       } else {
         throw new Error('Transaction failed!');
       }

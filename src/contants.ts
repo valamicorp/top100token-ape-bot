@@ -99,7 +99,7 @@ export const ethereumChains = [
     scanLogo: './assets/none.png',
     router: "0xab06aD5E30c039c0fb628fe8598e569Fb6B97fdc",
     factory: "0x85fA4b9d57A6e27e2c60796893f2007e0a081FC8",
-    rcpAddress: "https://rpc.deveth.org",
+    rcpAddress: "https://rpc.deveth.org/", 
     defaultGas: "5000000000",
     wCoin: '0xe5092b565b5119fa0860b0016d9E4cCe9cAB210E',
     testContract: '0xe758616f5f4db08398d88a9cd309397de16cdcdd',
