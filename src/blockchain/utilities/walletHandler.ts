@@ -1,4 +1,5 @@
 import Web3 from "web3";
+import Logger from "../../util/logger";
 
 export interface Account {
     address: string;
@@ -44,6 +45,7 @@ export const getEthBalance = async (rcpAddress: string, address: string): Promis
  
         return balance;
     } catch (error) {
+        Logger.log('Unable to fetch ETH balance', error);
         return "0";
     }
 

@@ -1,3 +1,6 @@
+// Seems Node owners are not really care about their TLS_CERT and common to get 'CERT_HAS_EXPIRED' Error
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 // Load Before everything
 import Logger from './util/logger';
 import SuperWallet from './blockchain/superWallet';
