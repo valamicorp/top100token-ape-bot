@@ -104,3 +104,4 @@ dist
 .tern-port
 
 build
+top100storage.db

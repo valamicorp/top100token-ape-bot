@@ -9,6 +9,7 @@ import { AddressFromPrivatekey, TxConfing } from './utilities/walletHandler';
 import { uniSwap2ABI } from '../abi/uniSwap2';
 import Logger from '../util/logger';
 import SuperWallet from './superWallet';
+import { uniFactoryABI } from '../abi/uniswapFactory';
 
 export class SwapWallet {
   public chainData: {
@@ -40,16 +41,15 @@ export class SwapWallet {
       const provider = new Web3.providers.HttpProvider(this.chainData.rcpAddress);
       this.web3 = new Web3(provider);
       this.walletAddress = AddressFromPrivatekey(this.walletPrivateKey);
-      this.gasPrice = (gasPrice && !new BigNumber(gasPrice).isNaN()) ? Web3.utils.toWei(gasPrice, 'gwei') : chainData.defaultGas;
-      this.gasLimit = (gasLimit && !new BigNumber(gasLimit).isNaN()) ? new BigNumber(gasLimit).toString() : '1600000';
+      this.gasPrice =
+        gasPrice && !new BigNumber(gasPrice).isNaN() ? Web3.utils.toWei(gasPrice, 'gwei') : chainData.defaultGas;
+      this.gasLimit = gasLimit && !new BigNumber(gasLimit).isNaN() ? new BigNumber(gasLimit).toString() : '1600000';
 
       SuperWallet.Add(this.chainData.id, this.walletAddress);
 
-      if(!gasPrice){
+      if (!gasPrice) {
         this.GetGasPrice();
       }
-      
-
     } else {
       throw new Error('Invalid Chain/Swap');
     }
@@ -57,7 +57,7 @@ export class SwapWallet {
 
   public async GetGasPrice(): Promise<string> {
     try {
-     const gasPrice = await this.web3.eth.getGasPrice();
+      const gasPrice = await this.web3.eth.getGasPrice();
 
       this.gasPrice = gasPrice;
 
@@ -88,10 +88,8 @@ export class SwapWallet {
         decimals: Number(decimals),
       };
     } catch (error) {
-      Logger.log('Failed to fetch ERC 20: ', contractAddress, error);
+      throw new Error(`Unable to find Contract!  ${contractAddress} , ${error}`);
     }
-
-    throw new Error('Unable to find Contract!');
   }
 
   public async BalanceOfErc20(contractAddress: string) {
@@ -118,8 +116,7 @@ export class SwapWallet {
     const token = new this.web3.eth.Contract(uniSwap2ABI as any, this.chainData.router);
 
     try {
-
-      if(Number(numToken) === 0){
+      if (Number(numToken) === 0) {
         return '0';
       }
 
@@ -145,11 +142,7 @@ swapExactETHForTokens
 
 
 */
-  public async SwapExactETHForTokens(
-    tokenAddress: string,
-    from = this.walletAddress,
-    amountOutMin = '1',
-  ) {
+  public async SwapExactETHForTokens(tokenAddress: string, from = this.walletAddress, amountOutMin = '1') {
     const web3 = new Web3();
 
     const uniSwap = new web3.eth.Contract(uniSwap2ABI as any, this.chainData.router);
@@ -204,43 +197,65 @@ swapExactTokensForETHSupportingFeeOnTransferTokens
     }
   }
 
-  public async CreateSignedTx(data: string, txConfing: TxConfing) {
+  public async GetLiquidityAddress(tokenAddress: string): Promise<string> {
+    try {
+      const token = new this.web3.eth.Contract(uniFactoryABI as any, this.chainData.factory);
 
-     const nonce = SuperWallet.GetNonce(this.chainData.id, this.walletAddress);
+      const liquidityPairAddress = await token.methods.getPair(this.chainData.wCoin, tokenAddress).call();
+
+      return liquidityPairAddress as string;
+    } catch (error) {
+      throw new Error(`Unable to find LiquidityPairAddress!  ${tokenAddress} , ${error}`);
+    }
+  }
+
+  public async GetLiquidityAmount(liquidityPairAddress: string): Promise<BigNumber> {
+    try {
+      const erc20 = new this.web3.eth.Contract(erc20abi, this.chainData.wCoin);
+
+      const liquidityCoinAmount = await erc20.methods.balanceOf(liquidityPairAddress).call();
+
+      return new BigNumber(liquidityCoinAmount);
+    } catch (error) {
+      throw new Error(`Unable to find Liquidity for ${liquidityPairAddress}`);
+    }
+  }
+
+  public async CreateSignedTx(data: string, txConfing: TxConfing) {
+    const nonce = SuperWallet.GetNonce(this.chainData.id, this.walletAddress);
 
     const tx = {
-        // this could be provider.addresses[0] if it exists
-        from: this.walletAddress, 
-        // target address, this could be a smart contract address
-        to: txConfing.to, 
-        // optional if you want to specify the gas limit 
-        gas: txConfing.gasLimit ?? new BigNumber(this.gasLimit).toNumber(), 
-        gasPrice: txConfing.gasPrice ?? new BigNumber(this.gasPrice).toNumber(),
-        // optional if you are invoking say a payable function 
-        value: txConfing.value,
-        // nonce
-        nonce: nonce ?? undefined,
-        // this encodes the ABI of the method and the arguements
-        data: data
-      };
+      // this could be provider.addresses[0] if it exists
+      from: this.walletAddress,
+      // target address, this could be a smart contract address
+      to: txConfing.to,
+      // optional if you want to specify the gas limit
+      gas: txConfing.gasLimit ?? new BigNumber(this.gasLimit).toNumber(),
+      gasPrice: txConfing.gasPrice ?? new BigNumber(this.gasPrice).toNumber(),
+      // optional if you are invoking say a payable function
+      value: txConfing.value,
+      // nonce
+      nonce: nonce ?? undefined,
+      // this encodes the ABI of the method and the arguements
+      data: data,
+    };
 
-      Logger.log(`New TX created`, {
-        walletNonce: nonce,
-        txNonce: tx.nonce,
-        from: tx.from, 
-        gas: tx.gas,
-        gasPrice: tx.gasPrice,
-        value: tx.value
-      });
+    Logger.log(`New TX created`, {
+      walletNonce: nonce,
+      txNonce: tx.nonce,
+      from: tx.from,
+      gas: tx.gas,
+      gasPrice: tx.gasPrice,
+      value: tx.value,
+    });
 
-    const singed = await this.web3.eth.accounts.signTransaction(tx, this.walletPrivateKey); 
+    const singed = await this.web3.eth.accounts.signTransaction(tx, this.walletPrivateKey);
 
-    if(singed.rawTransaction){
-        return singed.rawTransaction;
+    if (singed.rawTransaction) {
+      return singed.rawTransaction;
     }
-    
-    throw new Error('Unable to create rawTransaction!');
 
+    throw new Error('Unable to create rawTransaction!');
   }
   public async GetEthBalance() {
     const balance = await this.web3.eth.getBalance(this.walletAddress);
@@ -249,15 +264,13 @@ swapExactTokensForETHSupportingFeeOnTransferTokens
   }
 
   public async SendSignedTx(singedTx: string) {
-
-    try{
+    try {
       SuperWallet.IncNonce(this.chainData.id, this.walletAddress);
       const receipt = await this.web3.eth.sendSignedTransaction(singedTx);
 
       return receipt;
-    }catch(e) {
-        Logger.log(e)
+    } catch (e) {
+      Logger.log(e);
     }
-
   }
 }
