@@ -71,10 +71,10 @@ describe('APE Trade Engine', () => {
     engine.StopApe();
   });
 
-  it('should be AddNewApe buy', async () => {
+  it('should be InstantBuyApe buy', async () => {
     const engine = new ApeEngine(CHAIN_ID, 'privateKey', '0.1', '50', undefined, undefined, 100, mockWallet);
 
-    engine.AddNewApe(APE_ADDRESS);
+    engine.InstantBuyApe(APE_ADDRESS);
 
     expect(engine.currProfit).toBe('0.00%');
     expect(engine.paused).toBe(false);
@@ -92,10 +92,10 @@ describe('APE Trade Engine', () => {
     engine.StopApe();
   });
 
-  it('should be AddNewApe sell', async () => {
+  it('should be InstantBuyApe sell', async () => {
     const engine = new ApeEngine(CHAIN_ID, 'privateKey', '0.1', '50', undefined, undefined, 100, mockWallet);
 
-    engine.AddNewApe(APE_ADDRESS);
+    engine.InstantBuyApe(APE_ADDRESS);
 
     (mockWallet.GetApeSwapValue = async (...args) => {
       events.push({ name: 'GetApeSwapValue', args: [...args] });

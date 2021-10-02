@@ -102,7 +102,7 @@ const startNewApe = () =>{
       appState.settings.gasLimit,
     );
   
-    apeEngine.AddNewApe(appState.settings.apeAddress);
+    apeEngine.InstantBuyApe(appState.settings.apeAddress);
   
     appState.currentApe = apeEngine;
     appState.apeLoaded = appState.settings.apeAddress;
@@ -182,7 +182,7 @@ const start = async (broker: ElectronBroker) => {
               appState.settings.gasLimit,
             );
           
-            apeEngine.AddNewApe(address);
+            apeEngine.InstantBuyApe(address);
 
             appState.runningApes.push(apeEngine);
           

@@ -122,7 +122,7 @@ export class ApeEngine extends EventEmitter {
     this.minProfit = minProfit;
   }
 
-  async AddNewApe(address: string) {
+  async InstantBuyApe(address: string) {
     this.contractAddress = address;
     this.UpdateERC20(address);
     await this.HandleApeBuyEvent(address);
