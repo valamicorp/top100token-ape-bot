@@ -306,8 +306,6 @@ const start = async (broker: ElectronBroker) => {
         if(chainData){
   
           const ethBalance = await getEthBalance(chainData.rcpAddress, walletAddress);
-
-          Logger.log(ethBalance);
   
           broker.emit('write:info',  {
             status: 'success',
