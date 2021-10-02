@@ -437,6 +437,8 @@ export class ApeEngine extends EventEmitter {
           {
             chain: this.swapWallet.chainData.id,
             data: JSON.stringify({
+              wallet: this.swapWallet.walletAddress,
+              contract: this.contractAddress,
               buyAmount: this.maxPositionCoin,
               coinBalance: this.Balance[this.contractAddress],
               expectedProfit: this.currProfit,

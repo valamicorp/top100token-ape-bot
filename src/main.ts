@@ -11,7 +11,7 @@ import * as path from 'path';
 import { app, BrowserWindow } from 'electron';
 import { AddressFromPrivatekey, createWeb3Wallet, getEthBalance } from './blockchain/utilities/walletHandler';
 import BigNumber from 'bignumber.js';
-import { ApeOrder,  AppState } from './types';
+import { ApeHistoryDB, ApeOrder,  AppState } from './types';
 import { ElectronBroker } from './electronBroker';
 import { ElectronStore } from './util/electronStorage';
 import Web3 from 'web3';
@@ -50,6 +50,12 @@ const createWindow = (): Electron.BrowserWindow => {
 if (app) {
   Store.initRenderer();
   SQL.init();
+  /*
+  SQL.ReadData<ApeHistoryDB>('apeHistory').then((data)=> {
+    console.log(data)
+  });
+  */
+
   app.whenReady().then(()=> {
     const mainWindow = createWindow();
 

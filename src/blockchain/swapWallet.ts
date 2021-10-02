@@ -29,7 +29,7 @@ export class SwapWallet {
     swapLink: (address: string) => string;
   };
   private web3: Web3;
-  private walletAddress: string;
+  public walletAddress: string;
   public gasPrice: string;
   public gasLimit: string;
 
