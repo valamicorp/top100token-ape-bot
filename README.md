@@ -5,6 +5,8 @@
 
 DeFi APE bot for PancakeSwap, UniSwapV2, CheapSwap,Quickswap, SpookySwap, DevEthSwap.
 
+**This tool made for education purposes, use it for your own risk.**
+
 ## What is this?
 - The DeFi market is ruled by bots, and bots ruled by developers. Our goal is to provide a generic easy to use bot for everyone, without overpriced "PRO" version, mallware, tracking or GPU mining. 
 
@@ -15,13 +17,15 @@ To buy us a coffee ☕ => 0x0C52A285712B8A9Fb6b31B128C09aBd868c58987 (Accepted E
 ## Find the latest version in the release section:
 - https://github.com/valamicorp/top100token-ape-bot/releases
 
-## How to use? (video soon)
+## How to use?
 - Open the Settings
 - Add an empty address PrivateKey (You can create & export privateKey from Metamask)
 - Send some fund into the fresh address
 - Copy to Token Address and press start OR press start and when u copy a valid Token Address buy order send ASAP!
 - Let the bot do the job or press PanicSell!
 
+## Setting up Telegram signal plugin:
+- https://github.com/valamicorp/top100token-ape-bot/tree/main/src/plugins/telegram
 
 
 ### Screenshot UI:

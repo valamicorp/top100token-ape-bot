@@ -50,7 +50,7 @@ export const ethereumChains = [
     scanLogo: './assets/none.png',
     router: "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff",
     factory: "0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32",
-    rcpAddress: 'https://rpc-mainnet.matic.quiknode.pro',
+    rcpAddress: 'https://rpc-mainnet.maticvigil.com/',
     defaultGas: "5000000000",
     wCoin: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
     testContract: '0xa8fcee762642f156b5d757b6fabc36e06b6d4a1a',

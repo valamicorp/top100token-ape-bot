@@ -45,9 +45,7 @@ export const getEthBalance = async (rcpAddress: string, address: string): Promis
  
         return balance;
     } catch (error) {
-
-        Logger.log(error);
-
+        Logger.log('Unable to fetch ETH balance', error);
         return "0";
     }
 

@@ -1,6 +1,6 @@
 {
   "name": "top100token-ape-bot",
-  "version": "1.5.5",
+  "version": "1.6.0",
   "description": "",
   "main": "./build/main.js",
   "dependencies": {
@@ -13,7 +13,7 @@
     "telegram": "^1.9.4",
     "ts-jest": "^27.0.5",
     "tslib": "^2.3.1",
-    "web3": "^1.5.2"
+    "web3": "^1.6.0"
   },
   "devDependencies": {
     "@types/babel__core": "^7.1.16",
