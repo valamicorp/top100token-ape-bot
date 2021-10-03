@@ -91,6 +91,25 @@ export class TelegramScrapper extends EventEmitter {
           break;
         }
 
+
+        
+        // CMC list signals
+        if (content && content.includes('first pump')) {
+
+          Logger.log('Telegram address found!', content, new Date());
+
+           const regex = /0x[a-fA-F0-9]{40}/;
+           const almostAddress = content.match(regex);
+
+          if (almostAddress[0] && this.lastSignal !== almostAddress[0]) {
+            this.lastSignal = almostAddress[0];
+            this.emit('newSignal', almostAddress[0]);
+            return;
+          }
+        }
+
+
+        // Poocoin signals
         if (content && content.includes('poocoin.app')) {
 
           Logger.log('Telegram address found!', content, new Date());
@@ -103,6 +122,7 @@ export class TelegramScrapper extends EventEmitter {
           if (this.lastSignal !== address) {
             this.lastSignal = address;
             this.emit('newSignal', address);
+            return;
           }
         }
 
