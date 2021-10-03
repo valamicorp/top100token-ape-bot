@@ -3,13 +3,14 @@ import Web3 from 'web3';
 
 import { approveInfinity } from '../contants';
 
-import { ApeContract, ApeOrder, ApeOrderStatus, Balance, EngineEvent } from '../types';
+import { ApeContract, ApeOrder, ApeOrderStatus, Balance, EngineEvent, ApeHistoryDB } from '../types';
 
 import { SwapWallet } from '../blockchain/swapWallet';
 
-import {EventEmitter} from 'eventemitter3';
+import { EventEmitter } from 'eventemitter3';
 import { ERC20TokenData } from '../blockchain/utilities/erc20';
 import Logger from '../util/logger';
+import SQL from '../util/sqlStorage';
 
 export class ApeEngine extends EventEmitter {
   public orderStatus = ApeOrderStatus.created;
@@ -25,6 +26,8 @@ export class ApeEngine extends EventEmitter {
   private currSellRetry = 0;
 
   public contractAddress = '';
+
+  public liqudityAddress?: string;
 
   private updateInterval?: NodeJS.Timeout;
 
@@ -64,10 +67,9 @@ export class ApeEngine extends EventEmitter {
     gasLimit?: string,
     updateTimeout = 300,
     injectWallet?: SwapWallet,
-   
   ) {
     super();
-    this.swapWallet = injectWallet || new SwapWallet(chainId, privateKey,gasprice,gasLimit);
+    this.swapWallet = injectWallet || new SwapWallet(chainId, privateKey, gasprice, gasLimit);
 
     this.Balance = {
       chain: this.swapWallet.chainData.id,
@@ -81,8 +83,8 @@ export class ApeEngine extends EventEmitter {
     this.CreateEventQueue(updateTimeout);
   }
 
-  public SnapshotApe(): ApeOrder{
-    return ({
+  public SnapshotApe(): ApeOrder {
+    return {
       chain: this.swapWallet.chainData.id,
       address: this.contractAddress,
       erc20Data: this.erc20Data,
@@ -94,9 +96,9 @@ export class ApeEngine extends EventEmitter {
       stopped: false,
       error: undefined,
       status: this.orderStatus,
-      createdAt: this.createdAt
-    });
-  };
+      createdAt: this.createdAt,
+    };
+  }
 
   public PauseApe() {
     this.paused = !this.paused;
@@ -104,11 +106,11 @@ export class ApeEngine extends EventEmitter {
 
   public StopApe() {
     this.paused = true;
-    if(this.updateInterval){
+    if (this.updateInterval) {
       clearInterval(this.updateInterval);
     }
     // Save forced stop status
-    if(this.orderStatus !== ApeOrderStatus.finished){
+    if (this.orderStatus !== ApeOrderStatus.finished) {
       this.orderStatus = ApeOrderStatus.stopped;
     }
   }
@@ -121,13 +123,17 @@ export class ApeEngine extends EventEmitter {
     this.minProfit = minProfit;
   }
 
-  async AddNewApe(address: string) {
+  async SafeBuyApe(address: string) {
     this.contractAddress = address;
     this.UpdateERC20(address);
     await this.HandleApeBuyEvent(address);
   }
 
-
+  async InstantBuyApe(address: string) {
+    this.contractAddress = address;
+    this.UpdateERC20(address);
+    await this.HandleApeBuyEvent(address);
+  }
 
   public async LoadSnapshotApe(apeOrder: ApeOrder) {
     this.contractAddress = apeOrder.address;
@@ -141,7 +147,7 @@ export class ApeEngine extends EventEmitter {
 
     this.UpdateERC20(apeOrder.address);
 
-    if(!this.isApproved){
+    if (!this.isApproved) {
       this.Events.push({
         type: 'apeApprove',
         address: apeOrder.address,
@@ -154,9 +160,8 @@ export class ApeEngine extends EventEmitter {
     });
   }
 
-  public CreateEventQueue (speed: number){
-
-    if(this.updateInterval){
+  public CreateEventQueue(speed: number) {
+    if (this.updateInterval) {
       clearInterval(this.updateInterval);
     }
 
@@ -174,7 +179,7 @@ export class ApeEngine extends EventEmitter {
       if (e) {
         switch (e.type) {
           case 'apeBuyFail':
-            this.HandleApeBuyEvent(e.address);
+            this.HandleSafeBuyApe();
             break;
           case 'apeBuySuccess':
             this.HandleApeBuySuccess(e.address);
@@ -192,16 +197,15 @@ export class ApeEngine extends EventEmitter {
 
   async HandleApeBuySuccess(address: string) {
     try {
-
       const basicData = await this.swapWallet.GetERC20Data(address);
-  
+
       this.erc20Data = basicData;
 
       const contractData = {
         address,
         ...basicData,
       };
-  
+
       this.Contract = contractData;
     } catch (error) {
       Logger.log(error);
@@ -211,7 +215,48 @@ export class ApeEngine extends EventEmitter {
         address,
       });
     }
+  }
 
+  async HandleSafeBuyApe() {
+    try {
+  
+      this.state = 'APE WAIT FOR LIQUDITY!';
+
+      if (!this.erc20Data) {
+        const basicData = await this.swapWallet.GetERC20Data(this.contractAddress);
+        this.erc20Data = basicData;
+      }
+
+      if (!this.liqudityAddress) {
+        const liqudityAddress = await this.swapWallet.GetLiquidityAddress(this.contractAddress);
+        this.liqudityAddress = liqudityAddress;
+      }
+
+
+      if (this.liqudityAddress) {
+        const liquidityCoinAmount = await this.swapWallet.GetLiquidityAmount(this.liqudityAddress);
+
+        if (!liquidityCoinAmount.isZero() && !liquidityCoinAmount.isNaN()) {
+          Logger.log(`Liquidity found for ${this.contractAddress}, init Buy`);
+          // Every check is done we should be able to buy!
+          this.HandleApeBuyEvent(this.contractAddress);
+          return;
+        }
+      }
+
+      this.Events.push({
+        type: 'apeBuyFail',
+        address: this.contractAddress,
+      });
+
+    } catch (error) {
+      this.Events.push({
+        type: 'apeBuyFail',
+        address: this.contractAddress,
+      });
+      Logger.log(`Error HandleSafeBuyApe ${error}`);
+
+    }
   }
 
   async HandleApeExitCheck(address: string) {
@@ -230,7 +275,7 @@ export class ApeEngine extends EventEmitter {
         .multipliedBy(100)
         .toNumber();
 
-      if(Number(this.swapValue)!== 0){
+      if (Number(this.swapValue) !== 0) {
         this.currProfit = `${Number(Math.round(kindofProfit * 100) / 100 - 100)
           .toFixed(2)
           .toString()}%`;
@@ -239,10 +284,9 @@ export class ApeEngine extends EventEmitter {
       if (
         new BigNumber(swapValue).isGreaterThan(new BigNumber(this.maxPositionCoin).multipliedBy(1 + this.minProfit))
       ) {
-        if(!this.isSelling){
+        if (!this.isSelling) {
           await this.HandleApeSell(address, tokenBalance);
         }
-        
 
         return;
       }
@@ -256,13 +300,12 @@ export class ApeEngine extends EventEmitter {
     }
   }
 
-
   private async HandleApeBuyEvent(address: string): Promise<any> {
     try {
       this.state = 'APE BUY STARTED!';
       this.orderStatus = ApeOrderStatus.buyStart;
 
-      if(this.currBuyRetry >= this.maxBuyRetry){
+      if (this.currBuyRetry >= this.maxBuyRetry) {
         this.state = 'APE BUY RETRY LIMIT REACHED, APE STOPPED!';
         this.StopApe();
         return;
@@ -318,7 +361,7 @@ export class ApeEngine extends EventEmitter {
       this.state = 'APE APPROVE STARTED!';
       this.orderStatus = ApeOrderStatus.approvedStart;
 
-      if(this.currApproveRerty >= this.maxApproveRerty){
+      if (this.currApproveRerty >= this.maxApproveRerty) {
         this.state = 'APE APPROVE, RETRY LIMIT REACHED, APE STOPPED!';
         this.StopApe();
         return;
@@ -344,7 +387,7 @@ export class ApeEngine extends EventEmitter {
 
       this.state = 'APE APPROVE FAILED RETRY!';
 
-      this.currApproveRerty +=1;
+      this.currApproveRerty += 1;
 
       await new Promise((resolve) => setTimeout(resolve, this.retryTimeout));
 
@@ -366,12 +409,11 @@ export class ApeEngine extends EventEmitter {
         return;
       }
 
-      if(this.currSellRetry >= this.maxSellRetry){
+      if (this.currSellRetry >= this.maxSellRetry) {
         this.state = 'APE SELL, RETRY LIMIT REACHED, APE STOPPED!';
         this.StopApe();
         return;
       }
-
 
       this.state = 'APE SELL STARTED!';
       this.orderStatus = ApeOrderStatus.sellStart;
@@ -390,6 +432,22 @@ export class ApeEngine extends EventEmitter {
         this.orderStatus = ApeOrderStatus.sellSuccess;
         this.StopApe();
         this.orderStatus = ApeOrderStatus.finished;
+
+        SQL.InsertData<ApeHistoryDB>(
+          {
+            chain: this.swapWallet.chainData.id,
+            data: JSON.stringify({
+              wallet: this.swapWallet.walletAddress,
+              contract: this.contractAddress,
+              buyAmount: this.maxPositionCoin,
+              coinBalance: this.Balance[this.contractAddress],
+              expectedProfit: this.currProfit,
+              targetProfit: this.minProfit,
+              time: Date.now(),
+            }),
+          },
+          'apeHistory',
+        );
       } else {
         throw new Error('Transaction failed!');
       }
@@ -398,7 +456,7 @@ export class ApeEngine extends EventEmitter {
 
       this.state = 'APE SELL FAILED, RETRY!';
 
-      this.currSellRetry +=1;
+      this.currSellRetry += 1;
 
       await new Promise((resolve) => setTimeout(resolve, this.retryTimeout));
 
@@ -410,14 +468,11 @@ export class ApeEngine extends EventEmitter {
     }
   }
 
-
-  private async UpdateERC20 (address: string){
+  private async UpdateERC20(address: string) {
     try {
       const basicData = await this.swapWallet.GetERC20Data(address);
-  
+
       this.erc20Data = basicData;
-    } catch (error) {
-      
-    }
+    } catch (error) {}
   }
 }
