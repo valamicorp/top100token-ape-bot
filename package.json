@@ -36,6 +36,7 @@
     "start:node": "npm run build && node ./build/main.js",
     "postinstall": "install-app-deps",
     "cleanup": "rimraf dist",
+    "mac": "npm run cleanup && npm run build && electron-builder build --mac",
     "compile": "npm run cleanup && npm run build && electron-builder build --win portable"
   },
   "keywords": [],
