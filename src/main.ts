@@ -158,13 +158,13 @@ const start = async (broker: ElectronBroker) => {
       const telegramSignaler = new TelegramScrapper(tgOption.api, tgOption.hash, tgOption.session, tgOption.channel);
       telegramSignaler.on('newSignal', async (address: string) => {
         try {
-          if (store.has('signalHistory')) {
-            if (store.get('signalHistory') === address) {
+          if (store.has('signalHistoryTg')) {
+            if (store.get('signalHistoryTg') === address) {
               return;
             }
           }
 
-          store.set('signalHistory', address);
+          store.set('signalHistoryTg', address);
 
           if (appState.runningApes.find((e) => e.contractAddress === address && e.orderStatus <= 7)) {
             Logger.log('You cannot create new Ape order for the given address!');
@@ -195,13 +195,13 @@ const start = async (broker: ElectronBroker) => {
     const cmcSignaler = new CoinMarketCap(store.get('coinmarketcapAPI'));
     cmcSignaler.on('newSignal', async (address: string) => {
       try {
-        if (store.has('signalHistory')) {
-          if (store.get('signalHistory') === address) {
+        if (store.has('signalHistoryCMC')) {
+          if (store.get('signalHistoryCMC') === address) {
             return;
           }
         }
 
-        store.set('signalHistory', address);
+        store.set('signalHistoryCMC', address);
 
         if (appState.runningApes.find((e) => e.contractAddress === address && e.orderStatus <= 7)) {
           Logger.log('You cannot create new Ape order for the given address!');
