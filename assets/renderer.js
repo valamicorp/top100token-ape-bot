@@ -48,6 +48,9 @@ window.onload = (event) => {
   if (store.has('telegramChannel')) {
     document.getElementById('settingTelegramChannel').value = store.get('telegramChannel');
   }
+  if (store.has('coinmarketcapAPI')) {
+    document.getElementById('coinmarketcapAPI').value = store.get('coinmarketcapAPI');
+  }
 
   if(store.has('privateKey')){
     ipcRenderer.send('start:sync');
@@ -185,6 +188,11 @@ const readSetting = () => {
   const telegramChannel = document.getElementById('settingTelegramChannel').value;
   const telegramAPI = document.getElementById('settingTelegramAPI').value;
   const telegramAPIHASH = document.getElementById('settingTelegramAPIHASH').value;
+
+  const coinmarketcapAPI = document.getElementById('coinmarketcapAPI').value;
+
+  // Setup CMC plugin
+  store.set('coinmarketcapAPI', coinmarketcapAPI.trim());
 
   // Setup Telegram Plugin
   store.set('telegramChannel', telegramChannel.trim());

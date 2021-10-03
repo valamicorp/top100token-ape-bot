@@ -9,6 +9,7 @@
     "erc-20-abi": "^1.0.0",
     "eventemitter3": "^4.0.7",
     "knex": "^0.95.11",
+    "request-promise": "^4.2.6",
     "sqlite3": "^5.0.2",
     "telegram": "^1.9.4",
     "ts-jest": "^27.0.5",
