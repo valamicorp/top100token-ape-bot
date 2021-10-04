@@ -2,6 +2,7 @@ class SetupModal {
   constructor() {
     this.modalObject = new bootstrap.Modal(document.getElementById('setupModal'), {
       keyboard: false,
+      backdrop: 'static'
     });
 
     this.privateKeyField = document.getElementById('setupWalletPrivateKey');
