@@ -77,6 +77,10 @@ export class TelegramScrapper extends EventEmitter {
 
       Logger.log('Telegram', `Last: ${lastMessage} , Last processed: ${this.lastProcessed}`);
 
+      if(lastMessage && lastMessage > this.lastProcessed + 2){
+        this.lastProcessed = lastMessage;
+      }
+
       let message = ''
 
       while (message !== undefined) {
