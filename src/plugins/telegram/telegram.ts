@@ -46,7 +46,7 @@ export class TelegramScrapper extends EventEmitter {
       if (this.ready) {
         await this.GetPoocoinSignal();
       }
-    }, 5000);
+    }, 3500);
   }
 
   public async GetPoocoinSignal(): Promise<void> {
