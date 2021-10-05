@@ -110,7 +110,7 @@ export class TelegramScrapper extends EventEmitter {
         }
 
         // CMC list signals
-        if (content && content.includes('first pump')) {
+        if (content && content.includes('first pump') && content.includes('BNB')) {
 
           Logger.log('Telegram address found!', content, new Date());
 
