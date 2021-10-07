@@ -104,7 +104,7 @@ export class TelegramScrapper extends EventEmitter {
         }
 
         // Drop signals older than 15 minutes
-        if(getCurrentTimeUTC()  > (getLastMessage as any)?.messages[0].date + 900){
+        if(getCurrentTimeUTC()  > (getLastMessage as any)?.messages[0].date + 30){
           Logger.log('Telegram signal too old', getCurrentTimeUTC(), (getLastMessage as any)?.messages[0].date);
           break;
         }
