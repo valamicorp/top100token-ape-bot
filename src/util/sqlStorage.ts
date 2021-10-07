@@ -40,6 +40,25 @@ export class SQLStorageService {
 
   public init() {}
 
+  public async GetKey(key: string){
+      const allRows = await this.knex('settings').select('*').where({ key: key });
+
+      if(allRows[0] !== ''){
+        return allRows[0].value;
+      }
+      else{
+        return undefined;
+      }
+  }
+
+  public async SetKey(key: string, value: string){
+    try {
+      await this.knex('settings').insert({key, value});
+    } catch (error) {
+      Logger.log('Failed to write DB', error);
+    }
+}
+
   public async ReadData<T>(table: StorageTables, where?: any) {
     if (!where) {
       const allRows = await this.knex<T>(table).select('*');
@@ -76,6 +95,11 @@ export class SQLStorageService {
         table.increments('id');
         table.string('chain');
         table.string('data');
+      });
+
+      await this.knex.schema.createTable('settings', (table) => {
+        table.string('key').primary();
+        table.string('value');
       });
 
       await this.knex.schema.createTable('transactions', (table) => {
