@@ -8,8 +8,8 @@ export interface AppState {
   syncStared: boolean;
   currentApe: ApeEngine | null;
   runningApes: ApeEngine[];
+  privateKey: string;
   settings: {
-    privateKey: string;
     chain: string;
     apeAmount: string;
     minProfit: string;

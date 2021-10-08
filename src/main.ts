@@ -86,6 +86,7 @@ if (app) {
 var appState: AppState = {
   syncStared: false,
   buttonState: 'none',
+  privateKey: '',
   apeLoaded: null,
   currentApe: null,
   runningApes: [],
@@ -101,7 +102,7 @@ const startNewApe = () => {
 
     const apeEngine = new ApeEngine(
       appState.settings.chain,
-      appState.settings.privateKey,
+      appState.privateKey,
       appState.settings.apeAmount,
       appState.settings.minProfit,
       appState.settings.gasPrice,
@@ -116,11 +117,16 @@ const startNewApe = () => {
 };
 
 const start = async (broker: ElectronBroker) => {
+
+  
+
+
+
   // Bot already setted up!
   if (store.get('privateKey')) {
     const privateKey = store.get('privateKey');
 
-    appState.settings.privateKey = privateKey;
+    appState.privateKey = privateKey;
 
     const apeStore = new ElectronStore(`${privateKey}:apeOrders`, 'address');
 
@@ -132,7 +138,7 @@ const start = async (broker: ElectronBroker) => {
       if (apeOrder.status >= 2 && apeOrder.status <= 6) {
         const apeEngine = new ApeEngine(
           apeOrder.chain,
-          appState.settings.privateKey,
+          appState.privateKey,
           Web3.utils.fromWei(apeOrder.apeAmount, 'ether'),
           apeOrder.minProfit.toString(),
         );
@@ -173,7 +179,7 @@ const start = async (broker: ElectronBroker) => {
 
           const apeEngine = new ApeEngine(
             appState.settings.chain,
-            appState.settings.privateKey,
+            appState.privateKey,
             appState.settings.apeAmount,
             appState.settings.minProfit,
             appState.settings.gasPrice,
@@ -210,7 +216,7 @@ const start = async (broker: ElectronBroker) => {
 
         const apeEngine = new ApeEngine(
           appState.settings.chain,
-          appState.settings.privateKey,
+          appState.privateKey,
           appState.settings.apeAmount,
           appState.settings.minProfit,
           appState.settings.gasPrice,
@@ -304,7 +310,7 @@ const start = async (broker: ElectronBroker) => {
   });
 
   broker.msg.on('setting:async', async (event, arg) => {
-    appState.settings.privateKey = arg.privateKey;
+    appState.privateKey = arg.privateKey;
     appState.settings.chain = arg.chain;
     appState.settings.apeAmount = arg.apeAmount;
     appState.settings.minProfit = arg.minProfit;
@@ -313,7 +319,7 @@ const start = async (broker: ElectronBroker) => {
   });
 
   broker.msg.on('start:sync', () => {
-    const apeStore = new ElectronStore(`${appState.settings.privateKey}:apeOrders`, 'address');
+    const apeStore = new ElectronStore(`${appState.privateKey}:apeOrders`, 'address');
 
     if (!appState.syncStared) {
       appState.syncStared = true;
@@ -326,7 +332,7 @@ const start = async (broker: ElectronBroker) => {
 
       setInterval(async () => {
         const chainData = ethereumChains.find((e) => e.id === appState.settings.chain);
-        const walletAddress = AddressFromPrivatekey(appState.settings.privateKey);
+        const walletAddress = AddressFromPrivatekey(appState.privateKey);
 
         if (chainData) {
           const ethBalance = await getEthBalance(chainData.rcpAddress, walletAddress);
