@@ -266,7 +266,11 @@ swapExactTokensForETHSupportingFeeOnTransferTokens
   public async SendSignedTx(singedTx: string) {
     try {
       SuperWallet.IncNonce(this.chainData.id, this.walletAddress);
+
+      // God dam in an ideal world we wont need this...
       const receipt = await this.web3.eth.sendSignedTransaction(singedTx);
+
+      // Add Better receipt catcher
 
       return receipt;
     } catch (e) {
