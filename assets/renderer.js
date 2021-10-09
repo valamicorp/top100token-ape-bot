@@ -46,6 +46,15 @@ window.onload = (event) => {
   if (store.has('telegramChannel')) {
     document.getElementById('settingTelegramChannel').value = store.get('telegramChannel');
   }
+  if (store.has('telegramAPI')) {
+    document.getElementById('settingTelegramAPI').value = store.get('telegramAPI');
+  }
+  if (store.has('telegramAPIHASH')) {
+    document.getElementById('settingTelegramAPIHASH').value = store.get('telegramAPIHASH');
+  }
+  if (store.has('telegramSession')) {
+    document.getElementById('settingTelegramSession').value = store.get('telegramSession');
+  }
   if (store.has('coinmarketcapAPI')) {
     document.getElementById('coinmarketcapAPI').value = store.get('coinmarketcapAPI');
   }

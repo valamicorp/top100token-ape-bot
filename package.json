@@ -1,6 +1,6 @@
 {
   "name": "top100token-ape-bot",
-  "version": "1.8.4",
+  "version": "2.0.0",
   "description": "",
   "main": "./build/main.js",
   "dependencies": {
