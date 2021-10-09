@@ -87,15 +87,13 @@ var appState: AppState = {
   syncStared: false,
   buttonState: 'none',
   privateKey: '',
-  apeLoaded: null,
-  currentApe: null,
   runningApes: [],
   settings: {} as any,
 };
 
-const startNewApe = () => {
-  if (appState.settings.apeAddress) {
-    if (appState.runningApes.find((e) => e.contractAddress === appState.settings.apeAddress && e.orderStatus <= 7)) {
+const startNewApe = (apeAddress: string, broker: ElectronBroker) => {
+  if (apeAddress) {
+    if (appState.runningApes.find((e) => e.contractAddress === apeAddress && e.orderStatus <= 7)) {
       Logger.log('You cannot create new Ape order for the given address!');
       return;
     }
@@ -110,10 +108,17 @@ const startNewApe = () => {
     }
     );
 
-    apeEngine.InstantBuyApe(appState.settings.apeAddress);
+    apeEngine.InstantBuyApe(apeAddress);
 
-    appState.currentApe = apeEngine;
-    appState.apeLoaded = appState.settings.apeAddress;
+    appState.runningApes.unshift(apeEngine);
+
+    const allApes = appState.runningApes.map((e) => e.SnapshotApe());
+
+    broker.emit(
+      'portfolio:sync',
+      allApes.filter((e) => e.status < 8),
+    );
+   
   }
 };
 
@@ -256,60 +261,18 @@ const start = async (broker: ElectronBroker) => {
     appState.settings.gasLimit = store.get('gasLimit');
   }
 
-  broker.msg.on('button:control', async (event, arg) => {
+  broker.msg.on('button:control', async (event, action, apeAddress) => {
     try {
-      appState.buttonState = arg;
-
-      if (arg === 'start' && appState.apeLoaded === null) {
-        startNewApe();
+     
+      if (action === 'start') {
+        startNewApe(apeAddress, broker);
       }
 
-      if (arg === 'pause' && appState.currentApe) {
-        appState.currentApe.PauseApe();
-      }
-
-      if (arg === 'stop' && appState.currentApe) {
-        appState.currentApe.StopApe();
-        appState.currentApe = null;
-        appState.apeLoaded = null;
-        appState.buttonState = 'none';
-      }
-
-      if (arg === 'portfolio:move' && appState.currentApe) {
-        // Move APE
-        const ape = appState.currentApe;
-        ape.CreateEventQueue(3000); // Slow down update interval
-        appState.runningApes.unshift(ape);
-
-        appState.currentApe = null;
-        appState.apeLoaded = null;
-        appState.buttonState = 'none';
-
-        const allApes = appState.runningApes.map((e) => e.SnapshotApe());
-
-        broker.emit(
-          'portfolio:sync',
-          allApes.filter((e) => e.status < 8),
-        );
-      }
-
-      if (arg === 'panicSell' && appState.currentApe) {
-        appState.currentApe.PanicSell();
-        appState.buttonState = 'panicSell';
-      }
     } catch (error) {
       event.reply('asynchronous-reply', {
         status: 'error',
         statusdDetails: error,
       });
-    }
-  });
-
-  broker.msg.on('apeAddress:change', async (event, apeAddress) => {
-    appState.settings.apeAddress = apeAddress;
-
-    if (appState.buttonState === 'start' && appState.apeLoaded === null) {
-      startNewApe();
     }
   });
 
@@ -347,8 +310,6 @@ const start = async (broker: ElectronBroker) => {
             chainName: `${chainData.name}`,
             walletAddress: `${walletAddress}`,
             walletBalance: `${new BigNumber(ethBalance).dividedBy(10 ** 18).toString()}`,
-            currentProfit: appState.currentApe?.currProfit ?? '0.00%',
-            traderStatus: appState.currentApe?.state ?? undefined,
           });
         }
       }, 1000);
@@ -362,10 +323,6 @@ const start = async (broker: ElectronBroker) => {
         );
 
         const runningApes: ApeOrder[] = appState.runningApes.map((e) => e.SnapshotApe());
-
-        if (appState.currentApe) {
-          runningApes.push(appState.currentApe.SnapshotApe());
-        }
 
         if (runningApes.length > 0) {
           await apeStore.Write<ApeOrder>(runningApes);

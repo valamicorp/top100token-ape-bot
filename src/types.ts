@@ -4,9 +4,7 @@ import { ApeEngine } from './engine/apeEngine';
 
 export interface AppState {
   buttonState: 'none' | 'start' | 'pause' | 'stop' | 'panicSell';
-  apeLoaded: null | string;
   syncStared: boolean;
-  currentApe: ApeEngine | null;
   runningApes: ApeEngine[];
   privateKey: string;
   settings: {
@@ -15,7 +13,6 @@ export interface AppState {
     minProfit: string;
     gasPrice: string;
     gasLimit: string;
-    apeAddress: string;
   };
 }
 

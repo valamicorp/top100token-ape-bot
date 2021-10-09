@@ -12,7 +12,6 @@ window.StateApeUI = {
   chainName: '',
   walletAddress: '',
   walletBalance: '',
-  currentProfit: '',
 };
 
 window.onload = (event) => {
@@ -20,7 +19,6 @@ window.onload = (event) => {
     chainName: 'loading...',
     walletAddress: 'loading...',
     walletBalance: 'loading...',
-    currentProfit: '0.00%',
   });
 
   if (store.get('privateKey')) {
@@ -70,7 +68,6 @@ window.onload = (event) => {
         chainName: payload.chainName,
         walletAddress: payload.walletAddress,
         walletBalance: payload.walletBalance,
-        currentProfit: payload.currentProfit,
       });
     }
 
@@ -87,46 +84,20 @@ window.onload = (event) => {
     syncSetting();
   });
 
-  document.getElementById('apeAddress').addEventListener('input', () => {
-    const apeAddress = document.getElementById('apeAddress').value;
-    ipcRenderer.send('apeAddress:change', apeAddress);
-  });
-
   document.getElementById('startButton').addEventListener('click', function () {
-    ipcRenderer.send('button:control', 'start');
-    settingLocked = true;
-    document.getElementById('settingsButton').disabled = true;
-    document.getElementById('startButton').disabled = true;
-    document.getElementById('pauseButton').disabled = false;
-    document.getElementById('stopButton').disabled = false;
-    document.getElementById('movePortfolio').disabled = false;
-    document.getElementById('panicSell').disabled = false;
+    
+    const apeAddress = document.getElementById('apeAddress').value.trim();
+
+    if(apeAddress.length !== 40){
+      return;
+    }
+    
+    ipcRenderer.send('button:control', 'start', apeAddress);
+
+
+
   });
 
-  document.getElementById('pauseButton').addEventListener('click', function () {
-    ipcRenderer.send('button:control', 'pause');
-    document.getElementById('pauseButton').innerHTML =
-      document.getElementById('pauseButton').innerHTML === '⏳ Pause' ? 'Continue' : '⏳ Pause';
-    settingLocked = true;
-  });
-
-  document.getElementById('stopButton').addEventListener('click', function () {
-    ipcRenderer.send('button:control', 'stop');
-    settingLocked = false;
-    document.getElementById('pauseButton').innerHTML = '⏳ Pause';
-    document.getElementById('startButton').disabled = false;
-    document.getElementById('pauseButton').disabled = true;
-    document.getElementById('stopButton').disabled = true;
-    document.getElementById('panicSell').disabled = true;
-    document.getElementById('movePortfolio').disabled = true;
-    document.getElementById('settingsButton').disabled = false;
-    clearTradeStatus();
-  });
-
-  document.getElementById('panicSell').addEventListener('click', function () {
-    ipcRenderer.send('button:control', 'panicSell');
-    settingLocked = true;
-  });
 
   document.getElementById('movePortfolio').addEventListener('click', function () {
     ipcRenderer.send('button:control', 'portfolio:move');
@@ -147,7 +118,7 @@ window.onload = (event) => {
 
 
 
-const writeInfo = ({ chainName, walletAddress, walletBalance, currentProfit }) => {
+const writeInfo = ({ chainName, walletAddress, walletBalance }) => {
   if (chainName !== window.StateApeUI.chainName) {
     document.getElementById('chainName').innerHTML = chainName;
   }
@@ -157,14 +128,12 @@ const writeInfo = ({ chainName, walletAddress, walletBalance, currentProfit }) =
   if (walletBalance !== window.StateApeUI.walletBalance) {
     document.getElementById('walletBalance').innerHTML = walletBalance;
   }
-  document.getElementById('currentProfit').innerHTML = currentProfit;
-
+ 
   window.StateApeUI = {
     ...window.StateApeUI,
     chainName,
     walletAddress,
     walletBalance,
-    currentProfit,
   };
 };
 
