@@ -85,33 +85,21 @@ window.onload = (event) => {
   });
 
   document.getElementById('startButton').addEventListener('click', function () {
-    
+
     const apeAddress = document.getElementById('apeAddress').value.trim();
 
-    if(apeAddress.length !== 40){
+    if(apeAddress.length !== 42){
       return;
     }
     
     ipcRenderer.send('button:control', 'start', apeAddress);
 
-
-
-  });
-
-
-  document.getElementById('movePortfolio').addEventListener('click', function () {
-    ipcRenderer.send('button:control', 'portfolio:move');
-    settingLocked = false;
-    document.getElementById('pauseButton').innerHTML = '⏳ Pause';
-    document.getElementById('startButton').disabled = false;
-    document.getElementById('pauseButton').disabled = true;
-    document.getElementById('stopButton').disabled = true;
-    document.getElementById('panicSell').disabled = true;
-    document.getElementById('settingsButton').disabled = false;
-    document.getElementById('apeAddress').value = '';
-    document.getElementById('movePortfolio').disabled = true;
     clearTradeStatus();
+
   });
+
+
+
 
 };
 

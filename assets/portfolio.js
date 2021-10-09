@@ -36,6 +36,16 @@ const renderPortfolio = (apeOrders) => {
 };
 
 const renderPortfolioCard = (apeOrder) => {
+
+  if(!apeOrder.erc20Data){
+    apeOrder.erc20Data = {};
+    apeOrder.erc20Data.symbol = 'N/A';
+    apeOrder.erc20Data.name= 'Loading...';
+    apeOrder.erc20Data.totalSupply= '10000000000000';
+    apeOrder.erc20Data.intTotalSupply= 1000000000;
+    apeOrder.erc20Data.decimals= 18;
+  }
+
   return `<div class="card text-white bg-dark mb-3" style="width: 18rem;">
    <div class="card-body">
      <h5 class="card-title">$${apeOrder.erc20Data.symbol} / ${apeOrder.erc20Data.name}</h5>
@@ -68,7 +78,7 @@ const renderPortfolioCard = (apeOrder) => {
        }')" class="btn btn-danger">Stop</button>
        <button type="button" onclick="SellApePortfolio(this, '${
          apeOrder.address
-       }')" class="btn btn-secondary">🐥 PanicSell 🧻</button>
+       }')" class="btn btn-secondary">🧻 PanicSell</button>
      </div>
 
    </div>
