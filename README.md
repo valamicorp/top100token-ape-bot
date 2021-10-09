@@ -17,6 +17,13 @@ To buy us a coffee ☕ => 0x0C52A285712B8A9Fb6b31B128C09aBd868c58987 (Accepted E
 ## Find the latest version in the release section:
 - https://github.com/valamicorp/top100token-ape-bot/releases
 
+## How to develop or build?
+- Required Node v14+
+```
+- npm install
+- npm run win OR npm run mac
+```
+
 ## How to use?
 - Open the Settings
 - Add an empty address PrivateKey (You can create & export privateKey from Metamask)
