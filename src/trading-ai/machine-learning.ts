@@ -17,16 +17,16 @@ export const Iftt = async (chain: string, contract: TokenContract, balance: Bala
 
             if(tokenPrice.isLessThanOrEqualTo(buyPrice)){
                 const curPosition = new BigNumber(contract.position.amountCoin);
-                const maxPositionCoin = new BigNumber(contract.maxPositionCoin);
+                const apeAmount = new BigNumber(contract.apeAmount);
 
                 const balanceOfCoin = new BigNumber(balance.ethBalance);
 
-                const buyAmount = maxPositionCoin.minus(curPosition);
+                const buyAmount = apeAmount.minus(curPosition);
 
 
-                Logger.log('IFTT buy position check: ', curPosition.toString(), maxPositionCoin.toString());
+                Logger.log('IFTT buy position check: ', curPosition.toString(), apeAmount.toString());
 
-                if(curPosition.isLessThan(maxPositionCoin) && balanceOfCoin.isGreaterThan(buyAmount.plus(DustLimit)))
+                if(curPosition.isLessThan(apeAmount) && balanceOfCoin.isGreaterThan(buyAmount.plus(DustLimit)))
                 {
                     return {
                         type: 'buy',

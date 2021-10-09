@@ -12,6 +12,18 @@ import { ERC20TokenData } from '../blockchain/utilities/erc20';
 import Logger from '../util/logger';
 import SQL from '../util/sqlStorage';
 
+export interface ApeEngineSettings {
+  chainId: string,
+  privateKey: string,
+  apeAmount: string,
+  minProfitPct: string,
+  gasprice?: string,
+  gasLimit?: string,
+  updateTimeout?: number,
+  injectWallet?: SwapWallet,
+}
+
+
 export class ApeEngine extends EventEmitter {
   public orderStatus = ApeOrderStatus.created;
 
@@ -38,7 +50,7 @@ export class ApeEngine extends EventEmitter {
   private Events: EngineEvent[] = [];
 
   private Contract?: ApeContract;
-  private maxPositionCoin: string;
+  private apeAmount: string;
 
   public minProfit: number;
 
@@ -58,29 +70,21 @@ export class ApeEngine extends EventEmitter {
 
   public createdAt = Date.now();
 
-  constructor(
-    chainId: string,
-    privateKey: string,
-    maxPositionCoin = '0.1',
-    minProfitPct = '50',
-    gasprice?: string,
-    gasLimit?: string,
-    updateTimeout = 300,
-    injectWallet?: SwapWallet,
-  ) {
+  constructor(settings : ApeEngineSettings) {
     super();
-    this.swapWallet = injectWallet || new SwapWallet(chainId, privateKey, gasprice, gasLimit);
+
+    this.swapWallet = settings.injectWallet || new SwapWallet(settings.chainId, settings.privateKey, settings.gasprice, settings.gasLimit);
 
     this.Balance = {
       chain: this.swapWallet.chainData.id,
       ethBalance: '0',
     };
 
-    this.maxPositionCoin = Web3.utils.toWei(maxPositionCoin, 'ether');
+    this.apeAmount = Web3.utils.toWei(settings.apeAmount, 'ether');
 
-    this.minProfit = Number(minProfitPct) / 100;
+    this.minProfit = Number(settings.minProfitPct) / 100;
 
-    this.CreateEventQueue(updateTimeout);
+    this.CreateEventQueue(settings.updateTimeout || 800);
   }
 
   public SnapshotApe(): ApeOrder {
@@ -88,7 +92,7 @@ export class ApeEngine extends EventEmitter {
       chain: this.swapWallet.chainData.id,
       address: this.contractAddress,
       erc20Data: this.erc20Data,
-      apeAmount: this.maxPositionCoin,
+      apeAmount: this.apeAmount,
       tokenBalance: this.Balance[this.contractAddress],
       minProfit: this.minProfit,
       currProfit: this.currProfit,
@@ -139,6 +143,7 @@ export class ApeEngine extends EventEmitter {
     this.contractAddress = apeOrder.address;
     this.Balance[apeOrder.address] = apeOrder.tokenBalance;
     this.minProfit = apeOrder.minProfit;
+    this.apeAmount = apeOrder.apeAmount,
     this.isApproved = apeOrder.isApproved;
     this.orderStatus = apeOrder.status;
     this.createdAt = apeOrder.createdAt;
@@ -271,18 +276,18 @@ export class ApeEngine extends EventEmitter {
       this.swapValue = swapValue;
 
       const kindofProfit = new BigNumber(swapValue)
-        .dividedBy(new BigNumber(this.maxPositionCoin))
+        .dividedBy(new BigNumber(this.apeAmount))
         .multipliedBy(100)
         .toNumber();
 
       if (Number(this.swapValue) !== 0) {
-        this.currProfit = `${Number(Math.round(kindofProfit * 100) / 100 - 100)
+        this.currProfit = `${Number(Math.round(kindofProfit) - 100)
           .toFixed(2)
           .toString()}%`;
       }
 
       if (
-        new BigNumber(swapValue).isGreaterThan(new BigNumber(this.maxPositionCoin).multipliedBy(1 + this.minProfit))
+        new BigNumber(swapValue).isGreaterThan(new BigNumber(this.apeAmount).multipliedBy(1 + this.minProfit))
       ) {
         if (!this.isSelling) {
           await this.HandleApeSell(address, tokenBalance);
@@ -315,7 +320,7 @@ export class ApeEngine extends EventEmitter {
 
       const singedTx = await this.swapWallet.CreateSignedTx(data, {
         to: this.swapWallet.chainData.router,
-        value: this.maxPositionCoin,
+        value: this.apeAmount,
       });
 
       const receipt = await this.swapWallet.SendSignedTx(singedTx);
@@ -439,7 +444,7 @@ export class ApeEngine extends EventEmitter {
             data: JSON.stringify({
               wallet: this.swapWallet.walletAddress,
               contract: this.contractAddress,
-              buyAmount: this.maxPositionCoin,
+              buyAmount: this.apeAmount,
               coinBalance: this.Balance[this.contractAddress],
               expectedProfit: this.currProfit,
               targetProfit: this.minProfit,

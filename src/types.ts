@@ -41,7 +41,7 @@ export interface TokenContractOptions {
   buyPrice?: string | null;
   sellPrice?: string | null;
   apeTime?: Date;
-  maxPositionCoin?: string;
+  apeAmount?: string;
   overwritePlugin?: string;
 }
 
@@ -53,7 +53,7 @@ export interface TokenContract {
   intTotalSupply: number;
   decimals: number;
   isApproved: boolean;
-  maxPositionCoin: string;
+  apeAmount: string;
   position: Position;
   transactions: Transaction[];
   // Trade settings

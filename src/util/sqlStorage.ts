@@ -91,18 +91,18 @@ export class SQLStorageService {
 
   private async CreateTables() {
     try {
-      await this.knex.schema.createTable('apeHistory', (table) => {
+      await this.knex.schema.createTableIfNotExists('apeHistory', (table) => {
         table.increments('id');
         table.string('chain');
         table.string('data');
       });
 
-      await this.knex.schema.createTable('settings', (table) => {
+      await this.knex.schema.createTableIfNotExists('settings', (table) => {
         table.string('key').primary();
         table.string('value');
       });
 
-      await this.knex.schema.createTable('transactions', (table) => {
+      await this.knex.schema.createTableIfNotExists('transactions', (table) => {
         table.increments('id');
         table.string('chain');
         table.string('address');
