@@ -123,16 +123,33 @@ const startNewApe = (apeAddress: string, broker: ElectronBroker) => {
 };
 
 const start = async (broker: ElectronBroker) => {
-
-  
-
-
+  // Load Settings
+  if (store.get('chainId')) {
+    appState.settings.chain = store.get('chainId');
+  }
+  if (store.has('apeAmount')) {
+    appState.settings.apeAmount = store.get('apeAmount');
+  }
+  if (store.has('minProfit')) {
+    appState.settings.minProfit = store.get('minProfit');
+  }
+  if (store.has('gasPrice')) {
+    appState.settings.gasPrice = store.get('gasPrice');
+  }
+  if (store.has('gasLimit')) {
+    appState.settings.gasLimit = store.get('gasLimit');
+  }
 
   // Bot already setted up!
-  if (store.get('privateKey')) {
+  if (store.has('privateKey')) {
     const privateKey = store.get('privateKey');
 
     appState.privateKey = privateKey;
+
+    if(appState.settings.chain){
+      SuperWallet.AddPrivateKey(appState.settings.chain,appState.privateKey);
+    }
+  
 
     const apeStore = new ElectronStore(`${privateKey}:apeOrders`, 'address');
 
@@ -241,25 +258,7 @@ const start = async (broker: ElectronBroker) => {
     });
   }
 
-  if (store.get('chainId')) {
-    appState.settings.chain = store.get('chainId');
-  }
 
-  if (store.has('apeAmount')) {
-    appState.settings.apeAmount = store.get('apeAmount');
-  }
-
-  if (store.has('minProfit')) {
-    appState.settings.minProfit = store.get('minProfit');
-  }
-
-  if (store.has('gasPrice')) {
-    appState.settings.gasPrice = store.get('gasPrice');
-  }
-
-  if (store.has('gasLimit')) {
-    appState.settings.gasLimit = store.get('gasLimit');
-  }
 
   broker.msg.on('button:control', async (event, action, apeAddress) => {
     try {
@@ -277,12 +276,19 @@ const start = async (broker: ElectronBroker) => {
   });
 
   broker.msg.on('setting:async', async (event, arg) => {
+    if(appState.settings.chain != arg.chain || appState.privateKey != arg.privateKey){
+      SuperWallet.AddPrivateKey(arg.chain,arg.privateKey);
+    }
+
     appState.privateKey = arg.privateKey;
     appState.settings.chain = arg.chain;
     appState.settings.apeAmount = arg.apeAmount;
     appState.settings.minProfit = arg.minProfit;
     appState.settings.gasPrice = arg.gasPrice;
     appState.settings.gasLimit = arg.gasLimit;
+
+   
+
   });
 
   broker.msg.on('start:sync', () => {

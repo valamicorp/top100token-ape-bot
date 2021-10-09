@@ -1,6 +1,7 @@
 import Web3 from 'web3';
 import { ethereumChains } from '../contants';
 import  Logger  from '../util/logger';
+import { AddressFromPrivatekey } from './utilities/walletHandler';
 
 class SuperWalletClass {
    private readonly instance: any = null;
@@ -25,20 +26,32 @@ class SuperWalletClass {
 
   public init(){}
 
+  public AddPrivateKey(chain: string, privateKey: string){
+    const walletAddress = AddressFromPrivatekey(privateKey);
+
+    this.Add(chain, walletAddress);
+  }
+
   public async Add(chain: string, walletAddress: string){
+    try {
+      if(!this.nonceStore.get(chain)?.has(walletAddress)){
+        const chainData = ethereumChains.find((e) => e.id === chain);
+  
+        if (chainData) {
+          const provider = new Web3.providers.HttpProvider(chainData.rcpAddress);
+          const web3 = new Web3(provider);
+  
+          const nonce = await web3.eth.getTransactionCount(walletAddress);
+  
+          Logger.log(`Nonce: ${nonce} loaded for ${walletAddress}`)
 
-    if(!this.nonceStore.get(chain)?.has(walletAddress)){
-      const chainData = ethereumChains.find((e) => e.id === chain);
-
-      if (chainData) {
-        const provider = new Web3.providers.HttpProvider(chainData.rcpAddress);
-        const web3 = new Web3(provider);
-
-        const nonce = await web3.eth.getTransactionCount(walletAddress);
-
-        this.nonceStore.get(chain)?.set(walletAddress, nonce);
+          this.nonceStore.get(chain)?.set(walletAddress, nonce);
+        }
       }
+    } catch (error) {
+      Logger.log(`Super wallet error`, error);
     }
+  
   }
 
   public GetNonce(chain: string, walletAddress: string){
@@ -61,9 +74,9 @@ class SuperWalletClass {
 
       const nonce = this.nonceStore.get(chain)?.get(walletAddress);
 
-      Logger.log(`Super Wallet Increased: nonce: ${nonce} for ${walletAddress}`);
-
       if(nonce){
+        Logger.log(`Super Wallet Increased: new nonce: ${nonce+1} for ${walletAddress}`);
+
         this.nonceStore.get(chain)?.set(walletAddress, nonce+1)
       }
     }
