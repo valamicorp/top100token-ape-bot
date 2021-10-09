@@ -100,13 +100,14 @@ const startNewApe = () => {
       return;
     }
 
-    const apeEngine = new ApeEngine(
-      appState.settings.chain,
-      appState.privateKey,
-      appState.settings.apeAmount,
-      appState.settings.minProfit,
-      appState.settings.gasPrice,
-      appState.settings.gasLimit,
+    const apeEngine = new ApeEngine({
+      chainId: appState.settings.chain,
+      privateKey: appState.privateKey,
+      apeAmount: appState.settings.apeAmount,
+      minProfitPct: appState.settings.minProfit,
+      gasprice: appState.settings.gasPrice,
+      gasLimit: appState.settings.gasLimit
+    }
     );
 
     apeEngine.InstantBuyApe(appState.settings.apeAddress);
@@ -136,11 +137,12 @@ const start = async (broker: ElectronBroker) => {
     allApes.forEach((apeOrder) => {
       // Only load orders which has still something to do
       if (apeOrder.status >= 2 && apeOrder.status <= 6) {
-        const apeEngine = new ApeEngine(
-          apeOrder.chain,
-          appState.privateKey,
-          Web3.utils.fromWei(apeOrder.apeAmount, 'ether'),
-          apeOrder.minProfit.toString(),
+        const apeEngine = new ApeEngine({
+          chainId: apeOrder.chain,
+          privateKey: appState.privateKey,
+          apeAmount: Web3.utils.fromWei(apeOrder.apeAmount, 'ether'),
+          minProfitPct: apeOrder.minProfit.toString()
+        }
         );
 
         apeEngine.LoadSnapshotApe(apeOrder);
@@ -177,13 +179,14 @@ const start = async (broker: ElectronBroker) => {
             return;
           }
 
-          const apeEngine = new ApeEngine(
-            appState.settings.chain,
-            appState.privateKey,
-            appState.settings.apeAmount,
-            appState.settings.minProfit,
-            appState.settings.gasPrice,
-            appState.settings.gasLimit,
+          const apeEngine = new ApeEngine({
+            chainId: appState.settings.chain,
+            privateKey: appState.privateKey,
+            apeAmount: appState.settings.apeAmount,
+            minProfitPct: appState.settings.minProfit,
+            gasprice: appState.settings.gasPrice,
+            gasLimit: appState.settings.gasLimit
+          }
           );
 
           apeEngine.InstantBuyApe(address);
@@ -214,13 +217,14 @@ const start = async (broker: ElectronBroker) => {
           return;
         }
 
-        const apeEngine = new ApeEngine(
-          appState.settings.chain,
-          appState.privateKey,
-          appState.settings.apeAmount,
-          appState.settings.minProfit,
-          appState.settings.gasPrice,
-          appState.settings.gasLimit,
+        const apeEngine = new ApeEngine({
+          chainId: appState.settings.chain,
+          privateKey: appState.privateKey,
+          apeAmount: appState.settings.apeAmount,
+          minProfitPct: appState.settings.minProfit,
+          gasprice: appState.settings.gasPrice,
+          gasLimit: appState.settings.gasLimit
+        }
         );
 
         apeEngine.InstantBuyApe(address);
