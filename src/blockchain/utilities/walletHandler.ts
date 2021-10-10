@@ -1,5 +1,5 @@
 import Web3 from "web3";
-import Logger from "../../util/logger";
+
 
 export interface Account {
     address: string;
@@ -36,20 +36,7 @@ export const createWeb3Wallet = (entropy = randomEntropy): Account => {
    return result;
 };
 
-export const getEthBalance = async (rcpAddress: string, address: string): Promise<string>  =>{
-    try {
-        const provider = new Web3.providers.HttpProvider(rcpAddress);
-        const web3 = new Web3(provider);
-    
-        const balance = await web3.eth.getBalance(address);
- 
-        return balance;
-    } catch (error) {
-        Logger.log('Unable to fetch ETH balance', error);
-        return "0";
-    }
 
-}
 
 
 

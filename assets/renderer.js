@@ -58,6 +58,9 @@ window.onload = (event) => {
   if (store.has('coinmarketcapAPI')) {
     document.getElementById('coinmarketcapAPI').value = store.get('coinmarketcapAPI');
   }
+  if (store.has('customRPC')) {
+    document.getElementById('customRPC').value = store.get('customRPC');
+  }
 
   if(store.has('privateKey')){
     ipcRenderer.send('start:sync');
@@ -156,6 +159,11 @@ const readSetting = () => {
   const telegramAPIHASH = document.getElementById('settingTelegramAPIHASH').value;
 
   const coinmarketcapAPI = document.getElementById('coinmarketcapAPI').value;
+
+  const customRPC = document.getElementById('customRPC').value;
+
+
+  store.set('customRPC', customRPC.trim());
 
   // Setup CMC plugin
   store.set('coinmarketcapAPI', coinmarketcapAPI.trim());

@@ -1,3 +1,9 @@
+const Store = require('electron-store');
+
+const store = new Store({
+  encryptionKey: 'The old apple revels in its authority',
+});
+
 import Web3 from 'web3';
 import BigNumber from 'bignumber.js';
 
@@ -10,6 +16,7 @@ import { uniSwap2ABI } from '../abi/uniSwap2';
 import Logger from '../util/logger';
 import SuperWallet from './superWallet';
 import { uniFactoryABI } from '../abi/uniswapFactory';
+import { Web3Tx } from './utilities/transactionHandler';
 
 export class SwapWallet {
   public chainData: {
@@ -32,14 +39,29 @@ export class SwapWallet {
   public walletAddress: string;
   public gasPrice: string;
   public gasLimit: string;
+  public customProvider?: string;
 
   constructor(chainId: string, private walletPrivateKey: string, gasPrice?: string, gasLimit?: string) {
     const chainData = ethereumChains.find((e) => e.id === chainId);
 
     if (chainData) {
       this.chainData = chainData;
-      const provider = new Web3.providers.HttpProvider(this.chainData.rcpAddress);
+
+      let provider: any = new Web3.providers.HttpProvider(this.chainData.rcpAddress);
+
+      if (store.has('customRPC') && store.get('customRPC') !== '') {
+        this.customProvider = store.get('customRPC');
+
+        if (this.customProvider?.includes('https://')) {
+          provider = new Web3.providers.HttpProvider(this.customProvider);
+        }
+        if (this.customProvider?.includes('wss://')) {
+          provider = new Web3.providers.WebsocketProvider(this.customProvider);
+        }
+      }
+
       this.web3 = new Web3(provider);
+
       this.walletAddress = AddressFromPrivatekey(this.walletPrivateKey);
       this.gasPrice =
         gasPrice && !new BigNumber(gasPrice).isNaN() ? Web3.utils.toWei(gasPrice, 'gwei') : chainData.defaultGas;
@@ -267,10 +289,7 @@ swapExactTokensForETHSupportingFeeOnTransferTokens
     try {
       SuperWallet.IncNonce(this.chainData.id, this.walletAddress);
 
-      // God dam in an ideal world we wont need this...
-      const receipt = await this.web3.eth.sendSignedTransaction(singedTx);
-
-      // Add Better receipt catcher
+      const receipt = await new Web3Tx(this.web3).Send(singedTx);
 
       return receipt;
     } catch (e) {
