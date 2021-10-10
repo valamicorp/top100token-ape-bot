@@ -16,6 +16,7 @@ import { uniSwap2ABI } from '../abi/uniSwap2';
 import Logger from '../util/logger';
 import SuperWallet from './superWallet';
 import { uniFactoryABI } from '../abi/uniswapFactory';
+import { Web3Tx } from './utilities/transactionHandler';
 
 export class SwapWallet {
   public chainData: {
@@ -48,13 +49,13 @@ export class SwapWallet {
 
       let provider: any = new Web3.providers.HttpProvider(this.chainData.rcpAddress);
 
-      if(store.has('customRPC') && store.get('customRPC') !== ''){
+      if (store.has('customRPC') && store.get('customRPC') !== '') {
         this.customProvider = store.get('customRPC');
 
-        if(this.customProvider?.includes('https://')){
+        if (this.customProvider?.includes('https://')) {
           provider = new Web3.providers.HttpProvider(this.customProvider);
         }
-        if(this.customProvider?.includes('wss://')){
+        if (this.customProvider?.includes('wss://')) {
           provider = new Web3.providers.WebsocketProvider(this.customProvider);
         }
       }
@@ -288,10 +289,7 @@ swapExactTokensForETHSupportingFeeOnTransferTokens
     try {
       SuperWallet.IncNonce(this.chainData.id, this.walletAddress);
 
-      // God dam in an ideal world we wont need this...
-      const receipt = await this.web3.eth.sendSignedTransaction(singedTx);
-
-      // Add Better receipt catcher
+      const receipt = await new Web3Tx(this.web3).Send(singedTx);
 
       return receipt;
     } catch (e) {
