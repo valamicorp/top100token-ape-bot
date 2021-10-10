@@ -58,8 +58,8 @@ window.onload = (event) => {
   if (store.has('coinmarketcapAPI')) {
     document.getElementById('coinmarketcapAPI').value = store.get('coinmarketcapAPI');
   }
-  if (store.has('getblockAPI')) {
-    document.getElementById('getblockAPI').value = store.get('getblockAPI');
+  if (store.has('customRPC')) {
+    document.getElementById('customRPC').value = store.get('customRPC');
   }
 
   if(store.has('privateKey')){
@@ -160,10 +160,10 @@ const readSetting = () => {
 
   const coinmarketcapAPI = document.getElementById('coinmarketcapAPI').value;
 
-  const getblockAPI = document.getElementById('getblockAPI').value;
+  const customRPC = document.getElementById('customRPC').value;
 
 
-  store.set('getblockAPI', getblockAPI.trim());
+  store.set('customRPC', customRPC.trim());
 
   // Setup CMC plugin
   store.set('coinmarketcapAPI', coinmarketcapAPI.trim());

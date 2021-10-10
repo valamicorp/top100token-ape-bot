@@ -8,7 +8,7 @@ export interface AppState {
   runningApes: ApeEngine[];
   privateKey: string;
   settings: {
-    chain: string;
+    chainId: string;
     apeAmount: string;
     minProfit: string;
     gasPrice: string;

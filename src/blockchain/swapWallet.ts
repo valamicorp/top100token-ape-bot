@@ -1,3 +1,9 @@
+const Store = require('electron-store');
+
+const store = new Store({
+  encryptionKey: 'The old apple revels in its authority',
+});
+
 import Web3 from 'web3';
 import BigNumber from 'bignumber.js';
 
@@ -32,14 +38,31 @@ export class SwapWallet {
   public walletAddress: string;
   public gasPrice: string;
   public gasLimit: string;
+  public customProvider?: string;
 
   constructor(chainId: string, private walletPrivateKey: string, gasPrice?: string, gasLimit?: string) {
     const chainData = ethereumChains.find((e) => e.id === chainId);
 
     if (chainData) {
       this.chainData = chainData;
-      const provider = new Web3.providers.HttpProvider(this.chainData.rcpAddress);
+
+      let provider: any = new Web3.providers.HttpProvider(this.chainData.rcpAddress);
+
+      if(store.has('customRPC') && store.get('customRPC') !== ''){
+        this.customProvider = store.get('customRPC');
+
+        Logger.log(`Using CustomRPC: ${this.customProvider}`)
+
+        if(this.customProvider?.includes('https://')){
+          provider = new Web3.providers.HttpProvider(this.customProvider);
+        }
+        if(this.customProvider?.includes('wss://')){
+          provider = new Web3.providers.WebsocketProvider(this.customProvider);
+        }
+      }
+
       this.web3 = new Web3(provider);
+
       this.walletAddress = AddressFromPrivatekey(this.walletPrivateKey);
       this.gasPrice =
         gasPrice && !new BigNumber(gasPrice).isNaN() ? Web3.utils.toWei(gasPrice, 'gwei') : chainData.defaultGas;

@@ -9,7 +9,7 @@ import { ethereumChains } from './contants';
 import { ApeEngine } from './engine/apeEngine';
 import * as path from 'path';
 import { app, BrowserWindow } from 'electron';
-import { AddressFromPrivatekey, createWeb3Wallet, getEthBalance } from './blockchain/utilities/walletHandler';
+import {  createWeb3Wallet } from './blockchain/utilities/walletHandler';
 import BigNumber from 'bignumber.js';
 import { ApeHistoryDB, ApeOrder, AppState } from './types';
 import { ElectronBroker } from './electronBroker';
@@ -18,6 +18,7 @@ import Web3 from 'web3';
 import { TelegramScrapper } from './plugins/telegram/telegram';
 import SQL from './util/sqlStorage';
 import { CoinMarketCap } from './plugins/coinmarketcap/cmcPlugin';
+import { SwapWallet } from './blockchain/swapWallet';
 const Store = require('electron-store');
 
 let electronBroker: ElectronBroker;
@@ -99,7 +100,7 @@ const startNewApe = (apeAddress: string, broker: ElectronBroker) => {
     }
 
     const apeEngine = new ApeEngine({
-      chainId: appState.settings.chain,
+      chainId: appState.settings.chainId,
       privateKey: appState.privateKey,
       apeAmount: appState.settings.apeAmount,
       minProfitPct: appState.settings.minProfit,
@@ -125,7 +126,7 @@ const startNewApe = (apeAddress: string, broker: ElectronBroker) => {
 const start = async (broker: ElectronBroker) => {
   // Load Settings
   if (store.get('chainId')) {
-    appState.settings.chain = store.get('chainId');
+    appState.settings.chainId = store.get('chainId');
   }
   if (store.has('apeAmount')) {
     appState.settings.apeAmount = store.get('apeAmount');
@@ -146,8 +147,8 @@ const start = async (broker: ElectronBroker) => {
 
     appState.privateKey = privateKey;
 
-    if(appState.settings.chain){
-      SuperWallet.AddPrivateKey(appState.settings.chain,appState.privateKey);
+    if(appState.settings.chainId){
+      SuperWallet.AddPrivateKey(appState.settings.chainId,appState.privateKey);
     }
   
 
@@ -202,7 +203,7 @@ const start = async (broker: ElectronBroker) => {
           }
 
           const apeEngine = new ApeEngine({
-            chainId: appState.settings.chain,
+            chainId: appState.settings.chainId,
             privateKey: appState.privateKey,
             apeAmount: appState.settings.apeAmount,
             minProfitPct: appState.settings.minProfit,
@@ -240,7 +241,7 @@ const start = async (broker: ElectronBroker) => {
         }
 
         const apeEngine = new ApeEngine({
-          chainId: appState.settings.chain,
+          chainId: appState.settings.chainId,
           privateKey: appState.privateKey,
           apeAmount: appState.settings.apeAmount,
           minProfitPct: appState.settings.minProfit,
@@ -276,12 +277,12 @@ const start = async (broker: ElectronBroker) => {
   });
 
   broker.msg.on('setting:async', async (event, arg) => {
-    if(appState.settings.chain != arg.chain || appState.privateKey != arg.privateKey){
+    if(appState.settings.chainId != arg.chain || appState.privateKey != arg.privateKey){
       SuperWallet.AddPrivateKey(arg.chain,arg.privateKey);
     }
 
     appState.privateKey = arg.privateKey;
-    appState.settings.chain = arg.chain;
+    appState.settings.chainId = arg.chain;
     appState.settings.apeAmount = arg.apeAmount;
     appState.settings.minProfit = arg.minProfit;
     appState.settings.gasPrice = arg.gasPrice;
@@ -304,17 +305,18 @@ const start = async (broker: ElectronBroker) => {
       );
 
       setInterval(async () => {
-        const chainData = ethereumChains.find((e) => e.id === appState.settings.chain);
-        const walletAddress = AddressFromPrivatekey(appState.privateKey);
+        const chainData = ethereumChains.find((e) => e.id === appState.settings.chainId);
 
         if (chainData) {
-          const ethBalance = await getEthBalance(chainData.rcpAddress, walletAddress);
+          const wallet = new SwapWallet(appState.settings.chainId, appState.privateKey);
+
+          const ethBalance = await wallet.GetEthBalance();
 
           broker.emit('write:info', {
             status: 'success',
             statusdDetails: undefined,
             chainName: `${chainData.name}`,
-            walletAddress: `${walletAddress}`,
+            walletAddress: `${wallet.walletAddress}`,
             walletBalance: `${new BigNumber(ethBalance).dividedBy(10 ** 18).toString()}`,
           });
         }
