@@ -51,8 +51,6 @@ export class SwapWallet {
       if(store.has('customRPC') && store.get('customRPC') !== ''){
         this.customProvider = store.get('customRPC');
 
-        Logger.log(`Using CustomRPC: ${this.customProvider}`)
-
         if(this.customProvider?.includes('https://')){
           provider = new Web3.providers.HttpProvider(this.customProvider);
         }
