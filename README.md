@@ -3,8 +3,8 @@
 [![GitHub issues](https://img.shields.io/github/issues/valamicorp/top100token-ape-bot)](https://github.com/valamicorp/top100token-ape-bot/issues)
 [![GitHub stars](https://img.shields.io/github/stars/valamicorp/top100token-ape-bot)](https://github.com/valamicorp/top100token-ape-bot/stargazers)
 
+![top100token bot UI 1](https://i.imgur.com/8Gdmv7x.png)
 DeFi APE bot for PancakeSwap, UniSwapV2, CheapSwap,Quickswap, SpookySwap, DevEthSwap.
-
 **This tool made for education purposes, use it for your own risk.**
 
 ## What is this?
@@ -34,6 +34,6 @@ To buy us a coffee ☕ => 0x0C52A285712B8A9Fb6b31B128C09aBd868c58987 (Accepted E
 - https://github.com/valamicorp/top100token-ape-bot/tree/main/src/plugins/telegram
 
 
-### Screenshot UI:
-![top100token bot UI 1](https://i.imgur.com/8Gdmv7x.png)
+### Additional Screenshota UI:
+
 
