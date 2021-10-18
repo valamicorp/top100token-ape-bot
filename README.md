@@ -34,6 +34,6 @@ To buy us a coffee ☕ => 0x0C52A285712B8A9Fb6b31B128C09aBd868c58987 (Accepted E
 - https://github.com/valamicorp/top100token-ape-bot/tree/main/src/plugins/telegram
 
 
-### Additional Screenshota UI:
+### Additional Screenshots UI:
 
 
