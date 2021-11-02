@@ -370,6 +370,9 @@ export class ApeEngine extends EventEmitter {
       const allowed = await this.swapWallet.AllowanceErc20(address);
 
       if (allowed > 0) {
+        this.state = 'APE APPROVE FINISHED!';
+        this.isApproved = true;
+        this.orderStatus = ApeOrderStatus.approvedSuccess;
         return;
       }
 
