@@ -134,6 +134,19 @@ export class SwapWallet {
     return token.methods.approve(approveTo, amount).encodeABI();
   }
 
+  public async AllowanceErc20(contractAddress: string) {
+    const token = new this.web3.eth.Contract(erc20abi, contractAddress);
+
+    try {
+      const allowedAmount = await token.methods.allowance(this.walletAddress, this.chainData.router).call();
+
+      return new BigNumber(allowedAmount).toNumber();
+    } catch (error) {
+      Logger.log('Failed to connect ERC 20: ', contractAddress, ' ', error);
+      throw new Error('Unable to get allowance');
+    }
+  }
+
   public async GetApeSwapValue(tokenAddress: string, numToken: string) {
     const token = new this.web3.eth.Contract(uniSwap2ABI as any, this.chainData.router);
 

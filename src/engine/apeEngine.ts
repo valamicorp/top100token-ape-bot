@@ -130,8 +130,7 @@ export class ApeEngine extends EventEmitter {
 
   async SafeBuyApe(address: string) {
     this.contractAddress = address;
-    this.UpdateERC20(address);
-    await this.HandleApeBuyEvent(address);
+    await this.HandleSafeBuyApe();
   }
 
   async InstantBuyApe(address: string) {
@@ -245,6 +244,8 @@ export class ApeEngine extends EventEmitter {
           this.HandleApeBuyEvent(this.contractAddress);
           return;
         }
+      } else {
+        Logger.log(`No Liquidity found for ${this.contractAddress}, wait for LP`);
       }
 
       this.Events.push({
@@ -359,6 +360,18 @@ export class ApeEngine extends EventEmitter {
     try {
       this.state = 'APE APPROVE STARTED!';
       this.orderStatus = ApeOrderStatus.approvedStart;
+
+      const tokenBalance = await this.swapWallet.BalanceOfErc20(address);
+
+      if (new BigNumber(tokenBalance).isZero()) {
+        throw new Error('Cannot Approve Token Balance is 0');
+      }
+
+      const allowed = await this.swapWallet.AllowanceErc20(address);
+
+      if (allowed > 0) {
+        return;
+      }
 
       if (this.currApproveRerty >= this.maxApproveRerty) {
         this.state = 'APE APPROVE, RETRY LIMIT REACHED, APE STOPPED!';
