@@ -55,8 +55,7 @@ const apeSettings = {
   minProfitPct: '50',
   updateTimeout: 100,
   injectWallet: mockWallet,
-}
-
+};
 
 describe('APE Trade Engine', () => {
   beforeEach(() => {
@@ -84,7 +83,7 @@ describe('APE Trade Engine', () => {
   it('should be InstantBuyApe buy', async () => {
     const engine = new ApeEngine(apeSettings);
 
-    engine.InstantBuyApe(APE_ADDRESS);
+    engine.SafeBuyApe(APE_ADDRESS);
 
     expect(engine.currProfit).toBe('0.00%');
     expect(engine.paused).toBe(false);
@@ -105,7 +104,7 @@ describe('APE Trade Engine', () => {
   it('should be InstantBuyApe sell', async () => {
     const engine = new ApeEngine(apeSettings);
 
-    engine.InstantBuyApe(APE_ADDRESS);
+    engine.SafeBuyApe(APE_ADDRESS);
 
     (mockWallet.GetApeSwapValue = async (...args) => {
       events.push({ name: 'GetApeSwapValue', args: [...args] });

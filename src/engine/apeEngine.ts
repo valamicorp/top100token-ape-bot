@@ -13,16 +13,15 @@ import Logger from '../util/logger';
 import SQL from '../util/sqlStorage';
 
 export interface ApeEngineSettings {
-  chainId: string,
-  privateKey: string,
-  apeAmount: string,
-  minProfitPct: string,
-  gasprice?: string,
-  gasLimit?: string,
-  updateTimeout?: number,
-  injectWallet?: SwapWallet,
+  chainId: string;
+  privateKey: string;
+  apeAmount: string;
+  minProfitPct: string;
+  gasprice?: string;
+  gasLimit?: string;
+  updateTimeout?: number;
+  injectWallet?: SwapWallet;
 }
-
 
 export class ApeEngine extends EventEmitter {
   public orderStatus = ApeOrderStatus.created;
@@ -70,10 +69,12 @@ export class ApeEngine extends EventEmitter {
 
   public createdAt = Date.now();
 
-  constructor(settings : ApeEngineSettings) {
+  constructor(settings: ApeEngineSettings) {
     super();
 
-    this.swapWallet = settings.injectWallet || new SwapWallet(settings.chainId, settings.privateKey, settings.gasprice, settings.gasLimit);
+    this.swapWallet =
+      settings.injectWallet ||
+      new SwapWallet(settings.chainId, settings.privateKey, settings.gasprice, settings.gasLimit);
 
     this.Balance = {
       chain: this.swapWallet.chainData.id,
@@ -143,8 +144,7 @@ export class ApeEngine extends EventEmitter {
     this.contractAddress = apeOrder.address;
     this.Balance[apeOrder.address] = apeOrder.tokenBalance;
     this.minProfit = apeOrder.minProfit;
-    this.apeAmount = apeOrder.apeAmount,
-    this.isApproved = apeOrder.isApproved;
+    (this.apeAmount = apeOrder.apeAmount), (this.isApproved = apeOrder.isApproved);
     this.orderStatus = apeOrder.status;
     this.createdAt = apeOrder.createdAt;
 
@@ -224,7 +224,6 @@ export class ApeEngine extends EventEmitter {
 
   async HandleSafeBuyApe() {
     try {
-  
       this.state = 'APE WAIT FOR LIQUDITY!';
 
       if (!this.erc20Data) {
@@ -236,7 +235,6 @@ export class ApeEngine extends EventEmitter {
         const liqudityAddress = await this.swapWallet.GetLiquidityAddress(this.contractAddress);
         this.liqudityAddress = liqudityAddress;
       }
-
 
       if (this.liqudityAddress) {
         const liquidityCoinAmount = await this.swapWallet.GetLiquidityAmount(this.liqudityAddress);
@@ -253,14 +251,12 @@ export class ApeEngine extends EventEmitter {
         type: 'apeBuyFail',
         address: this.contractAddress,
       });
-
     } catch (error) {
       this.Events.push({
         type: 'apeBuyFail',
         address: this.contractAddress,
       });
       Logger.log(`Error HandleSafeBuyApe ${error}`);
-
     }
   }
 
@@ -286,9 +282,7 @@ export class ApeEngine extends EventEmitter {
           .toString()}%`;
       }
 
-      if (
-        new BigNumber(swapValue).isGreaterThan(new BigNumber(this.apeAmount).multipliedBy(1 + this.minProfit))
-      ) {
+      if (new BigNumber(swapValue).isGreaterThan(new BigNumber(this.apeAmount).multipliedBy(1 + this.minProfit))) {
         if (!this.isSelling) {
           await this.HandleApeSell(address, tokenBalance);
         }

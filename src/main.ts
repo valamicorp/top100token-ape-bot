@@ -9,7 +9,7 @@ import { ethereumChains } from './contants';
 import { ApeEngine } from './engine/apeEngine';
 import * as path from 'path';
 import { app, BrowserWindow } from 'electron';
-import {  createWeb3Wallet } from './blockchain/utilities/walletHandler';
+import { createWeb3Wallet } from './blockchain/utilities/walletHandler';
 import BigNumber from 'bignumber.js';
 import { ApeHistoryDB, ApeOrder, AppState } from './types';
 import { ElectronBroker } from './electronBroker';
@@ -67,9 +67,7 @@ if (app) {
     start(electronBroker).then();
   });
   app.on('window-all-closed', () => {
-
-      app.quit();
-
+    app.quit();
   });
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -105,11 +103,10 @@ const startNewApe = (apeAddress: string, broker: ElectronBroker) => {
       apeAmount: appState.settings.apeAmount,
       minProfitPct: appState.settings.minProfit,
       gasprice: appState.settings.gasPrice,
-      gasLimit: appState.settings.gasLimit
-    }
-    );
+      gasLimit: appState.settings.gasLimit,
+    });
 
-    apeEngine.InstantBuyApe(apeAddress);
+    apeEngine.SafeBuyApe(apeAddress);
 
     appState.runningApes.unshift(apeEngine);
 
@@ -119,7 +116,6 @@ const startNewApe = (apeAddress: string, broker: ElectronBroker) => {
       'portfolio:sync',
       allApes.filter((e) => e.status < 8),
     );
-   
   }
 };
 
@@ -147,10 +143,9 @@ const start = async (broker: ElectronBroker) => {
 
     appState.privateKey = privateKey;
 
-    if(appState.settings.chainId){
-      SuperWallet.AddPrivateKey(appState.settings.chainId,appState.privateKey);
+    if (appState.settings.chainId) {
+      SuperWallet.AddPrivateKey(appState.settings.chainId, appState.privateKey);
     }
-  
 
     const apeStore = new ElectronStore(`${privateKey}:apeOrders`, 'address');
 
@@ -164,9 +159,8 @@ const start = async (broker: ElectronBroker) => {
           chainId: apeOrder.chain,
           privateKey: appState.privateKey,
           apeAmount: Web3.utils.fromWei(apeOrder.apeAmount, 'ether'),
-          minProfitPct: apeOrder.minProfit.toString()
-        }
-        );
+          minProfitPct: apeOrder.minProfit.toString(),
+        });
 
         apeEngine.LoadSnapshotApe(apeOrder);
         apeEngine.CreateEventQueue(3000); // Slow down update interval
@@ -208,11 +202,10 @@ const start = async (broker: ElectronBroker) => {
             apeAmount: appState.settings.apeAmount,
             minProfitPct: appState.settings.minProfit,
             gasprice: appState.settings.gasPrice,
-            gasLimit: appState.settings.gasLimit
-          }
-          );
+            gasLimit: appState.settings.gasLimit,
+          });
 
-          apeEngine.InstantBuyApe(address);
+          apeEngine.SafeBuyApe(address);
 
           appState.runningApes.push(apeEngine);
         } catch (error) {
@@ -246,11 +239,10 @@ const start = async (broker: ElectronBroker) => {
           apeAmount: appState.settings.apeAmount,
           minProfitPct: appState.settings.minProfit,
           gasprice: appState.settings.gasPrice,
-          gasLimit: appState.settings.gasLimit
-        }
-        );
+          gasLimit: appState.settings.gasLimit,
+        });
 
-        apeEngine.InstantBuyApe(address);
+        apeEngine.SafeBuyApe(address);
 
         appState.runningApes.push(apeEngine);
       } catch (error) {
@@ -259,15 +251,11 @@ const start = async (broker: ElectronBroker) => {
     });
   }
 
-
-
   broker.msg.on('button:control', async (event, action, apeAddress) => {
     try {
-     
       if (action === 'start') {
         startNewApe(apeAddress, broker);
       }
-
     } catch (error) {
       event.reply('asynchronous-reply', {
         status: 'error',
@@ -277,8 +265,8 @@ const start = async (broker: ElectronBroker) => {
   });
 
   broker.msg.on('setting:async', async (event, arg) => {
-    if(appState.settings.chainId != arg.chain || appState.privateKey != arg.privateKey){
-      SuperWallet.AddPrivateKey(arg.chain,arg.privateKey);
+    if (appState.settings.chainId != arg.chain || appState.privateKey != arg.privateKey) {
+      SuperWallet.AddPrivateKey(arg.chain, arg.privateKey);
     }
 
     appState.privateKey = arg.privateKey;
@@ -287,9 +275,6 @@ const start = async (broker: ElectronBroker) => {
     appState.settings.minProfit = arg.minProfit;
     appState.settings.gasPrice = arg.gasPrice;
     appState.settings.gasLimit = arg.gasLimit;
-
-   
-
   });
 
   broker.msg.on('start:sync', () => {
