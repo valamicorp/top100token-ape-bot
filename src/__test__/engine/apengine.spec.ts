@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js';
 import Web3 from 'web3';
 import { SwapWallet } from '../../blockchain/swapWallet';
 import { ethereumChains } from '../../contants';
@@ -29,6 +30,15 @@ const mockWallet = {
   BalanceOfErc20: async (...args) => {
     events.push({ name: 'BalanceOfErc20', args: [...args] });
     return '1000000000';
+  },
+  GetLiquidityAddress: async (...args) => {
+    return '0x00000000000000000';
+  },
+  GetLiquidityAmount: async (...args) => {
+    return new BigNumber('100000000000000000000000000');
+  },
+  AllowanceErc20: async (...args) => {
+    return Web3.utils.toWei('0.08', 'ether');
   },
   GetApeSwapValue: async (...args) => {
     events.push({ name: 'GetApeSwapValue', args: [...args] });
@@ -87,11 +97,11 @@ describe('APE Trade Engine', () => {
 
     expect(engine.currProfit).toBe('0.00%');
     expect(engine.paused).toBe(false);
-    expect(engine.state).toBe('APE BUY STARTED!');
+    expect(engine.state).toBe('APE WAIT FOR LIQUDITY!');
     expect(engine.currProfit).toBe('0.00%');
     await new Promise((resolve) => setTimeout(resolve, 600));
     expect(engine.currProfit).toBe('0.00%');
-    expect(engine.state).toBe('APE APPROVE STARTED!');
+    expect(engine.state).toBe('APE APPROVE FINISHED!');
     await new Promise((resolve) => setTimeout(resolve, 1000));
     expect(engine.swapValue).toBe(Web3.utils.toWei('0.08', 'ether'));
     expect(engine.currProfit).toBe('-20.00%');
@@ -112,11 +122,11 @@ describe('APE Trade Engine', () => {
     }),
       expect(engine.currProfit).toBe('0.00%');
     expect(engine.paused).toBe(false);
-    expect(engine.state).toBe('APE BUY STARTED!');
+    expect(engine.state).toBe('APE WAIT FOR LIQUDITY!');
     expect(engine.currProfit).toBe('0.00%');
     await new Promise((resolve) => setTimeout(resolve, 600));
     expect(engine.currProfit).toBe('0.00%');
-    expect(engine.state).toBe('APE APPROVE STARTED!');
+    expect(engine.state).toBe('APE APPROVE FINISHED!');
     await new Promise((resolve) => setTimeout(resolve, 1000));
     expect(engine.swapValue).toBe(Web3.utils.toWei('0.5', 'ether'));
     expect(engine.currProfit).toBe('400.00%');
