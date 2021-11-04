@@ -7,6 +7,8 @@ const store = new Store({
 import Web3 from 'web3';
 import BigNumber from 'bignumber.js';
 
+BigNumber.set({ EXPONENTIAL_AT: 80 });
+
 const erc20abi = require('erc-20-abi');
 
 import { ethereumChains } from '../contants';

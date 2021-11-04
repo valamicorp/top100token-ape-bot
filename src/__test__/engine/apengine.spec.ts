@@ -4,6 +4,8 @@ import { SwapWallet } from '../../blockchain/swapWallet';
 import { ethereumChains } from '../../contants';
 import { ApeEngine } from '../../engine/apeEngine';
 
+BigNumber.set({ EXPONENTIAL_AT: 80 });
+
 const CHAIN_ID = 'cth';
 const APE_ADDRESS = '0xa34273ce752f5a8e926fa213bb08728b2387e8f5';
 

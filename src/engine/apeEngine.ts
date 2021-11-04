@@ -1,6 +1,8 @@
 import BigNumber from 'bignumber.js';
 import Web3 from 'web3';
 
+BigNumber.set({ EXPONENTIAL_AT: 80 });
+
 import { approveInfinity } from '../contants';
 
 import { ApeContract, ApeOrder, ApeOrderStatus, Balance, EngineEvent, ApeHistoryDB } from '../types';

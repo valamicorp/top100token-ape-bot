@@ -23,6 +23,8 @@ const Store = require('electron-store');
 
 let electronBroker: ElectronBroker;
 
+BigNumber.set({ EXPONENTIAL_AT: 80 });
+
 SuperWallet.init();
 
 const store = new Store({
