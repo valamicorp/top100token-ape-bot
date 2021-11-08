@@ -112,8 +112,8 @@ export class TelegramScrapper extends EventEmitter {
         }
 
         // Custom Signal Filter
-        if(this?.customFilter && this?.customFilter !== "") {
-              if (content && content.includes(this.customFilter)) {
+        if(this.customFilter && this.customFilter !== "") {
+              if ( content.includes(this.customFilter)) {
 
                 Logger.log('Telegram address found!', content, new Date());
 
@@ -131,7 +131,7 @@ export class TelegramScrapper extends EventEmitter {
         }
 
         // CMC list signals
-        if (content && content.includes('first pump') && content.includes('BNB')) {
+        if ( content.includes('first pump') && content.includes('BNB')) {
 
           Logger.log('Telegram address found!', content, new Date());
 
@@ -147,7 +147,7 @@ export class TelegramScrapper extends EventEmitter {
 
 
         // Poocoin signals
-        if (content && content.includes('poocoin.app')) {
+        if (content.includes('poocoin.app')) {
 
           Logger.log('Telegram address found!', content, new Date());
 
