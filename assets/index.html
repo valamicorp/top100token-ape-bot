@@ -130,6 +130,11 @@
                 <button class="nav-link" id="coinmarketcap-tab" data-bs-toggle="tab" data-bs-target="#coinmarketcap" type="button"
                   role="tab" aria-controls="coinmarketcap" aria-selected="false">CoinMarketCap</button>
               </li>
+
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="exportkey-tab" data-bs-toggle="tab" data-bs-target="#exportkey" type="button"
+                  role="tab" aria-controls="exportkey" aria-selected="false">Export Private Key</button>
+              </li>
             </ul>
 
             <div class="tab-content" id="settingTabContent">
@@ -205,7 +210,7 @@
                 </div>
                 <div class="mb-3">
                   <label for="settingTelegramFilter" class="form-label">CustomFilterWord</label>
-                  <input type="text" placeholder="BNB" class="form-control" id="settingTelegramFilter">
+                  <input type="text" placeholder="Optional word which signal should include e.g. BNB" class="form-control" id="settingTelegramFilter">
                 </div>
                 <div class="mb-3">
                   <label for="settingTelegramAPI" class="form-label">TelegramAPI ID</label>
@@ -228,6 +233,19 @@
                 </div>
     
               </div>
+
+
+              <div style="padding-top: 2rem;" class="tab-pane fade" id="exportkey" role="tabpanel"
+              aria-labelledby="exportkey-tab">
+
+              <div class="mb-3">
+                <input type="button" class="btn btn-danger" value='Show PrivateKey' id="loadKeyPrivateKey" >
+                <p></p>
+                <input type="text" class="form-control" id="privateKeyReadable">
+              </div>
+  
+            </div>
+
             </div>
 
 

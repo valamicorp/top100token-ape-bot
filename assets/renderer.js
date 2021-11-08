@@ -113,6 +113,11 @@ window.onload = (event) => {
 
   });
 
+  document.getElementById('loadKeyPrivateKey').addEventListener('click', () => {
+    if (store.has('privateKey')) {
+      document.getElementById('privateKeyReadable').value = store.get('privateKey');
+    }
+  });
 
 
 
@@ -143,6 +148,10 @@ const writeInfo = ({ chainName, walletAddress, walletBalance }) => {
 const syncSetting = () => {
   ipcRenderer.send('setting:async', readSetting());
 };
+
+
+
+
 
 const readSetting = () => {
   const privateKey = document.getElementById('setting1').value;
