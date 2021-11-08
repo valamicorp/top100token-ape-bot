@@ -23,9 +23,11 @@ export class TelegramScrapper extends EventEmitter {
   private listener?: NodeJS.Timer;
   private client?: TelegramClient;
 
+  private customFilter?: string;
+
   private lastProcessed = 0;
 
-  constructor(apiId: string, apiHash: string, session: string, channelName: string) {
+  constructor(apiId: string, apiHash: string, session: string, channelName: string, customFilter?: string) {
     super();
     this.apiId = Number(apiId);
     this.apiHash = apiHash;
@@ -107,6 +109,25 @@ export class TelegramScrapper extends EventEmitter {
         if(getCurrentTimeUTC()  > (getLastMessage as any)?.messages[0].date + 30){
           Logger.log('Telegram signal too old', getCurrentTimeUTC(), (getLastMessage as any)?.messages[0].date);
           break;
+        }
+
+        // Custom Signal Filter
+        if(this?.customFilter && this?.customFilter !== "") {
+              if (content && content.includes(this.customFilter)) {
+
+                Logger.log('Telegram address found!', content, new Date());
+
+                const regex = /0x[a-fA-F0-9]{40}/;
+                const almostAddress = content.match(regex);
+
+                if (almostAddress[0] && this.lastSignal !== almostAddress[0]) {
+                  this.lastSignal = almostAddress[0];
+                  this.emit('newSignal', almostAddress[0]);
+                  return;
+                }
+              }
+
+            return;
         }
 
         // CMC list signals

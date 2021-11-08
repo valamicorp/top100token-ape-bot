@@ -180,9 +180,10 @@ const start = async (broker: ElectronBroker) => {
         hash: store.get('telegramAPIHASH'),
         session: store.get('telegramSession'),
         channel: store.get('telegramChannel'),
+        filter: store.get('telegramFilter') || '',
       };
 
-      const telegramSignaler = new TelegramScrapper(tgOption.api, tgOption.hash, tgOption.session, tgOption.channel);
+      const telegramSignaler = new TelegramScrapper(tgOption.api, tgOption.hash, tgOption.session, tgOption.channel, tgOption.filter);
       telegramSignaler.on('newSignal', async (address: string) => {
         try {
           if (store.has('signalHistoryTg')) {

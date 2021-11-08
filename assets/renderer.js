@@ -49,6 +49,9 @@ window.onload = (event) => {
   if (store.has('telegramAPI')) {
     document.getElementById('settingTelegramAPI').value = store.get('telegramAPI');
   }
+  if (store.has('telegramFilter')) {
+    document.getElementById('settingTelegramFilter').value = store.get('telegramFilter');
+  }
   if (store.has('telegramAPIHASH')) {
     document.getElementById('settingTelegramAPIHASH').value = store.get('telegramAPIHASH');
   }
@@ -157,6 +160,9 @@ const readSetting = () => {
   const telegramChannel = document.getElementById('settingTelegramChannel').value;
   const telegramAPI = document.getElementById('settingTelegramAPI').value;
   const telegramAPIHASH = document.getElementById('settingTelegramAPIHASH').value;
+  const telegramFilter = document.getElementById('settingTelegramFilter').value;
+
+
 
   const coinmarketcapAPI = document.getElementById('coinmarketcapAPI').value;
 
@@ -175,6 +181,7 @@ const readSetting = () => {
     store.set('telegramAPI', telegramAPI.trim());
     store.set('telegramAPIHASH', telegramAPIHASH.trim());
     store.set('telegramSession', telegramSession.trim());
+    store.set('telegramFilter', telegramFilter.trim());
   }
 
 
