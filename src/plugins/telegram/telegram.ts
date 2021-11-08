@@ -112,8 +112,8 @@ export class TelegramScrapper extends EventEmitter {
         }
 
         // Custom Signal Filter
-        if(this.customFilter && this.customFilter !== "") {
-              if ( content.includes(this.customFilter)) {
+        if(this.customFilter && this.customFilter.length > 0) {
+              if (content.includes(this.customFilter)) {
 
                 Logger.log('Telegram address found!', content, new Date());
 
