@@ -22,7 +22,7 @@
 
 <body class="d-flex h-100 text-center text-white bg-dark">
 
- 
+
 
   <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
     <header style="margin-bottom: 4rem;">
@@ -31,21 +31,21 @@
         <a class="navbar-brand">
           <img src="./images/logoNorm.png" alt="top100token" height="36">
         </a>
-    
-          <div class="float-md-end mb-0">
-  
-            <button id='settingsButton' type="button" class="btn btn-primary" data-bs-toggle="modal"
-              data-bs-target="#settingModal">Settings</button>
-  
-          </div>
-       
+
+        <div class="float-md-end mb-0">
+
+          <button id='settingsButton' type="button" class="btn btn-primary" data-bs-toggle="modal"
+            data-bs-target="#settingModal">Settings</button>
+
+        </div>
+
       </nav>
 
-   
+
     </header>
 
 
-   
+
 
     <section>
 
@@ -63,10 +63,13 @@
           <div style="margin-bottom: 2rem;" class="col">
 
             <ul class="list-group list-group-flush">
-              <li class="list-group-item text-warning bg-dark text-pull-left">Chain:  <span class="text-light" id='chainName'></span></li>
-              <li class="list-group-item text-warning bg-dark text-pull-left">Wallet Address: <span class="text-light" id='walletAddress'></span></li>
-              <li class="list-group-item text-warning bg-dark text-pull-left">Wallet balance: <span class="text-light" id='walletBalance'></span></li>
-  
+              <li class="list-group-item text-warning bg-dark text-pull-left">Chain: <span class="text-light"
+                  id='chainName'></span></li>
+              <li class="list-group-item text-warning bg-dark text-pull-left">Wallet Address: <span class="text-light"
+                  id='walletAddress'></span></li>
+              <li class="list-group-item text-warning bg-dark text-pull-left">Wallet balance: <span class="text-light"
+                  id='walletBalance'></span></li>
+
             </ul>
 
 
@@ -127,13 +130,13 @@
               </li>
 
               <li class="nav-item" role="presentation">
-                <button class="nav-link" id="coinmarketcap-tab" data-bs-toggle="tab" data-bs-target="#coinmarketcap" type="button"
-                  role="tab" aria-controls="coinmarketcap" aria-selected="false">CoinMarketCap</button>
+                <button class="nav-link" id="coinmarketcap-tab" data-bs-toggle="tab" data-bs-target="#coinmarketcap"
+                  type="button" role="tab" aria-controls="coinmarketcap" aria-selected="false">CoinMarketCap</button>
               </li>
 
               <li class="nav-item" role="presentation">
-                <button class="nav-link" id="exportkey-tab" data-bs-toggle="tab" data-bs-target="#exportkey" type="button"
-                  role="tab" aria-controls="exportkey" aria-selected="false">Export Private Key</button>
+                <button class="nav-link" id="exportkey-tab" data-bs-toggle="tab" data-bs-target="#exportkey"
+                  type="button" role="tab" aria-controls="exportkey" aria-selected="false">Export Private Key</button>
               </li>
             </ul>
 
@@ -153,6 +156,8 @@
                     <option value="ethereum">UniSwapV2 / ETH</option>
                     <option value="polygon">QuickSwap / Poly</option>
                     <option value="fantom">SpookySwap / Fantom</option>
+                    <option value="avax">TraderJoe / Avalanche</option>
+                    <option value="cronos">CronaSwap / Cronos</option>
                     <option value="cth">CheapSwap / cTH</option>
                     <option value="polygon:ida">IdamurniSwap / Poly</option>
                   </select>
@@ -210,7 +215,8 @@
                 </div>
                 <div class="mb-3">
                   <label for="settingTelegramFilter" class="form-label">CustomFilterWord</label>
-                  <input type="text" placeholder="Optional word which signal should include e.g. BNB" class="form-control" id="settingTelegramFilter">
+                  <input type="text" placeholder="Optional word which signal should include e.g. BNB"
+                    class="form-control" id="settingTelegramFilter">
                 </div>
                 <div class="mb-3">
                   <label for="settingTelegramAPI" class="form-label">TelegramAPI ID</label>
@@ -231,20 +237,20 @@
                   <label for="coinmarketcapAPI" class="form-label">CoinMarketCap API</label>
                   <input type="password" class="form-control" id="coinmarketcapAPI">
                 </div>
-    
+
               </div>
 
 
               <div style="padding-top: 2rem;" class="tab-pane fade" id="exportkey" role="tabpanel"
-              aria-labelledby="exportkey-tab">
+                aria-labelledby="exportkey-tab">
 
-              <div class="mb-3">
-                <input type="button" class="btn btn-danger" value='Show PrivateKey' id="loadKeyPrivateKey" >
-                <p></p>
-                <input type="text" class="form-control" id="privateKeyReadable">
+                <div class="mb-3">
+                  <input type="button" class="btn btn-danger" value='Show PrivateKey' id="loadKeyPrivateKey">
+                  <p></p>
+                  <input type="text" class="form-control" id="privateKeyReadable">
+                </div>
+
               </div>
-  
-            </div>
 
             </div>
 
@@ -262,7 +268,7 @@
     </div>
     <!-- Settings modal -->
     <!-- Initial Setup modal -->
-    <div class="modal fade"  id="setupModal" tabindex="-1" aria-labelledby="setupModalLabel" aria-hidden="true">
+    <div class="modal fade" id="setupModal" tabindex="-1" aria-labelledby="setupModalLabel" aria-hidden="true">
       <div class="modal-dialog ">
         <div class="modal-content">
           <div class="modal-header text-dark">
