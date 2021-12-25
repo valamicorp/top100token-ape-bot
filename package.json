@@ -1,6 +1,6 @@
 {
   "name": "top100token-ape-bot",
-  "version": "2.4.1",
+  "version": "2.5.0",
   "description": "",
   "main": "./build/main.js",
   "dependencies": {
@@ -21,7 +21,7 @@
     "@types/jest": "^27.0.2",
     "@types/sqlite3": "^3.1.7",
     "cross-env": "^7.0.3",
-    "electron": "^14.2.0",
+    "electron": "^16.0.2",
     "electron-builder": "^22.13.1",
     "jest": "^27.3.1",
     "rimraf": "^3.0.2",
