@@ -12,8 +12,6 @@ DeFi APE bot for PancakeSwap, UniSwapV2, CheapSwap,Quickswap, SpookySwap, DevEth
 
 The project is forever free and open-source, feel free to evolve our codebase!
 
-To buy us a coffee ☕ => 0x0C52A285712B8A9Fb6b31B128C09aBd868c58987 (Accepted ETH,BNB,FTM,cTH,dTH)
-
 ## Find the latest version in the release section:
 - https://github.com/valamicorp/top100token-ape-bot/releases
 
