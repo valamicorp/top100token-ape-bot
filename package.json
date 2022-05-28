@@ -21,7 +21,7 @@
     "@types/jest": "^27.0.2",
     "@types/sqlite3": "^3.1.7",
     "cross-env": "^7.0.3",
-    "electron": "^18.0.1",
+    "electron": "^18.2.1",
     "electron-builder": "^22.14.13",
     "jest": "^27.3.1",
     "rimraf": "^3.0.2",
@@ -47,7 +47,7 @@
     "files": [
       "build/**/*",
       "package.json",
-      "assets/**/*"
+      "assets/dist/assets/**/*"
     ]
   }
 }

@@ -11,7 +11,7 @@ import * as path from 'path';
 import { app, BrowserWindow } from 'electron';
 import { createWeb3Wallet } from './blockchain/utilities/walletHandler';
 import BigNumber from 'bignumber.js';
-import {  ApeOrder, AppState } from './types';
+import { ApeOrder, AppState } from './types';
 import { ElectronBroker } from './electronBroker';
 import { ElectronStore } from './util/electronStorage';
 import Web3 from 'web3';
@@ -19,6 +19,8 @@ import { TelegramScrapper } from './plugins/telegram/telegram';
 import SQL from './util/sqlStorage';
 import { CoinMarketCap } from './plugins/coinmarketcap/cmcPlugin';
 import { SwapWallet } from './blockchain/swapWallet';
+
+const url = require('url');
 const Store = require('electron-store');
 
 let electronBroker: ElectronBroker;
@@ -41,7 +43,7 @@ const createWindow = (): Electron.BrowserWindow => {
     },
   });
 
-  window.loadFile(path.join(__dirname, '../assets/index.html'));
+  window.loadFile(path.join(__dirname, '../assets/dist/assets/index.html'));
 
   if (process?.env?.DEBUG === 'true') {
     window.webContents.openDevTools();
@@ -183,7 +185,13 @@ const start = async (broker: ElectronBroker) => {
         filter: store.get('telegramFilter') || '',
       };
 
-      const telegramSignaler = new TelegramScrapper(tgOption.api, tgOption.hash, tgOption.session, tgOption.channel, tgOption.filter);
+      const telegramSignaler = new TelegramScrapper(
+        tgOption.api,
+        tgOption.hash,
+        tgOption.session,
+        tgOption.channel,
+        tgOption.filter,
+      );
       telegramSignaler.on('newSignal', async (address: string) => {
         try {
           if (store.has('signalHistoryTg')) {
