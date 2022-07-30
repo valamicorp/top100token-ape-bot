@@ -40,24 +40,23 @@ export class SQLStorageService {
 
   public init() {}
 
-  public async GetKey(key: string){
-      const allRows = await this.knex('settings').select('*').where({ key: key });
+  public async GetKey(key: string) {
+    const allRows = await this.knex('settings').select('*').where({ key: key });
 
-      if(allRows[0] !== ''){
-        return allRows[0].value;
-      }
-      else{
-        return undefined;
-      }
+    if (allRows[0] !== '') {
+      return allRows[0].value;
+    } else {
+      return undefined;
+    }
   }
 
-  public async SetKey(key: string, value: string){
+  public async SetKey(key: string, value: string) {
     try {
-      await this.knex('settings').insert({key, value});
+      await this.knex('settings').insert({ key, value });
     } catch (error) {
       Logger.log('Failed to write DB', error);
     }
-}
+  }
 
   public async ReadData<T>(table: StorageTables, where?: any) {
     if (!where) {
@@ -91,18 +90,18 @@ export class SQLStorageService {
 
   private async CreateTables() {
     try {
-      await this.knex.schema.createTableIfNotExists('apeHistory', (table) => {
+      await this.CreateTable('apeHistory', (table) => {
         table.increments('id');
         table.string('chain');
         table.string('data');
       });
 
-      await this.knex.schema.createTableIfNotExists('settings', (table) => {
+      await this.CreateTable('settings', (table) => {
         table.string('key').primary();
         table.string('value');
       });
 
-      await this.knex.schema.createTableIfNotExists('transactions', (table) => {
+      await this.CreateTable('transactions', (table) => {
         table.increments('id');
         table.string('chain');
         table.string('address');
@@ -113,6 +112,14 @@ export class SQLStorageService {
       });
     } catch (error) {
       Logger.log('SQL create table error', error);
+    }
+  }
+
+  private async CreateTable(name: string, schema: (tableBuilder: any) => any) {
+    const exist = this.knex.schema.hasTable(name);
+
+    if (!exist) {
+      await this.knex.schema.createTableIfNotExists(name, schema);
     }
   }
 }
