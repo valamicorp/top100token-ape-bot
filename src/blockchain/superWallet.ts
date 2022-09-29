@@ -5,7 +5,8 @@ const store = new Store({
 });
 
 import Web3 from 'web3';
-import { ethereumChains } from '../contants';
+import { ethereumChains } from '../chainDatas';
+
 import Logger from '../util/logger';
 import { AddressFromPrivatekey } from './utilities/walletHandler';
 

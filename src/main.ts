@@ -5,7 +5,6 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 import Logger from './util/logger';
 import SuperWallet from './blockchain/superWallet';
 
-import { ethereumChains } from './contants';
 import { ApeEngine } from './engine/apeEngine';
 import * as path from 'path';
 import { app, BrowserWindow } from 'electron';
@@ -19,6 +18,7 @@ import { TelegramScrapper } from './plugins/telegram/telegram';
 import SQL from './util/sqlStorage';
 
 import { SwapWallet } from './blockchain/swapWallet';
+import { ethereumChains } from './chainDatas';
 const Store = require('electron-store');
 
 let electronBroker: ElectronBroker;

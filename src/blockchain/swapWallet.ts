@@ -11,7 +11,6 @@ BigNumber.set({ EXPONENTIAL_AT: 80 });
 
 const erc20abi = require('erc-20-abi');
 
-import { ethereumChains } from '../contants';
 import { ERC20TokenData } from './utilities/erc20';
 import { AddressFromPrivatekey, TxConfing } from './utilities/walletHandler';
 import { uniSwap2ABI } from '../abi/uniSwap2';
@@ -19,6 +18,7 @@ import Logger from '../util/logger';
 import SuperWallet from './superWallet';
 import { uniFactoryABI } from '../abi/uniswapFactory';
 import { Web3Tx } from './utilities/transactionHandler';
+import { ethereumChains } from '../chainDatas';
 
 export class SwapWallet {
   public chainData: {
@@ -33,9 +33,6 @@ export class SwapWallet {
     rcpAddress: string;
     wCoin: string;
     testContract: string;
-    contractExplorer: (address: string) => string;
-    chartLink: (address: string) => string;
-    swapLink: (address: string) => string;
   };
   private web3: Web3;
   public walletAddress: string;
