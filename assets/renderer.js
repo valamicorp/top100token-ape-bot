@@ -58,25 +58,23 @@ window.onload = (event) => {
   if (store.has('telegramSession')) {
     document.getElementById('settingTelegramSession').value = store.get('telegramSession');
   }
-  if (store.has('coinmarketcapAPI')) {
-    document.getElementById('coinmarketcapAPI').value = store.get('coinmarketcapAPI');
-  }
+
   if (store.has('customRPC')) {
     document.getElementById('customRPC').value = store.get('customRPC');
   }
 
-  if(store.has('privateKey')){
+  if (store.has('privateKey')) {
     ipcRenderer.send('start:sync');
   }
 
   ipcRenderer.on('logger:log', (event, payload) => {
-    console.log("Node:", ...payload);
- });
+    console.log('Node:', ...payload);
+  });
 
   ipcRenderer.on('portfolio:sync', (event, payload) => {
-      renderPortfolio(payload);
+    renderPortfolio(payload);
   });
-  
+
   ipcRenderer.on('write:info', (event, payload) => {
     if (payload.status === 'success') {
       writeInfo({
@@ -100,17 +98,15 @@ window.onload = (event) => {
   });
 
   document.getElementById('startButton').addEventListener('click', function () {
-
     const apeAddress = document.getElementById('apeAddress').value.trim();
 
-    if(apeAddress.length !== 42){
+    if (apeAddress.length !== 42) {
       return;
     }
-    
+
     ipcRenderer.send('button:control', 'start', apeAddress);
 
     clearTradeStatus();
-
   });
 
   document.getElementById('loadKeyPrivateKey').addEventListener('click', () => {
@@ -118,13 +114,7 @@ window.onload = (event) => {
       document.getElementById('privateKeyReadable').value = store.get('privateKey');
     }
   });
-
-
-
 };
-
-
-
 
 const writeInfo = ({ chainName, walletAddress, walletBalance }) => {
   if (chainName !== window.StateApeUI.chainName) {
@@ -136,7 +126,7 @@ const writeInfo = ({ chainName, walletAddress, walletBalance }) => {
   if (walletBalance !== window.StateApeUI.walletBalance) {
     document.getElementById('walletBalance').innerHTML = walletBalance;
   }
- 
+
   window.StateApeUI = {
     ...window.StateApeUI,
     chainName,
@@ -148,10 +138,6 @@ const writeInfo = ({ chainName, walletAddress, walletBalance }) => {
 const syncSetting = () => {
   ipcRenderer.send('setting:async', readSetting());
 };
-
-
-
-
 
 const readSetting = () => {
   const privateKey = document.getElementById('setting1').value;
@@ -171,28 +157,19 @@ const readSetting = () => {
   const telegramAPIHASH = document.getElementById('settingTelegramAPIHASH').value;
   const telegramFilter = document.getElementById('settingTelegramFilter').value;
 
-
-
-  const coinmarketcapAPI = document.getElementById('coinmarketcapAPI').value;
-
   const customRPC = document.getElementById('customRPC').value;
-
 
   store.set('customRPC', customRPC.trim());
 
-  // Setup CMC plugin
-  store.set('coinmarketcapAPI', coinmarketcapAPI.trim());
-
   // Setup Telegram Plugin
   store.set('telegramChannel', telegramChannel.trim());
- 
-  if(telegramSession.length > 2 && telegramAPI.length > 2 && telegramAPIHASH.length > 2){
+
+  if (telegramSession.length > 2 && telegramAPI.length > 2 && telegramAPIHASH.length > 2) {
     store.set('telegramAPI', telegramAPI.trim());
     store.set('telegramAPIHASH', telegramAPIHASH.trim());
     store.set('telegramSession', telegramSession.trim());
     store.set('telegramFilter', telegramFilter.trim());
   }
-
 
   store.set('chainId', chain);
   store.set('apeAmount', apeAmount);
@@ -210,9 +187,7 @@ const readSetting = () => {
   };
 };
 
-
-
 const clearTradeStatus = () => {
   document.getElementById('traderStatus2').innerHTML = '';
   document.getElementById('traderStatus').innerHTML = '';
-}
+};
