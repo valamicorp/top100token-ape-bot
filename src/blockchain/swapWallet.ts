@@ -9,6 +9,8 @@ import BigNumber from 'bignumber.js';
 
 BigNumber.set({ EXPONENTIAL_AT: 80 });
 
+import SQL from '../util/sqlStorage';
+
 const erc20abi = require('erc-20-abi');
 
 import { ERC20TokenData } from './utilities/erc20';
@@ -19,6 +21,9 @@ import SuperWallet from './superWallet';
 import { uniFactoryABI } from '../abi/uniswapFactory';
 import { Web3Tx } from './utilities/transactionHandler';
 import { ethereumChains } from '../chainDatas';
+import { erc20DB } from '../types';
+
+const SwapWalletStore: Map<string, SwapWallet> = new Map();
 
 export class SwapWallet {
   public chainData: {
@@ -94,12 +99,35 @@ export class SwapWallet {
     const token = new this.web3.eth.Contract(erc20abi, contractAddress);
 
     try {
+      const data = await SQL.ReadData<erc20DB>('erc20Data', { chain: this.chainData.id, address: contractAddress });
+
+      if (data && data[0]) {
+        return data[0];
+      }
+    } catch (error) {
+      Logger.log('ERC 20 Database error', contractAddress, ' ', error);
+    }
+
+    try {
       const symbol = await token.methods.symbol().call();
       const name = await token.methods.name().call();
       const totalSupply = await token.methods.totalSupply().call();
       const decimals = await token.methods.decimals().call();
 
       const intTotalSupply = Number(totalSupply.slice(0, Number(decimals) * -1));
+
+      SQL.InsertData(
+        {
+          chain: this.chainData.id,
+          address: contractAddress,
+          symbol,
+          name,
+          totalSupply,
+          intTotalSupply,
+          decimals: Number(decimals),
+        },
+        'erc20Data',
+      ).catch((e) => console.log(e));
 
       return {
         symbol,

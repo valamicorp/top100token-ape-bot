@@ -87,12 +87,13 @@ if (app) {
 var appState: AppState = {
   syncStared: false,
   buttonState: 'none',
+  selectedToken: undefined,
   privateKey: '',
   runningApes: [],
   settings: {} as any,
 };
 
-const startNewApe = (apeAddress: string, broker: ElectronBroker) => {
+const startNewApe = async (apeAddress: string, broker: ElectronBroker) => {
   if (apeAddress) {
     if (appState.runningApes.find((e) => e.contractAddress === apeAddress && e.orderStatus <= 7)) {
       Logger.log('You cannot create new Ape order for the given address!');
@@ -108,9 +109,19 @@ const startNewApe = (apeAddress: string, broker: ElectronBroker) => {
       gasLimit: appState.settings.gasLimit,
     });
 
-    apeEngine.SafeBuyApe(apeAddress);
+    const wallet = new SwapWallet(appState.settings.chainId, appState.privateKey);
 
-    appState.runningApes.unshift(apeEngine);
+    const erc20Data = await wallet.GetERC20Data(apeAddress);
+
+    appState.selectedToken = {
+      ...erc20Data,
+      address: apeAddress,
+      chainId: appState.settings.chainId,
+    };
+
+    broker.emit('selectedToken:data:update', appState.selectedToken);
+
+    // TODO: Add back APE start
 
     const allApes = appState.runningApes.map((e) => e.SnapshotApe());
 

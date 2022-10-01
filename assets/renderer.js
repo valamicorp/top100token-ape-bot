@@ -75,6 +75,13 @@ window.onload = (event) => {
     renderPortfolio(payload);
   });
 
+  ipcRenderer.on('selectedToken:data:update', (event, payload) => {
+    document.getElementById('token:name').innerHTML = `${payload.name} (${payload.symbol})`;
+    document.getElementById('token:supply').innerHTML = payload.intTotalSupply;
+    document.getElementById('token:decimal').innerHTML = payload.decimals;
+    document.getElementById('token:taxes').innerHTML = `Buy: 0% / Sell: 0%`;
+  });
+
   ipcRenderer.on('write:info', (event, payload) => {
     if (payload.status === 'success') {
       writeInfo({

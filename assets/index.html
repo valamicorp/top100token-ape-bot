@@ -53,8 +53,21 @@
         <div class="row">
           <div style="margin-bottom: 2rem;" class="col">
             <div class="text-pull-left mb-3">
-              <label for="apeAddress" class="form-label">APE ADDRESS</label>
+              <label for="apeAddress" class="form-label">Token Address</label>
               <input placeholder="0x..." class="form-control" id="apeAddress">
+            </div>
+            <div>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item text-warning bg-dark text-pull-left">Name: <span class="text-light"
+                    id='token:name'></span></li>
+                <li class="list-group-item text-warning bg-dark text-pull-left">Supply: <span class="text-light"
+                    id='token:supply'></span></li>
+                <li class="list-group-item text-warning bg-dark text-pull-left">Decimal: <span class="text-light"
+                    id='token:decimal'></span></li>
+                <li class="list-group-item text-warning bg-dark text-pull-left">Taxes: <span class="text-light"
+                    id='token:taxes'></span></li>
+
+              </ul>
             </div>
             <div class="btn-group" role="group" aria-label="ape-options">
               <button id='startButton' class="btn btn-success">🔥 Start New Ape</button>

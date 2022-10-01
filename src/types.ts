@@ -4,6 +4,7 @@ import { ApeEngine } from './engine/apeEngine';
 
 export interface AppState {
   buttonState: 'none' | 'start' | 'pause' | 'stop' | 'panicSell';
+  selectedToken: SelectedToken | undefined;
   syncStared: boolean;
   runningApes: ApeEngine[];
   privateKey: string;
@@ -14,6 +15,16 @@ export interface AppState {
     gasPrice: string;
     gasLimit: string;
   };
+}
+
+export interface SelectedToken {
+  chainId: string;
+  address: string;
+  symbol: string;
+  name: string;
+  totalSupply: string;
+  intTotalSupply: number;
+  decimals: number;
 }
 
 export interface Balance {
@@ -134,4 +145,19 @@ export interface ApeHistoryDB {
   data: string;
 }
 
-export type StorageTables = 'transactions' | 'apeHistory' | 'none';
+export interface ApeHistoryDB {
+  chain: string;
+  data: string;
+}
+
+export interface erc20DB {
+  chain: string;
+  address: string;
+  symbol: string;
+  name: string;
+  totalSupply: string;
+  intTotalSupply: number;
+  decimals: number;
+}
+
+export type StorageTables = 'transactions' | 'apeHistory' | 'erc20Data' | 'none';

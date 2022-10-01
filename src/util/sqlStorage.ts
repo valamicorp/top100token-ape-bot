@@ -96,6 +96,17 @@ export class SQLStorageService {
         table.string('data');
       });
 
+      await this.CreateTable('erc20Data', (table) => {
+        table.increments('id');
+        table.string('chain');
+        table.string('address');
+        table.string('symbol');
+        table.string('name');
+        table.string('totalSupply');
+        table.integer('intTotalSupply');
+        table.integer('decimals');
+      });
+
       await this.CreateTable('settings', (table) => {
         table.string('key').primary();
         table.string('value');
@@ -116,10 +127,10 @@ export class SQLStorageService {
   }
 
   private async CreateTable(name: string, schema: (tableBuilder: any) => any) {
-    const exist = this.knex.schema.hasTable(name);
+    const exist = await this.knex.schema.hasTable(name);
 
     if (!exist) {
-      await this.knex.schema.createTableIfNotExists(name, schema);
+      await this.knex.schema.createTable(name, schema);
     }
   }
 }
