@@ -11,6 +11,7 @@ export const ethereumChains = [
     defaultGas: '5000000000',
     wCoin: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
     testContract: '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c',
+    honeyChecker: '0x385826FBd70DfBB0a7188eE790A36E1fe4f6fc34',
   },
   {
     id: 'ethereum',
@@ -24,6 +25,7 @@ export const ethereumChains = [
     defaultGas: '35000000000',
     wCoin: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
     testContract: '0xF629cBd94d3791C9250152BD8dfBDF380E2a3B9c',
+    honeyChecker: '0xe7e07a2281f1e66e938ae7feefc69db181329f12',
   },
   {
     id: 'dogechain',
@@ -37,6 +39,7 @@ export const ethereumChains = [
     defaultGas: '5000000000',
     wCoin: '0xB7ddC6414bf4F5515b52D8BdD69973Ae205ff101',
     testContract: '0x7b4328c127b85369d9f82ca0503b000d09cf9180',
+    honeyChecker: '0x7c0612357771f6599e8e1a046a02f4beb9496de1',
   },
   {
     id: 'polygon',
@@ -50,6 +53,7 @@ export const ethereumChains = [
     defaultGas: '5000000000',
     wCoin: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
     testContract: '0xa8fcee762642f156b5d757b6fabc36e06b6d4a1a',
+    honeyChecker: '0xc817b3a104B7d48e3B9C4fbfd624e5D5F03757e0',
   },
   {
     id: 'fantom',
@@ -63,6 +67,7 @@ export const ethereumChains = [
     defaultGas: '100000000000',
     wCoin: '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83',
     testContract: '0xbf1f3d7266a1080bf448e428daa37eec6b05a8ed',
+    honeyChecker: '0x4208B737e8f3075fD2dCB9cE3358689452f98dCf',
   },
   {
     id: 'avax',
@@ -77,6 +82,7 @@ export const ethereumChains = [
     wUSD: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
     testContract: '0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd',
     defaultGas: '94000000000',
+    honeyChecker: '0xf3af9a948f275c2c3b9c61ade16540e66158a1d5',
   },
   {
     id: 'cronos',
@@ -90,5 +96,6 @@ export const ethereumChains = [
     defaultGas: '5000000000',
     wCoin: '0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23',
     testContract: '0xccae06ec0787c07d7df5a60856c73a113fc7cf9a',
+    honeyChecker: '0xb5BAA7d906b985C1A1eF0e2dAd19825EbAb5E9fc',
   },
 ];

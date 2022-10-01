@@ -2,15 +2,17 @@ import BigNumber from 'bignumber.js';
 import Web3 from 'web3';
 import { honeyCheckerAbi } from '../../abi/honeyChecker';
 
+const GAS_LIMIT = '4500000'; // 4.5 million Gas should be enough
+
 export class HoneyChecker {
   constructor(private web3: Web3) {}
 
-  async RunHoneyContract({
-    from: string,
-    honeyCheckerAddress: string,
-    token: string,
-    router: string,
-    rcpAddress: string,
+  async RunHoneyContract(options: {
+    from: string;
+    amount: string;
+    token: string;
+    honeyCheckerAddress: string;
+    router: string;
   }) {
     let buyTax = 0;
     let sellTax = 0;
@@ -23,21 +25,21 @@ export class HoneyChecker {
 
     const honeyCheck = new web3.eth.Contract(honeyCheckerAbi as any);
 
-    const data = honeyCheck.methods.honeyCheck(token, router).encodeABI();
+    const data = honeyCheck.methods.honeyCheck(options.token, options.router).encodeABI();
 
     let honeyTxResult: any;
 
     try {
       honeyTxResult = await web3.eth.call({
         // this could be provider.addresses[0] if it exists
-        from,
+        from: options.from,
         // target address, this could be a smart contract address
-        to: honeyCheckerAddress,
+        to: options.honeyCheckerAddress,
         // optional if you want to specify the gas limit
         gas: GAS_LIMIT,
         gasPrice: Math.floor(Number(gasPrice) * 1.2).toString(),
         // optional if you are invoking say a payable function
-        value: TEST_AMOUNT,
+        value: options.amount,
         // nonce
         nonce: undefined,
         // this encodes the ABI of the method and the arguements
@@ -68,9 +70,10 @@ export class HoneyChecker {
     };
 
     buyTax = (1 - new BigNumber(res.buyResult).dividedBy(new BigNumber(res.expectedAmount)).toNumber()) * 100;
-    sellTax = (1 - new BigNumber(res.sellResult).dividedBy(new BigNumber(TEST_AMOUNT)).toNumber()) * 100 - buyTax;
+    sellTax = (1 - new BigNumber(res.sellResult).dividedBy(new BigNumber(options.amount)).toNumber()) * 100 - buyTax;
 
     return {
+      expectedBuyAmount: res.expectedAmount,
       buyTax,
       sellTax,
       buyGasCost,
