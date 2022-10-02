@@ -76,6 +76,8 @@ window.onload = (event) => {
   });
 
   ipcRenderer.on('selectedToken:data:update', (event, payload) => {
+    console.log(payload);
+
     document.getElementById('token:name').innerHTML = `${payload.name} (${payload.symbol})`;
     document.getElementById('token:supply').innerHTML = payload.intTotalSupply;
     document.getElementById('token:decimal').innerHTML = payload.decimals;

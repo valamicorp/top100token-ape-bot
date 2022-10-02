@@ -84,7 +84,18 @@ export class SwapWallet {
     }
   }
 
-  public async GetSlippage(contractAddress: string, amount: string, router?: string): Promise<any> {
+  public async GetSlippage(
+    contractAddress: string,
+    amount: string,
+    router?: string,
+  ): Promise<{
+    expectedBuyAmount: string;
+    buyTax: number;
+    sellTax: number;
+    buyGasCost: string;
+    sellGasCost: string;
+    isHoneypot: number;
+  }> {
     try {
       const honeyChecker = new HoneyChecker(this.web3);
 
@@ -97,7 +108,9 @@ export class SwapWallet {
         gasPrice: this.gasPrice,
       });
 
-      console.log(slippageResult);
+      return {
+        ...slippageResult,
+      } as any;
     } catch (error) {
       throw new Error(`SlippageCheck Error!  ${contractAddress} , ${error}`);
     }

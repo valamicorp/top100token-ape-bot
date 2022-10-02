@@ -119,11 +119,16 @@ const startNewApe = async (apeAddress: string, broker: ElectronBroker) => {
       chainId: appState.settings.chainId,
     };
 
+    const slippage = await wallet.GetSlippage(apeAddress, appState.settings.apeAmount);
+
+    if (slippage) {
+      appState.selectedToken = {
+        ...appState.selectedToken,
+        ...slippage,
+      };
+    }
+
     broker.emit('selectedToken:data:update', appState.selectedToken);
-
-    await wallet.GetSlippage(apeAddress, appState.settings.apeAmount);
-
-    // TODO: Add back APE start
 
     const allApes = appState.runningApes.map((e) => e.SnapshotApe());
 

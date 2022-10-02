@@ -40,6 +40,9 @@ export interface SelectedToken {
   totalSupply: string;
   intTotalSupply: number;
   decimals: number;
+  buyTax?: number;
+  sellTax?: number;
+  isHoneypot?: number;
 }
 
 export interface Balance {
