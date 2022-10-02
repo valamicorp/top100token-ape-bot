@@ -121,6 +121,8 @@ const startNewApe = async (apeAddress: string, broker: ElectronBroker) => {
 
     broker.emit('selectedToken:data:update', appState.selectedToken);
 
+    await wallet.GetSlippage(apeAddress, appState.settings.apeAmount);
+
     // TODO: Add back APE start
 
     const allApes = appState.runningApes.map((e) => e.SnapshotApe());

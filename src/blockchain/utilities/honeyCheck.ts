@@ -13,6 +13,7 @@ export class HoneyChecker {
     token: string;
     honeyCheckerAddress: string;
     router: string;
+    gasPrice: string;
   }) {
     let buyTax = 0;
     let sellTax = 0;
@@ -21,7 +22,6 @@ export class HoneyChecker {
     let isHoneypot = 0;
 
     const web3 = this.web3;
-    const gasPrice = await web3.eth.getGasPrice();
 
     const honeyCheck = new web3.eth.Contract(honeyCheckerAbi as any);
 
@@ -37,7 +37,7 @@ export class HoneyChecker {
         to: options.honeyCheckerAddress,
         // optional if you want to specify the gas limit
         gas: GAS_LIMIT,
-        gasPrice: Math.floor(Number(gasPrice) * 1.2).toString(),
+        gasPrice: options.gasPrice,
         // optional if you are invoking say a payable function
         value: options.amount,
         // nonce

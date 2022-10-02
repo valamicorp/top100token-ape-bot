@@ -2,6 +2,21 @@ import { BigNumber } from 'bignumber.js';
 import { ERC20TokenData } from './blockchain/utilities/erc20';
 import { ApeEngine } from './engine/apeEngine';
 
+export interface ChainData {
+  id: string;
+  name: string;
+  slug: string;
+  logo: string;
+  scanLogo: string;
+  router: string;
+  factory: string;
+  defaultGas: string;
+  rcpAddress: string;
+  wCoin: string;
+  testContract: string;
+  honeyChecker: string;
+}
+
 export interface AppState {
   buttonState: 'none' | 'start' | 'pause' | 'stop' | 'panicSell';
   selectedToken: SelectedToken | undefined;

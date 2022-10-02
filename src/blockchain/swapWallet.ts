@@ -21,24 +21,13 @@ import SuperWallet from './superWallet';
 import { uniFactoryABI } from '../abi/uniswapFactory';
 import { Web3Tx } from './utilities/transactionHandler';
 import { ethereumChains } from '../chainDatas';
-import { erc20DB } from '../types';
+import { ChainData, erc20DB } from '../types';
+import { HoneyChecker } from './utilities/honeyCheck';
 
 const SwapWalletStore: Map<string, SwapWallet> = new Map();
 
 export class SwapWallet {
-  public chainData: {
-    id: string;
-    name: string;
-    slug: string;
-    logo: string;
-    scanLogo: string;
-    router: string;
-    factory: string;
-    defaultGas: string;
-    rcpAddress: string;
-    wCoin: string;
-    testContract: string;
-  };
+  public chainData: ChainData;
   private web3: Web3;
   public walletAddress: string;
   public gasPrice: string;
@@ -92,6 +81,25 @@ export class SwapWallet {
       Logger.log('Failed to fetch GasPrice ', error);
 
       return this.chainData.defaultGas;
+    }
+  }
+
+  public async GetSlippage(contractAddress: string, amount: string, router?: string): Promise<any> {
+    try {
+      const honeyChecker = new HoneyChecker(this.web3);
+
+      const slippageResult = await honeyChecker.RunHoneyContract({
+        from: this.walletAddress,
+        amount: Web3.utils.toWei(amount, 'ether'),
+        token: contractAddress,
+        honeyCheckerAddress: this.chainData.honeyChecker,
+        router: router ?? this.chainData.router,
+        gasPrice: this.gasPrice,
+      });
+
+      console.log(slippageResult);
+    } catch (error) {
+      throw new Error(`SlippageCheck Error!  ${contractAddress} , ${error}`);
     }
   }
 
