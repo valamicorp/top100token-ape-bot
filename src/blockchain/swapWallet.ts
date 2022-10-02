@@ -63,7 +63,7 @@ export class SwapWallet {
       SuperWallet.Add(this.chainData.id, this.walletAddress);
 
       if (!gasPrice) {
-        this.GetGasPrice();
+        this.GetGasPrice().catch((e) => Logger.log(e));
       }
     } else {
       throw new Error('Invalid Chain/Swap');
