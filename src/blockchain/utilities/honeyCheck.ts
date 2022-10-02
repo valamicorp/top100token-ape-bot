@@ -74,8 +74,8 @@ export class HoneyChecker {
 
     return {
       expectedBuyAmount: res.expectedAmount,
-      buyTax,
-      sellTax,
+      buyTax: buyTax.toFixed(1),
+      sellTax: sellTax.toFixed(1),
       buyGasCost,
       sellGasCost,
       isHoneypot,

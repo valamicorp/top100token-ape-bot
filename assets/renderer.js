@@ -76,12 +76,21 @@ window.onload = (event) => {
   });
 
   ipcRenderer.on('selectedToken:data:update', (event, payload) => {
-    console.log(payload);
-
     document.getElementById('token:name').innerHTML = `${payload.name} (${payload.symbol})`;
     document.getElementById('token:supply').innerHTML = payload.intTotalSupply;
     document.getElementById('token:decimal').innerHTML = payload.decimals;
-    document.getElementById('token:taxes').innerHTML = `Buy: 0% / Sell: 0%`;
+
+    if (payload.isHoneypot === 0) {
+      document.getElementById('token:taxes').innerHTML = `Buy: ${payload.buyTax}% / Sell: ${payload.sellTax}%`;
+    }
+
+    if (payload.isHoneypot === 1) {
+      document.getElementById('token:taxes').innerHTML = `Unable to trade!`;
+    }
+
+    if (payload.isHoneypot === -1) {
+      document.getElementById('token:taxes').innerHTML = `Unable to calculate tax!`;
+    }
   });
 
   ipcRenderer.on('write:info', (event, payload) => {
