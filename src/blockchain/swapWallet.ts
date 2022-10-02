@@ -24,17 +24,21 @@ import { ethereumChains } from '../chainDatas';
 import { ChainData, erc20DB } from '../types';
 import { HoneyChecker } from './utilities/honeyCheck';
 
-const SwapWalletStore: Map<string, SwapWallet> = new Map();
+export const SwapWalletStore: Map<string, SwapWallet> = new Map();
 
 export class SwapWallet {
-  public chainData: ChainData;
-  private web3: Web3;
-  public walletAddress: string;
-  public gasPrice: string;
-  public gasLimit: string;
+  public chainData!: ChainData;
+  private web3!: Web3;
+  public walletAddress!: string;
+  public gasPrice!: string;
+  public gasLimit!: string;
   public customProvider?: string;
 
   constructor(chainId: string, private walletPrivateKey: string, gasPrice?: string, gasLimit?: string) {
+    if (SwapWalletStore.has(`${chainId}:${walletPrivateKey}`)) {
+      return SwapWalletStore.get(`${chainId}:${walletPrivateKey}`) as SwapWallet;
+    }
+
     const chainData = ethereumChains.find((e) => e.id === chainId);
 
     if (chainData) {
@@ -65,6 +69,10 @@ export class SwapWallet {
       if (!gasPrice) {
         this.GetGasPrice().catch((e) => Logger.log(e));
       }
+
+      const self = this;
+
+      SwapWalletStore.set(`${chainId}:${walletPrivateKey}`, self);
     } else {
       throw new Error('Invalid Chain/Swap');
     }
