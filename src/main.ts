@@ -109,6 +109,10 @@ const startNewApe = async (apeAddress: string, broker: ElectronBroker) => {
       gasLimit: appState.settings.gasLimit,
     });
 
+    await apeEngine.SafeBuyApe(apeAddress);
+
+    appState.runningApes.push(apeEngine);
+
     const allApes = appState.runningApes.map((e) => e.SnapshotApe());
 
     broker.emit(

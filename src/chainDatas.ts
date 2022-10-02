@@ -36,7 +36,7 @@ export const ethereumChains = [
     router: '0x72d85Ab47fBfc5E7E04a8bcfCa1601D8f8cE1a50',
     factory: '0xAaA04462e35f3e40D798331657cA015169e005d7',
     rcpAddress: 'https://rpc-us.dogechain.dog',
-    defaultGas: '5000000000',
+    defaultGas: '50000000000',
     wCoin: '0xB7ddC6414bf4F5515b52D8BdD69973Ae205ff101',
     testContract: '0x7b4328c127b85369d9f82ca0503b000d09cf9180',
     honeyChecker: '0x7c0612357771f6599e8e1a046a02f4beb9496de1',
