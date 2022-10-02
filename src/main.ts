@@ -109,6 +109,24 @@ const startNewApe = async (apeAddress: string, broker: ElectronBroker) => {
       gasLimit: appState.settings.gasLimit,
     });
 
+    const allApes = appState.runningApes.map((e) => e.SnapshotApe());
+
+    broker.emit(
+      'portfolio:sync',
+      allApes.filter((e) => e.status < 8),
+    );
+  }
+};
+
+const loadNewApe = async (apeAddress: string, broker: ElectronBroker) => {
+  if (apeAddress) {
+    Logger.log('New ape address', apeAddress);
+
+    if (appState.runningApes.find((e) => e.contractAddress === apeAddress && e.orderStatus <= 7)) {
+      Logger.log('You cannot create new Ape order for the given address!');
+      return;
+    }
+
     const wallet = new SwapWallet(appState.settings.chainId, appState.privateKey);
 
     const erc20Data = await wallet.GetERC20Data(apeAddress);
@@ -128,14 +146,20 @@ const startNewApe = async (apeAddress: string, broker: ElectronBroker) => {
       };
     }
 
+    const balance = await wallet.BalanceOfErc20(apeAddress);
+
+    if (balance) {
+      appState.selectedToken = {
+        ...appState.selectedToken,
+        balanceReal: balance,
+        balance: new BigNumber(balance)
+          .div(10 ** erc20Data.decimals)
+          .toNumber()
+          .toFixed(8),
+      };
+    }
+
     broker.emit('selectedToken:data:update', appState.selectedToken);
-
-    const allApes = appState.runningApes.map((e) => e.SnapshotApe());
-
-    broker.emit(
-      'portfolio:sync',
-      allApes.filter((e) => e.status < 8),
-    );
   }
 };
 
@@ -241,6 +265,17 @@ const start = async (broker: ElectronBroker) => {
       });
     }
   }
+
+  broker.msg.on('apeAddress:changed', async (event, apeAddress) => {
+    try {
+      loadNewApe(apeAddress, broker);
+    } catch (error) {
+      event.reply('asynchronous-reply', {
+        status: 'error',
+        statusdDetails: error,
+      });
+    }
+  });
 
   broker.msg.on('button:control', async (event, action, apeAddress) => {
     try {

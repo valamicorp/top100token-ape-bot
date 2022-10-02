@@ -79,6 +79,7 @@ window.onload = (event) => {
     document.getElementById('token:name').innerHTML = `${payload.name} (${payload.symbol})`;
     document.getElementById('token:supply').innerHTML = payload.intTotalSupply;
     document.getElementById('token:decimal').innerHTML = payload.decimals;
+    document.getElementById('token:balance').innerHTML = payload.balance;
 
     if (payload.isHoneypot === 0) {
       document.getElementById('token:taxes').innerHTML = `Buy: ${payload.buyTax}% / Sell: ${payload.sellTax}%`;
@@ -113,6 +114,16 @@ window.onload = (event) => {
 
   document.getElementById('settingSaveAndClose').addEventListener('click', () => {
     syncSetting();
+  });
+
+  document.getElementById('apeAddress').addEventListener('input', function () {
+    const apeAddress = document.getElementById('apeAddress').value.trim();
+
+    if (apeAddress.length !== 42) {
+      return;
+    }
+
+    ipcRenderer.send('apeAddress:changed', apeAddress);
   });
 
   document.getElementById('startButton').addEventListener('click', function () {
