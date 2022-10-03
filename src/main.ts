@@ -14,11 +14,11 @@ import { ApeOrder, AppState } from './types';
 import { ElectronBroker } from './electronBroker';
 import { ElectronStore } from './util/electronStorage';
 import Web3 from 'web3';
-import { TelegramScrapper } from './plugins/telegram/telegram';
 import SQL from './util/sqlStorage';
 
 import { SwapWallet } from './blockchain/swapWallet';
 import { ethereumChains } from './chainDatas';
+import { TelegramSingaler } from './plugins/telegram/telegram';
 const Store = require('electron-store');
 
 let electronBroker: ElectronBroker;
@@ -228,7 +228,7 @@ const start = async (broker: ElectronBroker) => {
         filter: store.get('telegramFilter') || '',
       };
 
-      const telegramSignaler = new TelegramScrapper(
+      const telegramSignaler = new TelegramSingaler(
         tgOption.api,
         tgOption.hash,
         tgOption.session,
