@@ -126,11 +126,6 @@ const loadNewApe = async (apeAddress: string, broker: ElectronBroker) => {
   if (apeAddress) {
     Logger.log('New ape address', apeAddress);
 
-    if (appState.runningApes.find((e) => e.contractAddress === apeAddress && e.orderStatus <= 7)) {
-      Logger.log('You cannot create new Ape order for the given address!');
-      return;
-    }
-
     const wallet = new SwapWallet(appState.settings.chainId, appState.privateKey);
 
     const erc20Data = await wallet.GetERC20Data(apeAddress);
