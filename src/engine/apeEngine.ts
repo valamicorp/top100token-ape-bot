@@ -263,6 +263,13 @@ export class ApeEngine extends EventEmitter {
         address: this.contractAddress,
       });
     } catch (error) {
+      this.currBuyRetry += 1;
+
+      if (this.currBuyRetry >= this.maxBuyRetry) {
+        this.state = 'APE BUY RETRY LIMIT REACHED, APE STOPPED!';
+        this.StopApe();
+      }
+
       this.Events.push({
         type: 'apeBuyFail',
         address: this.contractAddress,
