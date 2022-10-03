@@ -146,6 +146,7 @@ export interface ApeOrder {
   minProfit: number;
   currProfit: string;
   isApproved: boolean;
+  slippage: number;
   stopped: boolean;
   error: string | undefined;
   status: ApeOrderStatus;

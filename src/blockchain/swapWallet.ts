@@ -109,7 +109,7 @@ export class SwapWallet {
 
       const slippageResult = await honeyChecker.RunHoneyContract({
         from: this.walletAddress,
-        amount: Web3.utils.toWei(amount, 'ether'),
+        amount: amount,
         token: contractAddress,
         honeyCheckerAddress: this.chainData.honeyChecker,
         router: router ?? this.chainData.router,
@@ -203,7 +203,7 @@ export class SwapWallet {
     }
   }
 
-  public async GetApeSwapValue(tokenAddress: string, numToken: string) {
+  public async GetApeSwapValue(tokenAddress: string, numToken: string, sellTax = 0) {
     const token = new this.web3.eth.Contract(uniSwap2ABI as any, this.chainData.router);
 
     try {
@@ -213,7 +213,7 @@ export class SwapWallet {
 
       const exchangeRate = await token.methods.getAmountsOut(numToken, [tokenAddress, this.chainData.wCoin]).call();
 
-      return exchangeRate[1];
+      return new BigNumber(exchangeRate[1]).multipliedBy(1 - sellTax).toFixed(0);
     } catch (error) {
       Logger.log('Failed to fetch UniSwap Data: ', tokenAddress, ' ', error);
     }

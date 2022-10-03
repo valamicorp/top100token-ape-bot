@@ -43,6 +43,9 @@ window.onload = (event) => {
   if (store.has('gasLimit')) {
     document.getElementById('setting6').value = store.get('gasLimit');
   }
+  if (store.has('maxSlippage')) {
+    document.getElementById('setting7').value = store.get('maxSlippage');
+  }
   if (store.has('telegramChannel')) {
     document.getElementById('settingTelegramChannel').value = store.get('telegramChannel');
   }
@@ -206,6 +209,7 @@ const readSetting = () => {
   store.set('minProfit', minProfit);
   store.set('gasPrice', gasPrice);
   store.set('gasLimit', gasLimit);
+  store.set('maxSlippage', maxSlippage);
 
   return {
     privateKey,

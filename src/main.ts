@@ -107,6 +107,7 @@ const startNewApe = async (apeAddress: string, broker: ElectronBroker) => {
       minProfitPct: appState.settings.minProfit,
       gasprice: appState.settings.gasPrice,
       gasLimit: appState.settings.gasLimit,
+      maxSlippage: appState.settings.maxSlippage,
     });
 
     await apeEngine.SafeBuyApe(apeAddress);
@@ -136,7 +137,7 @@ const loadNewApe = async (apeAddress: string, broker: ElectronBroker) => {
       chainId: appState.settings.chainId,
     };
 
-    const slippage = await wallet.GetSlippage(apeAddress, appState.settings.apeAmount);
+    const slippage = await wallet.GetSlippage(apeAddress, Web3.utils.toWei(appState.settings.apeAmount, 'ether'));
 
     if (slippage) {
       appState.selectedToken = {
@@ -178,6 +179,9 @@ const start = async (broker: ElectronBroker) => {
   }
   if (store.has('gasLimit')) {
     appState.settings.gasLimit = store.get('gasLimit');
+  }
+  if (store.has('maxSlippage')) {
+    appState.settings.maxSlippage = store.get('maxSlippage');
   }
 
   // Bot already setted up!

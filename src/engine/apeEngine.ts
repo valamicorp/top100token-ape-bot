@@ -23,6 +23,7 @@ export interface ApeEngineSettings {
   gasLimit?: string;
   updateTimeout?: number;
   injectWallet?: SwapWallet;
+  maxSlippage?: string;
 }
 
 export class ApeEngine extends EventEmitter {
@@ -70,6 +71,8 @@ export class ApeEngine extends EventEmitter {
   public erc20Data: ERC20TokenData | undefined;
 
   public createdAt = Date.now();
+  public slippage: number;
+  public sellTax: number;
 
   constructor(settings: ApeEngineSettings) {
     super();
@@ -87,6 +90,10 @@ export class ApeEngine extends EventEmitter {
 
     this.minProfit = Number(settings.minProfitPct) / 100;
 
+    this.sellTax = 0.03;
+
+    this.slippage = Number(settings.maxSlippage ?? 10) / 100;
+
     this.CreateEventQueue(settings.updateTimeout || 800);
   }
 
@@ -100,6 +107,7 @@ export class ApeEngine extends EventEmitter {
       minProfit: this.minProfit,
       currProfit: this.currProfit,
       isApproved: this.isApproved,
+      slippage: this.slippage,
       stopped: false,
       error: undefined,
       status: this.orderStatus,
@@ -133,12 +141,6 @@ export class ApeEngine extends EventEmitter {
   async SafeBuyApe(address: string) {
     this.contractAddress = address;
     await this.HandleSafeBuyApe();
-  }
-
-  async InstantBuyApe(address: string) {
-    this.contractAddress = address;
-    this.UpdateERC20(address);
-    await this.HandleApeBuyEvent(address);
   }
 
   public async LoadSnapshotApe(apeOrder: ApeOrder) {
@@ -232,22 +234,28 @@ export class ApeEngine extends EventEmitter {
         this.erc20Data = basicData;
       }
 
-      if (!this.liqudityAddress) {
-        const liqudityAddress = await this.swapWallet.GetLiquidityAddress(this.contractAddress);
-        this.liqudityAddress = liqudityAddress;
-      }
+      // Check is the transaction and honeypot
+      const slipResult = await this.swapWallet.GetSlippage(
+        this.contractAddress,
+        this.apeAmount,
+        this.swapWallet.chainData.router,
+      );
 
-      if (this.liqudityAddress) {
-        const liquidityCoinAmount = await this.swapWallet.GetLiquidityAmount(this.liqudityAddress);
+      if (slipResult.isHoneypot === 0) {
+        const buyTax = Number(slipResult.buyTax) / 100;
 
-        if (!liquidityCoinAmount.isZero() && !liquidityCoinAmount.isNaN()) {
-          Logger.log(`Liquidity found for ${this.contractAddress}, init Buy`);
-          // Every check is done we should be able to buy!
-          this.HandleApeBuyEvent(this.contractAddress);
-          return;
-        }
+        this.sellTax = Number(slipResult.sellTax) / 100;
+
+        const minAmount = new BigNumber(slipResult.expectedBuyAmount)
+          .multipliedBy(1 - (this.slippage + buyTax))
+          .toFixed(0);
+
+        Logger.log('Max amount', slipResult.expectedBuyAmount, 'Min amount', minAmount);
+
+        this.HandleApeBuyEvent(this.contractAddress, minAmount);
+        return;
       } else {
-        Logger.log(`No Liquidity found for ${this.contractAddress}, wait for LP`);
+        Logger.log(`Transaction pre-check failed ${this.contractAddress}`);
       }
 
       this.Events.push({
@@ -268,7 +276,7 @@ export class ApeEngine extends EventEmitter {
       this.orderStatus = ApeOrderStatus.waitForExit;
 
       const tokenBalance = await this.swapWallet.BalanceOfErc20(address);
-      const swapValue = await this.swapWallet.GetApeSwapValue(address, tokenBalance);
+      const swapValue = await this.swapWallet.GetApeSwapValue(address, tokenBalance, this.sellTax);
 
       this.Balance[address] = tokenBalance;
 
@@ -287,7 +295,7 @@ export class ApeEngine extends EventEmitter {
 
       if (new BigNumber(swapValue).isGreaterThan(new BigNumber(this.apeAmount).multipliedBy(1 + this.minProfit))) {
         if (!this.isSelling) {
-          await this.HandleApeSell(address, tokenBalance);
+          await this.HandleApeSell(address, tokenBalance, swapValue);
         }
 
         return;
@@ -302,7 +310,7 @@ export class ApeEngine extends EventEmitter {
     }
   }
 
-  private async HandleApeBuyEvent(address: string): Promise<any> {
+  private async HandleApeBuyEvent(address: string, minAmount: string): Promise<any> {
     try {
       this.state = 'APE BUY STARTED!';
       this.orderStatus = ApeOrderStatus.buyStart;
@@ -313,7 +321,7 @@ export class ApeEngine extends EventEmitter {
         return;
       }
 
-      const data = await this.swapWallet.SwapExactETHForTokens(address);
+      const data = await this.swapWallet.SwapExactETHForTokens(address, this.swapWallet.walletAddress, minAmount);
 
       const singedTx = await this.swapWallet.CreateSignedTx(data, {
         to: this.swapWallet.chainData.router,
@@ -416,7 +424,7 @@ export class ApeEngine extends EventEmitter {
     }
   }
 
-  private async HandleApeSell(address: string, tokenBalance: string): Promise<any> {
+  private async HandleApeSell(address: string, tokenBalance: string, minOut: string): Promise<any> {
     try {
       if (!this.isApproved) {
         this.Events.push({
@@ -436,7 +444,12 @@ export class ApeEngine extends EventEmitter {
       this.orderStatus = ApeOrderStatus.sellStart;
       this.isSelling = true;
 
-      const data = await this.swapWallet.SwapExactTokensForETH(address, tokenBalance);
+      const data = await this.swapWallet.SwapExactTokensForETH(
+        address,
+        tokenBalance,
+        this.swapWallet.walletAddress,
+        minOut,
+      );
 
       const singedTx = await this.swapWallet.CreateSignedTx(data, {
         to: this.swapWallet.chainData.router,
