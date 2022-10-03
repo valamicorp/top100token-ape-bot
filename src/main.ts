@@ -257,9 +257,10 @@ const start = async (broker: ElectronBroker) => {
             minProfitPct: appState.settings.minProfit,
             gasprice: appState.settings.gasPrice,
             gasLimit: appState.settings.gasLimit,
+            maxSlippage: appState.settings.maxSlippage,
           });
 
-          apeEngine.SafeBuyApe(address);
+          await apeEngine.SafeBuyApe(address);
 
           appState.runningApes.push(apeEngine);
         } catch (error) {
