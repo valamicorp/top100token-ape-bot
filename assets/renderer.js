@@ -175,6 +175,7 @@ const readSetting = () => {
   const minProfit = document.getElementById('setting4').value;
   const gasPrice = document.getElementById('setting5').value;
   const gasLimit = document.getElementById('setting6').value;
+  const maxSlippage = document.getElementById('setting7').value;
 
   if (privateKey && typeof privateKey === 'string' && privateKey.length >= 64) {
     store.set('privateKey', privateKey);
@@ -213,6 +214,7 @@ const readSetting = () => {
     minProfit,
     gasPrice,
     gasLimit,
+    maxSlippage,
   };
 };
 

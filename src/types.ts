@@ -29,6 +29,7 @@ export interface AppState {
     minProfit: string;
     gasPrice: string;
     gasLimit: string;
+    maxSlippage: string;
   };
 }
 

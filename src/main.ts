@@ -305,6 +305,9 @@ const start = async (broker: ElectronBroker) => {
     appState.settings.minProfit = arg.minProfit;
     appState.settings.gasPrice = arg.gasPrice;
     appState.settings.gasLimit = arg.gasLimit;
+    appState.settings.maxSlippage = arg.maxSlippage;
+
+    console.log(appState.settings);
   });
 
   broker.msg.on('start:sync', () => {
