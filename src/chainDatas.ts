@@ -11,7 +11,7 @@ export const ethereumChains = [
     defaultGas: '5000000000',
     wCoin: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
     testContract: '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c',
-    honeyChecker: '0x385826FBd70DfBB0a7188eE790A36E1fe4f6fc34',
+    honeyChecker: '0x52689BA8e1D164A16fb06918A18978d03fF6EB3F',
   },
   {
     id: 'ethereum',

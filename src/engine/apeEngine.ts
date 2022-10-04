@@ -241,6 +241,10 @@ export class ApeEngine extends EventEmitter {
         this.swapWallet.chainData.router,
       );
 
+      Logger.log('Honey / Slip checker result', {
+        ...slipResult,
+      });
+
       if (slipResult.isHoneypot === 0) {
         const buyTax = Number(slipResult.buyTax) / 100;
 
