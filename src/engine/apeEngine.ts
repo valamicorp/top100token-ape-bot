@@ -306,7 +306,11 @@ export class ApeEngine extends EventEmitter {
 
       if (new BigNumber(swapValue).isGreaterThan(new BigNumber(this.apeAmount).multipliedBy(1 + this.minProfit))) {
         if (!this.isSelling) {
-          await this.HandleApeSell(address, tokenBalance, swapValue);
+          await this.HandleApeSell(
+            address,
+            tokenBalance,
+            new BigNumber(swapValue).multipliedBy(1 - this.slippage).toFixed(0),
+          );
         }
 
         return;
