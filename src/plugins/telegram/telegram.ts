@@ -56,8 +56,8 @@ export class TelegramSingaler extends EventEmitter {
 
     this.client.addEventHandler(async (update: any) => {
       try {
-        if (update && update?.message && update?.message?.message) {
-          const channelId = update?.message?.peerId?.channelId;
+        if (update?.message?.message) {
+          const channelId = update.message.peerId?.channelId;
 
           Logger.log(new Date(), Number(channelId));
 
@@ -65,7 +65,7 @@ export class TelegramSingaler extends EventEmitter {
             const channelName = this.Cache.get(Number(channelId));
 
             if (channelName) {
-              const content = update?.message?.message;
+              const content = update.message.message;
 
               Logger.log('ChannelID', Number(channelId), new Date().toTimeString(), content);
 
