@@ -38,7 +38,7 @@ export class TelegramSingaler extends EventEmitter {
 
     setTimeout(() => {
       this.SetListeners();
-    }, 5000);
+    }, 15000);
   }
 
   async SetListeners() {
@@ -49,15 +49,17 @@ export class TelegramSingaler extends EventEmitter {
         }),
       );
 
-      this.Cache.set(channelResult.fullChat.id, channelName);
+      this.Cache.set(channelResult.fullChat.id.toJSNumber(), channelName);
     }
 
-    console.log(this.Cache);
+    Logger.log(this.Cache);
 
     this.client.addEventHandler(async (update: any) => {
       try {
         if (update && update?.message && update?.message?.message) {
           const channelId = update?.message?.peerId?.channelId;
+
+          Logger.log(new Date(), Number(channelId));
 
           if (channelId) {
             const channelName = this.Cache.get(Number(channelId));
@@ -65,11 +67,11 @@ export class TelegramSingaler extends EventEmitter {
             if (channelName) {
               const content = update?.message?.message;
 
-              console.log('ChannelID', Number(channelId), new Date().toTimeString(), content);
+              Logger.log('ChannelID', Number(channelId), new Date().toTimeString(), content);
 
               const contract = this.MessageProcess(content);
 
-              console.log('Contract found!', contract);
+              Logger.log('Contract found!', contract);
 
               if (contract) {
                 this.emit('newSignal', contract);
@@ -78,7 +80,7 @@ export class TelegramSingaler extends EventEmitter {
           }
         }
       } catch (error) {
-        console.log('Update process error', error);
+        Logger.log('Update process error', error);
       }
     });
   }

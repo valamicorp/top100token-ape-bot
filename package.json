@@ -11,7 +11,7 @@
     "knex": "^0.95.12",
     "request-promise": "^4.2.6",
     "sqlite3": "^5.0.2",
-    "telegram": "^1.9.4",
+    "telegram": "2.12.8",
     "ts-jest": "^27.0.7",
     "tslib": "^2.3.1",
     "web3": "1.8.0"

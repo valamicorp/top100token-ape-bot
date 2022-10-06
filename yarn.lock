@@ -1609,11 +1609,6 @@
   "resolved" "https://registry.npmjs.org/brorand/-/brorand-1.1.0.tgz"
   "version" "1.1.0"
 
-"browser-or-node@^1.3.0":
-  "integrity" "sha512-0F2z/VSnLbmEeBcUrSuDH5l0HxTXdQQzLjkmBR4cYfvg1zJrKSlmIZFqyFR8oX0NrwPhy3c3HQ6i3OxMbew4Tg=="
-  "resolved" "https://registry.npmjs.org/browser-or-node/-/browser-or-node-1.3.0.tgz"
-  "version" "1.3.0"
-
 "browser-process-hrtime@^1.0.0":
   "integrity" "sha512-9o5UecI3GhkpM6DrXr69PblIuWxPKk9Y0jHBRhdocZ2y7YECBFCsHm79Pr3OyR2AvjhDkabFJaDJMYRazHgsow=="
   "resolved" "https://registry.npmjs.org/browser-process-hrtime/-/browser-process-hrtime-1.0.0.tgz"
@@ -4925,7 +4920,7 @@
   "resolved" "https://registry.npmjs.org/mime-db/-/mime-db-1.52.0.tgz"
   "version" "1.52.0"
 
-"mime-types@^2.1.12", "mime-types@^2.1.16", "mime-types@^2.1.30", "mime-types@~2.1.19", "mime-types@~2.1.24", "mime-types@~2.1.34":
+"mime-types@^2.1.12", "mime-types@^2.1.16", "mime-types@~2.1.19", "mime-types@~2.1.24", "mime-types@~2.1.34":
   "integrity" "sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw=="
   "resolved" "https://registry.npmjs.org/mime-types/-/mime-types-2.1.35.tgz"
   "version" "2.1.35"
@@ -4936,6 +4931,11 @@
   "integrity" "sha512-USPkMeET31rOMiarsBNIHZKLGgvKc/LrjofAnBlOttf5ajRvqiRA8QsenbcooctK6d6Ts6aqZXBA+XbkKthiQg=="
   "resolved" "https://registry.npmjs.org/mime/-/mime-2.6.0.tgz"
   "version" "2.6.0"
+
+"mime@^3.0.0":
+  "integrity" "sha512-jSCU7/VB1loIWBZe14aEYHU/+1UMEHoaO7qxCOVJOw9GgH72VAWppxNcjU+x9a2k3GSIBXNKxXQFqRvvZ7vr3A=="
+  "resolved" "https://registry.npmjs.org/mime/-/mime-3.0.0.tgz"
+  "version" "3.0.0"
 
 "mime@1.6.0":
   "integrity" "sha512-x0Vn8spI+wuJ1O6S7gnbaQg8Pxh4NNHb7KSINmEWKiPE4RKOplvijn+NkmYmmRgP68mc70j2EbeTFRsrswaQeg=="
@@ -5236,7 +5236,7 @@
   "resolved" "https://registry.npmjs.org/node-int64/-/node-int64-0.4.0.tgz"
   "version" "0.4.0"
 
-"node-localstorage@^2.1.6":
+"node-localstorage@^2.2.1":
   "integrity" "sha512-vv8fJuOUCCvSPjDjBLlMqYMHob4aGjkmrkaE42/mZr0VT+ZAU10jRF8oTnX9+pgU9/vYJ8P7YT3Vd6ajkmzSCw=="
   "resolved" "https://registry.npmjs.org/node-localstorage/-/node-localstorage-2.2.1.tgz"
   "version" "2.2.1"
@@ -5397,11 +5397,6 @@
     "prelude-ls" "~1.1.2"
     "type-check" "~0.3.2"
     "word-wrap" "~1.2.3"
-
-"os-browserify@^0.3.0":
-  "integrity" "sha1-hUNzx/XCMVkU/Jv8a9gjj92h7Cc="
-  "resolved" "https://registry.npmjs.org/os-browserify/-/os-browserify-0.3.0.tgz"
-  "version" "0.3.0"
 
 "p-cancelable@^1.0.0":
   "integrity" "sha512-s73XxOZ4zpt1edZYZzvhqFa6uvQc1vwUa0K0BdtIZgQMAJj9IbebH+JkgKZc9h+B05PKHLOTl4ajG1BmNrVZlw=="
@@ -6242,7 +6237,7 @@
     "debug" "^4.3.3"
     "socks" "^2.6.2"
 
-"socks@^2.6.1", "socks@^2.6.2":
+"socks@^2.6.2":
   "integrity" "sha512-zDZhHhZRY9PxRruRMR7kMhnf3I8hDs4S3f9RecfnGxvcBHQcKcIH/oUcEWffsfl1XxdYlA7nnlGbbTvPz9D8gA=="
   "resolved" "https://registry.npmjs.org/socks/-/socks-2.6.2.tgz"
   "version" "2.6.2"
@@ -6338,7 +6333,7 @@
   "resolved" "https://registry.npmjs.org/stealthy-require/-/stealthy-require-1.1.1.tgz"
   "version" "1.1.1"
 
-"store2@^2.12.0":
+"store2@^2.13.0":
   "integrity" "sha512-CMtO2Uneg3SAz/d6fZ/6qbqqQHi2ynq6/KzMD/26gTkiEShCcpqFfTHgOxsE0egAq6SX3FmN4CeSqn8BzXQkJg=="
   "resolved" "https://registry.npmjs.org/store2/-/store2-2.13.2.tgz"
   "version" "2.13.2"
@@ -6536,27 +6531,23 @@
   "resolved" "https://registry.npmjs.org/tarn/-/tarn-3.0.2.tgz"
   "version" "3.0.2"
 
-"telegram@^1.9.4":
-  "integrity" "sha512-5Qh3ajIN0DC3Lk5TPcE+4pjx1wy7LMig0xC+HcunUcA3gyliaHUvtPl8n/hTdW0hXZJ8EUJqYmQoH6VZJz6adA=="
-  "resolved" "https://registry.npmjs.org/telegram/-/telegram-1.11.1.tgz"
-  "version" "1.11.1"
+"telegram@2.12.8":
+  "integrity" "sha512-RfZV/fmp9zTjzWDnPbIMLL2JyP0KQjjTZUW7/eeGUXicLiiQ5l0lZqSu+DXGS5fnM3I2pYer7TfvsMMuD/F60A=="
+  "resolved" "https://registry.npmjs.org/telegram/-/telegram-2.12.8.tgz"
+  "version" "2.12.8"
   dependencies:
     "@cryptography/aes" "^0.1.1"
     "async-mutex" "^0.3.0"
     "big-integer" "^1.6.48"
-    "browser-or-node" "^1.3.0"
     "buffer" "^6.0.3"
     "htmlparser2" "^6.1.0"
-    "mime-types" "^2.1.30"
-    "node-localstorage" "^2.1.6"
-    "os-browserify" "^0.3.0"
+    "mime" "^3.0.0"
+    "node-localstorage" "^2.2.1"
     "pako" "^2.0.3"
     "path-browserify" "^1.0.1"
-    "process" "^0.11.10"
-    "socks" "^2.6.1"
-    "store2" "^2.12.0"
+    "socks" "^2.6.2"
+    "store2" "^2.13.0"
     "ts-custom-error" "^3.2.0"
-    "util" "^0.12.4"
     "websocket" "^1.0.34"
   optionalDependencies:
     "bufferutil" "^4.0.3"
@@ -6907,7 +6898,7 @@
   "resolved" "https://registry.npmjs.org/util-deprecate/-/util-deprecate-1.0.2.tgz"
   "version" "1.0.2"
 
-"util@^0.12.0", "util@^0.12.4":
+"util@^0.12.0":
   "integrity" "sha512-bxZ9qtSlGUWSOy9Qa9Xgk11kSslpuZwaxCg4sNIDj6FLucDab2JxnHwyNTCpHMtK1MjoQiWQ6DiUMZYbSrO+Sw=="
   "resolved" "https://registry.npmjs.org/util/-/util-0.12.4.tgz"
   "version" "0.12.4"
