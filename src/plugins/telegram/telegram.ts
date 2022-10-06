@@ -41,6 +41,16 @@ export class TelegramSingaler extends EventEmitter {
     }, 15000);
   }
 
+  async GetChannels() {
+    const results: any = await this.client.invoke(
+      new Api.messages.GetAllChats({
+        exceptIds: [],
+      }),
+    );
+
+    Logger.log(results);
+  }
+
   async SetListeners() {
     for (const channelName of this.channelNames) {
       const channelResult = await this.client.invoke(
