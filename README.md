@@ -32,6 +32,5 @@ The project is forever free and open-source, feel free to evolve our codebase!
 ## Setting up Telegram signal plugin:
 - https://github.com/valamicorp/top100token-ape-bot/tree/main/src/plugins/telegram
 
-
-
-
+## Additional UI screenshots:
+![Settings](https://user-images.githubusercontent.com/52665225/194729813-9cc05645-9cc5-49f5-8945-1051a6dc22c1.png)
