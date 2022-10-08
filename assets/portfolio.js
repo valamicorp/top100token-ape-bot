@@ -36,19 +36,18 @@ const renderPortfolio = (apeOrders) => {
 };
 
 const renderPortfolioCard = (apeOrder) => {
-
-  if(!apeOrder.erc20Data){
+  if (!apeOrder.erc20Data) {
     apeOrder.erc20Data = {};
     apeOrder.erc20Data.symbol = 'N/A';
-    apeOrder.erc20Data.name= 'Loading...';
-    apeOrder.erc20Data.totalSupply= '10000000000000';
-    apeOrder.erc20Data.intTotalSupply= 1000000000;
-    apeOrder.erc20Data.decimals= 18;
+    apeOrder.erc20Data.name = 'Loading...';
+    apeOrder.erc20Data.totalSupply = '10000000000000';
+    apeOrder.erc20Data.intTotalSupply = 1000000000;
+    apeOrder.erc20Data.decimals = 18;
   }
 
   return `<div class="card text-white bg-dark mb-3" style="width: 18rem;">
    <div class="card-body">
-     <h5 class="card-title">$${apeOrder.erc20Data.symbol} / ${apeOrder.erc20Data.name}</h5>
+     <h5 class="card-title">${apeOrder.erc20Data.symbol} / ${apeOrder.erc20Data.name}</h5>
      <p class="card-title" style="font-size: x-small;">${apeOrder.address}</p>
        <div style="margin-top: 1rem; margin-bottom: 1rem">
          <div class="logtailTitle">
