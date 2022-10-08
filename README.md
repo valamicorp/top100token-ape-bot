@@ -3,7 +3,8 @@
 [![GitHub issues](https://img.shields.io/github/issues/valamicorp/top100token-ape-bot)](https://github.com/valamicorp/top100token-ape-bot/issues)
 [![GitHub stars](https://img.shields.io/github/stars/valamicorp/top100token-ape-bot)](https://github.com/valamicorp/top100token-ape-bot/stargazers)
 
-![top100token bot UI 1](https://i.imgur.com/8Gdmv7x.png)
+![top100token bot UI 1](https://user-images.githubusercontent.com/52665225/194729758-f0416cf3-2be7-478b-a9df-664c281d9754.png)
+
 DeFi APE bot for PancakeSwap, UniSwapV2, CheapSwap,Quickswap, SpookySwap, DevEthSwap.
 **This tool made for education purposes, use it for your own risk.**
 
@@ -31,5 +32,5 @@ The project is forever free and open-source, feel free to evolve our codebase!
 ## Setting up Telegram signal plugin:
 - https://github.com/valamicorp/top100token-ape-bot/tree/main/src/plugins/telegram
 
-
-
+## Additional UI screenshots:
+![Settings](https://user-images.githubusercontent.com/52665225/194729813-9cc05645-9cc5-49f5-8945-1051a6dc22c1.png)
