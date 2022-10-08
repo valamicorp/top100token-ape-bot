@@ -132,6 +132,7 @@ export class ApeEngine extends EventEmitter {
 
   public PanicSell() {
     this.minProfit = -0.99;
+    this.slippage = 0.99;
   }
 
   public SetMinProfit(minProfit: number) {
