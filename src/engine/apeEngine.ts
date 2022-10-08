@@ -259,6 +259,14 @@ export class ApeEngine extends EventEmitter {
         this.HandleApeBuyEvent(this.contractAddress, minAmount);
         return;
       } else {
+        this.currBuyRetry += 1;
+
+        if (this.currBuyRetry >= this.maxBuyRetry) {
+          this.state = 'APE BUY RETRY LIMIT REACHED, APE STOPPED!';
+          this.StopApe();
+          return;
+        }
+
         Logger.log(`Transaction pre-check failed ${this.contractAddress}`);
       }
 
@@ -272,12 +280,14 @@ export class ApeEngine extends EventEmitter {
       if (this.currBuyRetry >= this.maxBuyRetry) {
         this.state = 'APE BUY RETRY LIMIT REACHED, APE STOPPED!';
         this.StopApe();
+        return;
+      } else {
+        this.Events.push({
+          type: 'apeBuyFail',
+          address: this.contractAddress,
+        });
       }
 
-      this.Events.push({
-        type: 'apeBuyFail',
-        address: this.contractAddress,
-      });
       Logger.log(`Error HandleSafeBuyApe ${error}`);
     }
   }

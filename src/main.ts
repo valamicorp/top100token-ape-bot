@@ -19,6 +19,7 @@ import SQL from './util/sqlStorage';
 import { SwapWallet } from './blockchain/swapWallet';
 import { ethereumChains } from './chainDatas';
 import { TelegramSingaler } from './plugins/telegram/telegram';
+import { WebsocketSignaler } from './plugins/websocket/websocket';
 const Store = require('electron-store');
 
 let electronBroker: ElectronBroker;
@@ -33,7 +34,7 @@ const store = new Store({
 
 const createWindow = (): Electron.BrowserWindow => {
   const window = new BrowserWindow({
-    width: 1600,
+    width: 1800,
     height: 900,
     webPreferences: {
       nodeIntegration: true,
@@ -217,6 +218,45 @@ const start = async (broker: ElectronBroker) => {
     });
   }
 
+  /*
+  const websocketSignal = new WebsocketSignaler('', 'testSignal', 'binance');
+
+  if (websocketSignal) {
+    websocketSignal.on('newSignal', async (address: string) => {
+      try {
+        if (store.has('signalHistoryTg')) {
+          if (store.get('signalHistoryTg') === address) {
+            return;
+          }
+        }
+
+        store.set('signalHistoryTg', address);
+
+        if (appState.runningApes.find((e) => e.contractAddress === address && e.orderStatus <= 7)) {
+          Logger.log('You cannot create new Ape order for the given address!');
+          return;
+        }
+
+        const apeEngine = new ApeEngine({
+          chainId: appState.settings.chainId,
+          privateKey: appState.privateKey,
+          apeAmount: appState.settings.apeAmount,
+          minProfitPct: appState.settings.minProfit,
+          gasprice: appState.settings.gasPrice,
+          gasLimit: appState.settings.gasLimit,
+          maxSlippage: appState.settings.maxSlippage,
+        });
+
+        await apeEngine.SafeBuyApe(address);
+
+        appState.runningApes.push(apeEngine);
+      } catch (error) {
+        Logger.log('Unable to start Websocket Signal APE');
+      }
+    });
+  }
+  */
+
   // TELEGRAM PLUGIN
   if (store.has('telegramAPI') && store.has('telegramAPIHASH')) {
     if (store.has('telegramSession') && store.has('telegramChannel')) {
@@ -228,45 +268,47 @@ const start = async (broker: ElectronBroker) => {
         filter: store.get('telegramFilter') || '',
       };
 
-      const telegramSignaler = new TelegramSingaler(
-        tgOption.api,
-        tgOption.hash,
-        tgOption.session,
-        tgOption.channel,
-        tgOption.filter,
-      );
-      telegramSignaler.on('newSignal', async (address: string) => {
-        try {
-          if (store.has('signalHistoryTg')) {
-            if (store.get('signalHistoryTg') === address) {
+      if (tgOption?.channel?.length > 0) {
+        const telegramSignaler = new TelegramSingaler(
+          tgOption.api,
+          tgOption.hash,
+          tgOption.session,
+          tgOption.channel,
+          tgOption.filter,
+        );
+        telegramSignaler.on('newSignal', async (address: string) => {
+          try {
+            if (store.has('signalHistoryTg')) {
+              if (store.get('signalHistoryTg') === address) {
+                return;
+              }
+            }
+
+            store.set('signalHistoryTg', address);
+
+            if (appState.runningApes.find((e) => e.contractAddress === address && e.orderStatus <= 7)) {
+              Logger.log('You cannot create new Ape order for the given address!');
               return;
             }
+
+            const apeEngine = new ApeEngine({
+              chainId: appState.settings.chainId,
+              privateKey: appState.privateKey,
+              apeAmount: appState.settings.apeAmount,
+              minProfitPct: appState.settings.minProfit,
+              gasprice: appState.settings.gasPrice,
+              gasLimit: appState.settings.gasLimit,
+              maxSlippage: appState.settings.maxSlippage,
+            });
+
+            await apeEngine.SafeBuyApe(address);
+
+            appState.runningApes.push(apeEngine);
+          } catch (error) {
+            Logger.log('Unable to start Telegram Signal APE');
           }
-
-          store.set('signalHistoryTg', address);
-
-          if (appState.runningApes.find((e) => e.contractAddress === address && e.orderStatus <= 7)) {
-            Logger.log('You cannot create new Ape order for the given address!');
-            return;
-          }
-
-          const apeEngine = new ApeEngine({
-            chainId: appState.settings.chainId,
-            privateKey: appState.privateKey,
-            apeAmount: appState.settings.apeAmount,
-            minProfitPct: appState.settings.minProfit,
-            gasprice: appState.settings.gasPrice,
-            gasLimit: appState.settings.gasLimit,
-            maxSlippage: appState.settings.maxSlippage,
-          });
-
-          await apeEngine.SafeBuyApe(address);
-
-          appState.runningApes.push(apeEngine);
-        } catch (error) {
-          Logger.log('Unable to start Telegram Signal APE');
-        }
-      });
+        });
+      }
     }
   }
 
