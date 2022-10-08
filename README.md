@@ -32,6 +32,4 @@ The project is forever free and open-source, feel free to evolve our codebase!
 - https://github.com/valamicorp/top100token-ape-bot/tree/main/src/plugins/telegram
 
 
-### Additional Screenshots UI:
-
 
