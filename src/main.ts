@@ -147,6 +147,8 @@ const loadNewApe = async (apeAddress: string, broker: ElectronBroker) => {
       };
     }
 
+    Logger.log('Honey/slippage result:', slippage);
+
     const balance = await wallet.BalanceOfErc20(apeAddress);
 
     if (balance) {
