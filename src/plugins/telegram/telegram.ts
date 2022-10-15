@@ -37,6 +37,7 @@ export class TelegramSingaler extends EventEmitter {
     this.client.connect().catch();
 
     setTimeout(() => {
+      //this.GetChannels();
       this.SetListeners();
     }, 15000);
   }
@@ -48,6 +49,9 @@ export class TelegramSingaler extends EventEmitter {
       }),
     );
 
+    for (const chat of results.chats) {
+      Logger.log(`${chat.title} - ${chat.id}`);
+    }
     Logger.log(results);
   }
 
