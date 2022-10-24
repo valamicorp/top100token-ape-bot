@@ -312,6 +312,37 @@ swapExactTokensForETHSupportingFeeOnTransferTokens
     }
   }
 
+  public async PreCheckTx(data: string, txConfing: TxConfing) {
+    const nonce = SuperWallet.GetNonce(this.chainData.id, this.walletAddress);
+
+    const tx = {
+      // this could be provider.addresses[0] if it exists
+      from: this.walletAddress,
+      // target address, this could be a smart contract address
+      to: txConfing.to,
+      // optional if you want to specify the gas limit
+      gas: txConfing.gasLimit ?? new BigNumber(this.gasLimit).toNumber(),
+      gasPrice: txConfing.gasPrice ?? new BigNumber(this.gasPrice).toNumber(),
+      // optional if you are invoking say a payable function
+      value: txConfing.value,
+      // nonce
+      nonce: nonce ?? undefined,
+      // this encodes the ABI of the method and the arguements
+      data: data,
+    };
+
+    Logger.log(`PreCheck TX created`, {
+      walletNonce: nonce,
+      txNonce: tx.nonce,
+      from: tx.from,
+      gas: tx.gas,
+      gasPrice: tx.gasPrice,
+      value: tx.value,
+    });
+
+    return await this.web3.eth.call(tx);
+  }
+
   public async CreateSignedTx(data: string, txConfing: TxConfing) {
     const nonce = SuperWallet.GetNonce(this.chainData.id, this.walletAddress);
 
@@ -362,7 +393,11 @@ swapExactTokensForETHSupportingFeeOnTransferTokens
 
       return receipt;
     } catch (e) {
-      Logger.log(e);
+      Logger.log('SendSignedTx Error', e);
+
+      if ((e as any).message?.includes('incorrect nonce')) {
+        throw e;
+      }
     }
   }
 }
