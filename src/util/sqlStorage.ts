@@ -58,13 +58,13 @@ export class SQLStorageService {
     }
   }
 
-  public async ReadData<T>(table: StorageTables, where?: any) {
+  public async ReadData<T>(table: StorageTables, where?: any): Promise<T[]> {
     if (!where) {
-      const allRows = await this.knex<T>(table).select('*');
+      const allRows = await this.knex(table).select('*');
 
       return allRows;
     } else {
-      const allRows = await this.knex<T>(table).select('*').where(where);
+      const allRows = await this.knex(table).select('*').where(where);
 
       return allRows;
     }
@@ -81,7 +81,7 @@ export class SQLStorageService {
 
     insertData.forEach(async (singleData) => {
       try {
-        await this.knex<T>(table).insert(singleData as any);
+        await this.knex(table).insert(singleData as any);
       } catch (error) {
         Logger.log('Failed to write DB', error);
       }

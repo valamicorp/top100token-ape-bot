@@ -10,7 +10,6 @@
     "importHelpers": false,
     "experimentalDecorators": true,
     "declaration": false,
-    "suppressImplicitAnyIndexErrors": true,
     "outDir": "./build",
     "module": "commonjs",
     "strict": true,
