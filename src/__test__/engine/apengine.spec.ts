@@ -1,8 +1,9 @@
 import BigNumber from 'bignumber.js';
 import Web3 from 'web3';
 import { SwapWallet } from '../../blockchain/swapWallet';
-import { ethereumChains } from '../../contants';
+
 import { ApeEngine } from '../../engine/apeEngine';
+import { ethereumChains } from '../../chainDatas';
 
 BigNumber.set({ EXPONENTIAL_AT: 80 });
 
